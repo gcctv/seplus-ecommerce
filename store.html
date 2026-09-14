@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SEPLUS - CCTV Store</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f7fa;
+            color: #111827;
+        }
+
+        header {
+            background: #0f172a;
+            color: white;
+            padding: 18px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 25px;
+            font-size: 16px;
+        }
+
+        .hero {
+            background: white;
+            padding: 50px 40px;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 40px;
+            margin-bottom: 12px;
+        }
+
+        .hero p {
+            font-size: 18px;
+            color: #666;
+        }
+
+        .shop-button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 25px;
+            background: #0f172a;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 35px 20px;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .categories {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .category {
+            background: white;
+            padding: 25px;
+            text-align: center;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+
+        .products {
+            display: block;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .product {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+
+        .product img {
+            width: 100%;
+            height: 180px;
+            object-fit: contain;
+        }
+
+        .product h3 {
+            margin-bottom: 10px;
+        }
+
+        .price {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .add-cart {
+            width: 100%;
+            padding: 10px;
+            margin-top: 12px;
+            background: #0f172a;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        footer {
+            margin-top: 40px;
+            background: #0f172a;
+            color: white;
+            text-align: center;
+            padding: 25px;
+        }
+
+        @media (max-width: 900px) {
+            .categories,
+            .products {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .categories,
+            .products {
+                grid-template-columns: 1fr;
+            }
+
+            .hero h1 {
+                font-size: 30px;
+            }
+        }
+        .store-filters {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.store-filters input,
+.store-filters select {
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 15px;
+}
+
+.store-filters input {
+    flex: 1;
+}
+
+.store-filters select {
+    width: 220px;
+}
+
+@media (max-width: 768px) {
+    .store-filters {
+        flex-direction: column;
+    }
+
+    .store-filters select {
+        width: 100%;
+    }
+}
+.products {
+    display: grid;
+    width: 100%;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 25px;
+}
+
+@media (max-width: 1000px) {
+    .products {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .products {
+        grid-template-columns: 1fr;
+    }
+}
+#dynamic-products {
+    display: grid;
+    width: 100%;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 25px;
+}
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo">SEPLUS</div>
+
+    <nav>
+        <a href="store.html">Home</a>
+        <a href="#categories">Categories</a>
+        <a href="#products">Products</a>
+        <a href="cart.html">Cart</a>
+    </nav>
+</header>
+
+<section class="hero">
+    <h1>CCTV & Security Solutions</h1>
+    <p>IP Cameras, NVR, DVR, Surveillance HDD & Accessories</p>
+    <a href="#products" class="shop-button">Shop Now</a>
+</section>
+
+<section class="container" id="categories">
+
+    <h2 class="section-title">Shop by Category</h2>
+
+    <div class="categories">
+
+        <div class="category">
+            <h3>IP Cameras</h3>
+            <p>Dome & Bullet Cameras</p>
+        </div>
+
+        <div class="category">
+            <h3>NVR / DVR</h3>
+            <p>Network & DVR Recorders</p>
+        </div>
+
+        <div class="category">
+            <h3>Surveillance HDD</h3>
+            <p>Storage for CCTV</p>
+        </div>
+
+        <div class="category">
+            <h3>CCTV Accessories</h3>
+            <p>PoE, SMPS, Cables & More</p>
+        </div>
+
+    </div>
+
+</section>
+
+<section class="container" id="products">
+
+    <h2 class="section-title">Featured Products</h2>
+<div class="store-filters">
+
+    <input type="text" id="searchInput" placeholder="Search products...">
+
+    <select id="categoryFilter">
+        <option value="all">All Categories</option>
+        <option value="IP Camera">IP Camera</option>
+        <option value="NVR/DVR">NVR/DVR</option>
+        <option value="HDD">HDD</option>
+        <option value="PoE Switch">PoE Switch</option>
+        <option value="Accessories">Accessories</option>
+        <option value="CCTV Kits">CCTV Kits</option>
+    </select>
+
+</div>
+
+<div class="products">
+    <div id="dynamic-products"></div>
+</div>
+    
+</section>
+
+<footer>
+    <p>© 2026 SEPLUS. All Rights Reserved.</p>
+    <p>CCTV & Security Solutions</p>
+</footer>
+<script>
+    const cartButtons = document.querySelectorAll(".add-cart");
+
+cartButtons.forEach(button => {
+    button.addEventListener("click", function () {
+
+        const product = button.closest(".product");
+
+        const name = product.querySelector("h3").textContent;
+        const priceText = product.querySelector(".price").textContent;
+        const price = Number(priceText.replace(/[₹,]/g, ""));
+
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+        const existingProduct = cart.find(item => item.name === name);
+
+        if (existingProduct) {
+            existingProduct.quantity += 1;
+        } else {
+            cart.push({
+                name: name,
+                price: price,
+                quantity: 1
+            });
+        }
+
+        localStorage.setItem("cart", JSON.stringify(cart));
+        alert(localStorage.getItem("cart"));
+        alert("Product added to cart!");
+    });
+});
+const adminProducts = JSON.parse(localStorage.getItem("products")) || [];
+function addToCart(name, price) {
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+    const existingProduct = cart.find(item => item.name === name);
+
+    if (existingProduct) {
+        existingProduct.quantity += 1;
+    } else {
+        cart.push({
+            name: name,
+            price: Number(price),
+            quantity: 1
+        });
+    }
+
+    localStorage.setItem("cart", JSON.stringify(cart));
+
+    alert("Product added to cart!");
+}
+function loadAdminProducts() {
+    const container = document.getElementById("dynamic-products");
+
+    adminProducts.forEach(product => {
+        const card = document.createElement("div");
+
+        card.className = "product";
+        card.dataset.category = product.category || "Accessories";
+
+        card.innerHTML = `
+            <img src="images/${product.image}" alt="${product.name}">
+            <a href="product.html?name=${encodeURIComponent(product.name)}">
+                <h3>${product.name}</h3>
+            </a>
+            <p>
+    <del>MRP: ₹${Number(product.mrp || product.price).toLocaleString("en-IN")}</del>
+</p>
+<p class="price">
+    ₹${Number(product.price).toLocaleString("en-IN")}
+</p>
+<p>
+    <strong>Discount:</strong>
+    ${product.mrp && product.mrp > product.price
+        ? Math.round(((product.mrp - product.price) / product.mrp) * 100)
+        : 0}% OFF
+</p>
+            <p>Stock: ${product.stock}</p>
+            <button class="add-cart" onclick="addToCart('${product.name}', ${product.price})">Add to Cart</button>
+        `;
+
+        container.appendChild(card);
+    });
+}
+loadAdminProducts();
+const searchInput = document.getElementById("searchInput");
+const categoryFilter = document.getElementById("categoryFilter");
+
+function filterProducts() {
+    const searchText = searchInput.value.toLowerCase().trim();
+
+    let selectedCategory = categoryFilter.value.toLowerCase();
+
+    // Category name mapping
+    if (selectedCategory === "nvr") {
+        selectedCategory = "nvr/dvr";
+    }
+
+    if (selectedCategory === "surveillance hdd") {
+        selectedCategory = "hdd";
+    }
+
+    const products = document.querySelectorAll(".product");
+
+    products.forEach(product => {
+
+        const productText =
+            product.querySelector("h3").textContent.toLowerCase();
+
+        let productCategory =
+            (product.dataset.category || "").toLowerCase();
+
+        // Product category mapping
+        if (productCategory === "nvr") {
+            productCategory = "nvr/dvr";
+        }
+
+        if (productCategory === "surveillance hdd") {
+            productCategory = "hdd";
+        }
+
+        const matchesSearch =
+            productText.includes(searchText);
+
+        const matchesCategory =
+            selectedCategory === "all" ||
+            productCategory === selectedCategory;
+
+        if (matchesSearch && matchesCategory) {
+            product.style.display = "";
+        } else {
+            product.style.display = "none";
+        }
+    });
+}
+
+searchInput.addEventListener("input", filterProducts);
+categoryFilter.addEventListener("change", filterProducts);
+</script>
+</body>
+</html>
