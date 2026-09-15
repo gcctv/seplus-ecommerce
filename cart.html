@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -208,4 +209,216 @@ localStorage.setItem("cart", JSON.stringify(cartData));
 </script>
 
 </body>
+=======
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SEPLUS - Cart</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f6f8;
+            color: #111827;
+        }
+
+        header {
+            background: #111827;
+            color: white;
+            padding: 20px 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        header a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .cart-container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .cart-box {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 0;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .cart-item h3 {
+            margin: 0 0 6px;
+        }
+
+        .cart-item p {
+            margin: 0;
+            color: #555;
+        }
+
+        .remove-btn {
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .total {
+            text-align: right;
+            font-size: 22px;
+            font-weight: bold;
+            margin-top: 25px;
+        }
+
+        .checkout-btn {
+            display: block;
+            width: 100%;
+            background: #111827;
+            color: white;
+            border: none;
+            padding: 14px;
+            margin-top: 20px;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo">SEPLUS</div>
+    <a href="index.html">← Continue Shopping</a>
+</header>
+
+<div class="cart-container">
+
+    <h1>Your Cart</h1>
+
+    <div class="cart-box">
+
+        <div id="cart-items"></div>
+
+        <div class="total">
+            Total: ₹<span id="cart-total">0</span>
+        </div>
+
+        <a href="checkout.html" class="checkout-btn">
+    Proceed to Checkout
+</a>
+
+    </div>
+
+</div>
+
+<script>
+    const cartData = JSON.parse(localStorage.getItem("cart")) || [];
+    const cartItems = document.getElementById("cart-items");
+    const cartTotal = document.getElementById("cart-total");
+
+    let total = 0;
+
+    if (cartData.length === 0) {
+
+        cartItems.innerHTML = `
+            <div class="empty">
+                Your cart is empty.
+            </div>
+        `;
+
+    } else {
+
+        cartData.forEach((item, index) => {
+
+            const price = Number(item.price);
+             const quantity = item.quantity || 1;
+total += price * quantity;
+
+            cartItems.innerHTML += `
+                <div class="cart-item">
+                    <div>
+                        <h3>${item.name}</h3>
+                        <p>
+    ₹${price} ×
+    <input type="number"
+           value="${quantity}"
+           min="1"
+           onchange="updateQuantity(${index}, this.value)"
+           style="width:60px; padding:5px;">
+</p>
+                    </div>
+
+                    <button class="remove-btn"
+                        onclick="removeItem(${index})">
+                        Remove
+                    </button>
+                </div>
+            `;
+        });
+    }
+
+    cartTotal.textContent = total.toLocaleString("en-IN");
+
+    function removeItem(index) {
+
+       cartData.splice(index, 1);
+
+localStorage.setItem("cart", JSON.stringify(cartData));
+
+          location.reload();
+    }
+
+    function updateQuantity(index, value) {
+    let quantity = Number(value);
+
+    if (quantity < 1) {
+        quantity = 1;
+    }
+
+    cart[index].quantity = quantity;
+
+    localStorage.setItem("cart", JSON.stringify(cart));
+
+    location.reload();
+}
+</script>
+
+</body>
+>>>>>>> cf3758d965f0f79ef72ae11215ceed614a038091
 </html>
