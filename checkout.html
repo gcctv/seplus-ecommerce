@@ -174,6 +174,8 @@ document.getElementById("checkout-form").addEventListener("submit", async functi
     }
 
     const order = {
+    user_id: (await supabaseClient.auth.getUser()).data.user?.id || null,
+    
         name: document.getElementById("name").value.trim(),
         mobile: document.getElementById("mobile").value.trim(),
         email: document.getElementById("email").value.trim(),

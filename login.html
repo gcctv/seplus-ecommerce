@@ -116,7 +116,11 @@
 
             <button type="submit">Login</button>
 
-        </form>
+            <div style="text-align:center; margin-top:12px;">
+            <a href="#" id="forgotPassword">Forgot Password?</a>
+            </div>
+
+            </form>
 
         <div id="message"></div>
 
@@ -162,6 +166,32 @@ document.getElementById("loginForm").addEventListener("submit", async function(e
     message.textContent = "Login successful!";
 
     window.location.href = "store.html";
+});
+document.getElementById("forgotPassword").addEventListener("click", async function(event) {
+
+    event.preventDefault();
+
+    const email = document.getElementById("email").value.trim();
+    const message = document.getElementById("message");
+
+    if (!email) {
+        message.textContent = "Please enter your email address first.";
+        return;
+    }
+
+    message.textContent = "Sending password reset email...";
+
+    const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.origin + "/seplus-ecommerce/reset-password.html"
+    });
+
+    if (error) {
+        console.error("Password reset error:", error);
+        message.textContent = error.message;
+        return;
+    }
+
+    message.textContent = "Password reset email sent. Please check your email.";
 });
 </script>
 </body>
