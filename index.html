@@ -392,5 +392,14 @@ function filterProducts() {
 searchBox.addEventListener("input", filterProducts);
 categoryFilter.addEventListener("change", filterProducts);
 </script>
+
+<script>
+const hashParams = new URLSearchParams(window.location.hash.substring(1));
+
+if (hashParams.get("type") === "recovery") {
+    window.location.href = "reset-password.html" + window.location.hash;
+}
+</script>
+
 </body>
 </html>
