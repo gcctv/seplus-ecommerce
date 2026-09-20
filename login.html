@@ -183,6 +183,7 @@ document.getElementById("forgotPassword").addEventListener("click", async functi
 
     const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
         redirectTo: window.location.origin + "/seplus-ecommerce/reset-password.html"
+        
     });
 
     if (error) {
