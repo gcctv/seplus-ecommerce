@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SEPLUS - CCTV Store</title>
-
     <style>
         * {
             box-sizing: border-box;
@@ -210,6 +209,20 @@
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 25px;
 }
+#cart-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 5px;
+    margin-left: 4px;
+    background: red;
+    color: white;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: bold;
+}
     </style>
 </head>
 
@@ -222,7 +235,10 @@
         <a href="store.html">Home</a>
         <a href="#categories">Categories</a>
         <a href="#products">Products</a>
-        <a href="cart.html">Cart</a>
+        <a href="cart.html">Cart <span id="cart-count">0</span></a>
+        <a href="my-orders.html">My Orders</a>
+        <span id="user-name">Account</span>
+        <a href="#" id="logout-btn">Logout</a>
     </nav>
 </header>
 
@@ -321,8 +337,22 @@ function addToCart(name, price) {
 
     localStorage.setItem("cart", JSON.stringify(cart));
 
+    updateCartCount();
+
     alert("Product added to cart!");
 }
+function updateCartCount() {
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+    const totalQuantity = cart.reduce(
+        (total, item) => total + (item.quantity || 1),
+        0
+    );
+
+    document.getElementById("cart-count").textContent = totalQuantity;
+}
+
+updateCartCount();
 async function loadAdminProducts() {
     const container = document.getElementById("dynamic-products");
 
@@ -439,5 +469,40 @@ function filterProducts() {
 searchInput.addEventListener("input", filterProducts);
 categoryFilter.addEventListener("change", filterProducts);
 </script>
+
+<script>
+async function loadUserAccount() {
+    const { data: { user } } = await supabaseClient.auth.getUser();
+
+    const userName = document.getElementById("user-name");
+    const logoutBtn = document.getElementById("logout-btn");
+
+    if (user) {
+        const name = user.user_metadata?.full_name || user.email;
+        userName.textContent = "Welcome, " + name;
+
+        logoutBtn.addEventListener("click", async function(event) {
+            event.preventDefault();
+
+            const { error } = await supabaseClient.auth.signOut();
+
+            if (error) {
+                alert("Logout failed. Please try again.");
+                return;
+            }
+
+            window.location.href = "login.html";
+        });
+    } else {
+        userName.textContent = "Account";
+        logoutBtn.textContent = "Login";
+        logoutBtn.href = "login.html";
+    }
+}
+
+loadUserAccount();
+
+</script>
+
 </body>
 </html>
