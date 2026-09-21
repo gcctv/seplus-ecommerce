@@ -1,719 +1,427 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SEPLUS - Admin Panel</title>
 
-    <title>SEPLUS - Admin Panel</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f5f6f8;color:#111827}
+header{background:#111827;color:#fff;padding:20px 40px;display:flex;justify-content:space-between;align-items:center}
+.logo{font-size:28px;font-weight:bold}
+.admin-title{font-size:18px}
+.admin-container{max-width:1200px;margin:40px auto;padding:0 20px}
+h1{text-align:center;margin-bottom:30px}
+button{padding:10px 16px;border:0;border-radius:6px;cursor:pointer;background:#111827;color:#fff}
+button:hover{opacity:.9}
+button:disabled{opacity:.6;cursor:not-allowed}
+.section{background:#fff;padding:25px;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,.08);margin-bottom:25px}
+.section h2{margin-top:0}
+#order-search,#product-search{width:100%;padding:12px;margin:15px 0 20px;border:1px solid #ddd;border-radius:6px;font-size:15px}
+.order-card{border:1px solid #e5e7eb;border-radius:12px;padding:20px;margin-bottom:20px;box-shadow:0 4px 12px rgba(0,0,0,.06)}
+.order-card h3{margin-top:0}
+.order-card p{margin:7px 0;color:#444}
+.order-products{margin-top:10px;padding-left:20px}
+.status-control{margin-top:15px;padding:12px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px}
+.status-control label{display:block;font-weight:bold;margin-bottom:8px}
+.status-select{padding:9px 10px;border:1px solid #ccc;border-radius:6px;font-size:14px;margin-right:8px;min-width:170px}
+.empty{text-align:center;padding:40px;color:#666;font-size:18px}
+.error{background:#fee2e2;color:#991b1b;padding:15px;border-radius:8px;margin-bottom:20px}
+.success{background:#dcfce7;color:#166534;padding:15px;border-radius:8px;margin-bottom:20px}
+.loading{text-align:center;padding:30px;color:#666}
+.admin-user{background:#e0f2fe;color:#075985;padding:12px;border-radius:8px;margin-bottom:20px}
 
-    <style>
-        * {
-            box-sizing: border-box;
-        }
+.product-form{display:grid;grid-template-columns:repeat(2,1fr);gap:15px;margin-top:20px}
+.product-form .full-width{grid-column:1/-1}
+.product-form input,.product-form textarea{width:100%;padding:10px;border:1px solid #ccc;border-radius:6px;font-size:14px}
+.product-form textarea{min-height:90px;resize:vertical}
+.product-form button{background:#198754}
+.products-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:20px}
+.product-card{border:1px solid #ddd;border-radius:8px;padding:15px;background:#fff}
+.product-card img{width:100%;height:180px;object-fit:contain;border-radius:6px;background:#f5f5f5}
+.product-card h3{margin:12px 0 8px}
+.product-card p{margin:5px 0}
+.product-price{font-size:18px;font-weight:bold}
+.product-mrp{color:#777;text-decoration:line-through}
+.product-stock{font-weight:bold}
+.product-actions{margin-top:12px}
+.edit-product-btn{background:#2563eb}
+.admin-only-note{background:#fff7ed;color:#9a3412;padding:10px;border-radius:6px;margin-top:15px;font-size:14px}
 
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f5f6f8;
-            color: #111827;
-        }
-
-        header {
-            background: #111827;
-            color: white;
-            padding: 20px 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            font-size: 28px;
-            font-weight: bold;
-        }
-
-        .admin-title {
-            font-size: 18px;
-        }
-
-        .admin-container {
-            max-width: 1200px;
-            margin: 40px auto;
-            padding: 0 20px;
-        }
-
-        h1 {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        button {
-            padding: 10px 16px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            background: #111827;
-            color: white;
-            margin-right: 8px;
-        }
-
-        button:hover {
-            opacity: 0.9;
-        }
-
-        .section {
-            background: white;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-            margin-bottom: 25px;
-        }
-
-        .section h2 {
-            margin-top: 0;
-        }
-
-        #order-search {
-            width: 100%;
-            padding: 12px;
-            margin: 15px 0 20px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 15px;
-        }
-
-        .order-card {
-            background: #ffffff;
-            border: 1px solid #e5e7eb;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-        }
-
-        .order-card h3 {
-            margin-top: 0;
-            margin-bottom: 15px;
-        }
-
-        .order-card p {
-            margin: 7px 0;
-            color: #444;
-        }
-
-        .order-products {
-            margin-top: 10px;
-            padding-left: 20px;
-        }
-
-        .status {
-            margin-top: 15px;
-            padding: 9px;
-            border-radius: 6px;
-            font-weight: bold;
-            border: 1px solid #ccc;
-        }
-
-        .status-control {
-            margin-top: 15px;
-            padding: 12px;
-            background: #f9fafb;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-        }
-
-        .status-control label {
-            display: block;
-            font-weight: bold;
-            margin-bottom: 8px;
-        }
-
-        .status-select {
-            padding: 9px 10px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            font-size: 14px;
-            margin-right: 8px;
-            min-width: 170px;
-        }
-
-        .update-status-btn {
-            background: #111827;
-            color: white;
-        }
-
-        .update-status-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        .empty {
-            text-align: center;
-            padding: 40px;
-            color: #666;
-            font-size: 18px;
-        }
-
-        .error {
-            background: #fee2e2;
-            color: #991b1b;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-
-        .success {
-            background: #dcfce7;
-            color: #166534;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 30px;
-            color: #666;
-        }
-
-        .admin-user {
-            background: #e0f2fe;
-            color: #075985;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-
-        @media (max-width: 600px) {
-            header {
-                padding: 15px 20px;
-            }
-
-            .logo {
-                font-size: 22px;
-            }
-
-            .admin-title {
-                font-size: 15px;
-            }
-
-            .admin-container {
-                margin: 20px auto;
-                padding: 0 12px;
-            }
-
-            .section {
-                padding: 18px;
-            }
-        }
-    </style>
+@media(max-width:900px){.products-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){
+header{padding:15px 20px}.logo{font-size:22px}.admin-title{font-size:15px}
+.admin-container{margin:20px auto;padding:0 12px}.section{padding:18px}
+.product-form{grid-template-columns:1fr}.product-form .full-width{grid-column:auto}
+.products-grid{grid-template-columns:1fr}.status-select{width:100%;margin-bottom:10px}
+}
+</style>
 </head>
 
 <body>
-
-    <header>
-        <div class="logo">SEPLUS</div>
-        <div class="admin-title">Admin Panel</div>
-    </header>
-
-    <div class="admin-container">
-
-        <h1>Admin Panel</h1>
-
-        <div id="message"></div>
-
-        <div id="admin-user" class="admin-user">
-            Checking login...
-        </div>
-
-        <!-- ORDER MANAGEMENT -->
-        <div class="section">
-
-            <h2>Order Management</h2>
-
-            <input
-                type="text"
-                id="order-search"
-                placeholder="Search customer, mobile, email or order..."
-            >
-
-            <div id="orders">
-
-                <div class="loading">
-                    Loading orders...
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <!-- SUPABASE -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-    <script>
-
-        // =====================================================
-        // SUPABASE CONNECTION
-        // =====================================================
-
-        const SUPABASE_URL = "https://uxujlcahvnzohohnjclv.supabase.co";
-        const SUPABASE_KEY = "sb_publishable_sna7FS8E7-w7pXG3_u-rRw__q2Dcv0_";
-
-        const supabaseClient = window.supabase.createClient(
-            SUPABASE_URL,
-            SUPABASE_KEY
-        );
-
-
-        // =====================================================
-        // GLOBAL ORDERS
-        // =====================================================
-
-        let allOrders = [];
-
-
-        // =====================================================
-        // MESSAGE FUNCTION
-        // =====================================================
-
-        function showMessage(message, type = "error") {
-
-            const messageBox = document.getElementById("message");
-
-            messageBox.innerHTML = `
-                <div class="${type}">
-                    ${message}
-                </div>
-            `;
-
-        }
-
-
-        // =====================================================
-        // CHECK LOGIN
-        // =====================================================
-
-        async function checkLogin() {
-
-            const {
-                data: {
-                    user
-                }
-            } = await supabaseClient.auth.getUser();
-
-
-            if (!user) {
-
-                document.getElementById("admin-user").innerHTML =
-                    "Please login to access Admin Panel.";
-
-                document.getElementById("orders").innerHTML = `
-                    <div class="empty">
-                        Please login first.
-                    </div>
-                `;
-
-                return false;
-            }
-
-
-            document.getElementById("admin-user").innerHTML = `
-                Logged in as:
-                <strong>${user.email || "User"}</strong>
-            `;
-
-            return true;
-        }
-
-
-        // =====================================================
-        // LOAD ORDERS FROM SUPABASE
-        // =====================================================
-
-        async function loadOrders() {
-
-            const ordersContainer =
-                document.getElementById("orders");
-
-
-            ordersContainer.innerHTML = `
-                <div class="loading">
-                    Loading orders from Supabase...
-                </div>
-            `;
-
-
-            const {
-                data,
-                error
-            } = await supabaseClient
-                .from("orders")
-                .select("*")
-                .order("id", {
-                    ascending: false
-                });
-
-
-            if (error) {
-
-                console.error("Orders Error:", error);
-
-                ordersContainer.innerHTML = `
-                    <div class="error">
-                        Unable to load orders.<br><br>
-                        ${error.message}
-                    </div>
-                `;
-
-                return;
-            }
-
-
-            allOrders = data || [];
-
-            displayOrders(allOrders);
-
-        }
-
-
-        // =====================================================
-        // DISPLAY ORDERS
-        // =====================================================
-
-        function displayOrders(orders) {
-
-            const ordersContainer =
-                document.getElementById("orders");
-
-
-            if (!orders || orders.length === 0) {
-
-                ordersContainer.innerHTML = `
-                    <div class="empty">
-                        No orders available.
-                    </div>
-                `;
-
-                return;
-            }
-
-
-            ordersContainer.innerHTML = "";
-
-
-            orders.forEach((order, index) => {
-
-                let productsHTML = "";
-
-
-                if (Array.isArray(order.products)) {
-
-                    productsHTML = order.products.map(item => {
-
-                        const quantity =
-                            item.quantity || 1;
-
-                        const price =
-                            Number(item.price) || 0;
-
-                        return `
-                            <li>
-                                ${item.name || "Product"}
-                                × ${quantity}
-                                — ₹${price.toLocaleString("en-IN")}
-                            </li>
-                        `;
-
-                    }).join("");
-
-                }
-
-
-                const amount =
-                    Number(order.amount) || 0;
-
-
-                const status =
-                    order.status || "New Order";
-
-
-                ordersContainer.innerHTML += `
-
-                    <div class="order-card">
-
-                        <h3>
-                            Order #${order.id}
-                        </h3>
-
-
-                        <p>
-                            <strong>Customer:</strong>
-                            ${order.name || ""}
-                        </p>
-
-
-                        <p>
-                            <strong>Mobile:</strong>
-                            ${order.mobile || ""}
-                        </p>
-
-
-                        <p>
-                            <strong>Email:</strong>
-                            ${order.email || ""}
-                        </p>
-
-
-                        <p>
-                            <strong>Address:</strong>
-                            ${order.address || ""}
-                        </p>
-
-
-                        <p>
-                            <strong>City:</strong>
-                            ${order.city || ""}
-                        </p>
-
-
-                        <p>
-                            <strong>State:</strong>
-                            ${order.state || ""}
-                        </p>
-
-
-                        <p>
-                            <strong>Pincode:</strong>
-                            ${order.pincode || ""}
-                        </p>
-
-
-                        <p>
-                            <strong>Products:</strong>
-                        </p>
-
-
-                        <ul class="order-products">
-                            ${productsHTML}
-                        </ul>
-
-
-                        <p>
-                            <strong>Total Amount:</strong>
-                            ₹${amount.toLocaleString("en-IN")}
-                        </p>
-
-
-                        <p>
-                            <strong>Date:</strong>
-                            ${order.date || order.created_at || ""}
-                        </p>
-
-
-                        <p>
-                            <strong>User ID:</strong>
-                            ${order.user_id || "Not available"}
-                        </p>
-
-
-                        <p>
-                            <strong>Current Status:</strong>
-                            ${status}
-                        </p>
-
-                        <div class="status-control">
-                            <label for="status-${order.id}">Update Order Status:</label>
-
-                            <select id="status-${order.id}" class="status-select">
-                                <option value="New Order" ${status === "New Order" ? "selected" : ""}>New Order</option>
-                                <option value="Confirmed" ${status === "Confirmed" ? "selected" : ""}>Confirmed</option>
-                                <option value="Processing" ${status === "Processing" ? "selected" : ""}>Processing</option>
-                                <option value="Shipped" ${status === "Shipped" ? "selected" : ""}>Shipped</option>
-                                <option value="Delivered" ${status === "Delivered" ? "selected" : ""}>Delivered</option>
-                                <option value="Cancelled" ${status === "Cancelled" ? "selected" : ""}>Cancelled</option>
-                            </select>
-
-                            <button type="button" class="update-status-btn" onclick="updateOrderStatus(${order.id})">
-                                Update Status
-                            </button>
-                        </div>
-
-                    </div>
-
-                `;
-
-            });
-
-        }
-
-
-        // =====================================================
-        // UPDATE ORDER STATUS
-        // =====================================================
-
-        async function updateOrderStatus(orderId) {
-
-            const select = document.getElementById(`status-${orderId}`);
-
-            if (!select) {
-                return;
-            }
-
-            const newStatus = select.value;
-            const button = select.nextElementSibling;
-
-            if (button) {
-                button.disabled = true;
-                button.textContent = "Updating...";
-            }
-
-            const { error } = await supabaseClient
-                .from("orders")
-                .update({ status: newStatus })
-                .eq("id", orderId);
-
-            if (error) {
-
-                console.error("Status Update Error:", error);
-
-                showMessage(
-                    `Unable to update Order #${orderId}.<br><br>${error.message}`,
-                    "error"
-                );
-
-                if (button) {
-                    button.disabled = false;
-                    button.textContent = "Update Status";
-                }
-
-                return;
-            }
-
-            const orderIndex = allOrders.findIndex(
-                order => Number(order.id) === Number(orderId)
-            );
-
-            if (orderIndex !== -1) {
-                allOrders[orderIndex].status = newStatus;
-            }
-
-            showMessage(
-                `Order #${orderId} status updated to <strong>${newStatus}</strong>.`,
-                "success"
-            );
-
-            const searchText =
-                document.getElementById("order-search").value.toLowerCase().trim();
-
-            if (!searchText) {
-                displayOrders(allOrders);
-            } else {
-                const filteredOrders = allOrders.filter(order => {
-
-                    const searchData = `
-                        ${order.id || ""}
-                        ${order.name || ""}
-                        ${order.mobile || ""}
-                        ${order.email || ""}
-                        ${order.address || ""}
-                        ${order.city || ""}
-                        ${order.state || ""}
-                        ${order.pincode || ""}
-                        ${order.status || ""}
-                    `.toLowerCase();
-
-                    return searchData.includes(searchText);
-                });
-
-                displayOrders(filteredOrders);
-            }
-        }
-
-
-        // =====================================================
-        // ORDER SEARCH
-        // =====================================================
-
-        document
-            .getElementById("order-search")
-            .addEventListener("input", function () {
-
-                const searchText =
-                    this.value.toLowerCase().trim();
-
-
-                if (!searchText) {
-
-                    displayOrders(allOrders);
-
-                    return;
-                }
-
-
-                const filteredOrders =
-                    allOrders.filter(order => {
-
-                        const searchData = `
-
-                            ${order.id || ""}
-
-                            ${order.name || ""}
-
-                            ${order.mobile || ""}
-
-                            ${order.email || ""}
-
-                            ${order.address || ""}
-
-                            ${order.city || ""}
-
-                            ${order.state || ""}
-
-                            ${order.pincode || ""}
-
-                            ${order.status || ""}
-
-                        `.toLowerCase();
-
-
-                        return searchData.includes(searchText);
-
-                    });
-
-
-                displayOrders(filteredOrders);
-
-            });
-
-
-        // =====================================================
-        // START ADMIN PAGE
-        // =====================================================
-
-        async function startAdmin() {
-
-            const loggedIn =
-                await checkLogin();
-
-
-            if (!loggedIn) {
-                return;
-            }
-
-
-            await loadOrders();
-
-        }
-
-
-        startAdmin();
-
-    </script>
-
+<header>
+<div class="logo">SEPLUS</div>
+<div class="admin-title">Admin Panel</div>
+</header>
+
+<div class="admin-container">
+<h1>Admin Panel</h1>
+<div id="message"></div>
+<div id="admin-user" class="admin-user">Checking login...</div>
+
+<!-- ORDER MANAGEMENT -->
+<div class="section">
+<h2>Order Management</h2>
+<input type="text" id="order-search" placeholder="Search customer, mobile, email or order...">
+<div id="orders"><div class="loading">Loading orders...</div></div>
+</div>
+
+<!-- PRODUCT MANAGEMENT -->
+<div class="section">
+<h2>Product Management</h2>
+
+<form id="product-form" class="product-form">
+<input type="hidden" id="product-id">
+<input type="text" id="product-name" placeholder="Product Name" required>
+<input type="number" id="product-price" placeholder="Selling Price" min="0" step="0.01" required>
+<input type="number" id="product-mrp" placeholder="MRP" min="0" step="0.01">
+<input type="number" id="product-stock" placeholder="Stock" min="0" value="0" required>
+<input type="text" id="product-category" placeholder="Category e.g. CCTV Camera">
+<input type="text" id="product-image" placeholder="Image file name e.g. bullet-camera.jpg">
+<input type="text" id="product-brand" placeholder="Brand">
+<input type="text" id="product-model" placeholder="Model">
+<input type="text" id="product-warranty" placeholder="Warranty e.g. 1 Year">
+<textarea id="product-description" class="full-width" placeholder="Product Description"></textarea>
+<textarea id="product-specs" class="full-width" placeholder="Product Specifications"></textarea>
+<div class="full-width">
+<button type="submit" id="add-product-btn">Add Product</button>
+<button type="button" id="cancel-edit-btn" style="display:none;margin-left:8px;background:#6b7280;" onclick="cancelEdit()">Cancel Edit</button>
+</div>
+</form>
+
+<div class="admin-only-note">Product add access is protected by the Supabase Admin RLS policy.</div>
+
+<input type="text" id="product-search" placeholder="Search products...">
+
+<div id="products-list" class="products-grid">
+<div class="loading">Loading products...</div>
+</div>
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+const SUPABASE_URL="https://uxujlcahvnzohohnjclv.supabase.co";
+const SUPABASE_KEY="sb_publishable_sna7FS8E7-w7pXG3_u-rRw__q2Dcv0_";
+const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+
+const ADMIN_USER_ID="b063e9e1-779a-4305-addb-4cba887e6821";
+let allOrders=[];
+let allProducts=[];
+let currentUser=null;
+
+function escapeHtml(value){
+return String(value??"").replace(/[&<>"']/g,function(ch){
+return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[ch];
+});
+}
+
+function showMessage(message,type="error"){
+document.getElementById("message").innerHTML=`<div class="${type}">${message}</div>`;
+}
+
+async function checkLogin(){
+const {data:{user},error}=await supabaseClient.auth.getUser();
+if(error){console.error(error);}
+if(!user){
+currentUser=null;
+document.getElementById("admin-user").textContent="Please login to access Admin Panel.";
+document.getElementById("orders").innerHTML='<div class="empty">Please login first.</div>';
+document.getElementById("products-list").innerHTML='<div class="empty">Please login first.</div>';
+document.getElementById("product-form").style.display="none";
+return false;
+}
+currentUser=user;
+const isAdmin=user.id===ADMIN_USER_ID;
+document.getElementById("admin-user").innerHTML=`Logged in as: <strong>${escapeHtml(user.email||"User")}</strong> ${isAdmin?"— Admin Access":"— Customer Access"}`;
+if(!isAdmin){
+document.getElementById("product-form").style.display="none";
+document.getElementById("products-list").innerHTML='<div class="empty">Admin access required for Product Management.</div>';
+}
+return true;
+}
+
+async function loadOrders(){
+const container=document.getElementById("orders");
+container.innerHTML='<div class="loading">Loading orders from Supabase...</div>';
+const {data,error}=await supabaseClient.from("orders").select("*").order("id",{ascending:false});
+if(error){
+console.error("Orders Error:",error);
+container.innerHTML=`<div class="error">Unable to load orders.<br><br>${escapeHtml(error.message)}</div>`;
+return;
+}
+allOrders=data||[];
+displayOrders(allOrders);
+}
+
+function displayOrders(orders){
+const container=document.getElementById("orders");
+if(!orders||orders.length===0){container.innerHTML='<div class="empty">No orders available.</div>';return;}
+container.innerHTML="";
+orders.forEach(order=>{
+let productsHTML="";
+if(Array.isArray(order.products)){
+productsHTML=order.products.map(item=>`<li>${escapeHtml(item.name||"Product")} × ${item.quantity||1} — ₹${(Number(item.price)||0).toLocaleString("en-IN")}</li>`).join("");
+}
+const amount=Number(order.amount)||0;
+const status=order.status||"New Order";
+container.innerHTML+=`
+<div class="order-card">
+<h3>Order #${escapeHtml(order.id)}</h3>
+<p><strong>Customer:</strong> ${escapeHtml(order.name)}</p>
+<p><strong>Mobile:</strong> ${escapeHtml(order.mobile)}</p>
+<p><strong>Email:</strong> ${escapeHtml(order.email)}</p>
+<p><strong>Address:</strong> ${escapeHtml(order.address)}</p>
+<p><strong>City:</strong> ${escapeHtml(order.city)}</p>
+<p><strong>State:</strong> ${escapeHtml(order.state)}</p>
+<p><strong>Pincode:</strong> ${escapeHtml(order.pincode)}</p>
+<p><strong>Products:</strong></p>
+<ul class="order-products">${productsHTML}</ul>
+<p><strong>Total Amount:</strong> ₹${amount.toLocaleString("en-IN")}</p>
+<p><strong>Date:</strong> ${escapeHtml(order.date||order.created_at||"")}</p>
+<p><strong>User ID:</strong> ${escapeHtml(order.user_id||"Not available")}</p>
+<p><strong>Current Status:</strong> ${escapeHtml(status)}</p>
+<div class="status-control">
+<label for="status-${order.id}">Update Order Status:</label>
+<select id="status-${order.id}" class="status-select">
+<option value="New Order" ${status==="New Order"?"selected":""}>New Order</option>
+<option value="Confirmed" ${status==="Confirmed"?"selected":""}>Confirmed</option>
+<option value="Processing" ${status==="Processing"?"selected":""}>Processing</option>
+<option value="Shipped" ${status==="Shipped"?"selected":""}>Shipped</option>
+<option value="Delivered" ${status==="Delivered"?"selected":""}>Delivered</option>
+<option value="Cancelled" ${status==="Cancelled"?"selected":""}>Cancelled</option>
+</select>
+<button type="button" onclick="updateOrderStatus(${Number(order.id)})">Update Status</button>
+</div>
+</div>`;
+});
+}
+
+async function updateOrderStatus(orderId){
+const select=document.getElementById(`status-${orderId}`);
+if(!select)return;
+const button=select.nextElementSibling;
+const newStatus=select.value;
+if(button){button.disabled=true;button.textContent="Updating...";}
+const {error}=await supabaseClient.from("orders").update({status:newStatus}).eq("id",orderId);
+if(error){
+showMessage(`Unable to update Order #${orderId}.<br><br>${escapeHtml(error.message)}`,"error");
+if(button){button.disabled=false;button.textContent="Update Status";}
+return;
+}
+const index=allOrders.findIndex(o=>Number(o.id)===Number(orderId));
+if(index!==-1)allOrders[index].status=newStatus;
+showMessage(`Order #${orderId} status updated to <strong>${escapeHtml(newStatus)}</strong>.`,"success");
+const search=document.getElementById("order-search").value.toLowerCase().trim();
+search?filterOrders(search):displayOrders(allOrders);
+}
+
+function filterOrders(searchText){
+const filtered=allOrders.filter(order=>{
+const data=`${order.id||""} ${order.name||""} ${order.mobile||""} ${order.email||""} ${order.address||""} ${order.city||""} ${order.state||""} ${order.pincode||""} ${order.status||""}`.toLowerCase();
+return data.includes(searchText);
+});
+displayOrders(filtered);
+}
+
+document.getElementById("order-search").addEventListener("input",function(){
+const text=this.value.toLowerCase().trim();
+text?filterOrders(text):displayOrders(allOrders);
+});
+
+function getProductImageUrl(image){
+if(!image)return"";
+if(image.startsWith("http://")||image.startsWith("https://")||image.startsWith("/"))return image;
+return `images/${image}`;
+}
+
+async function loadProducts(){
+const container=document.getElementById("products-list");
+container.innerHTML='<div class="loading">Loading products from Supabase...</div>';
+const {data,error}=await supabaseClient.from("products").select("*").order("id",{ascending:false});
+if(error){
+console.error("Products Error:",error);
+container.innerHTML=`<div class="error">Unable to load products.<br><br>${escapeHtml(error.message)}</div>`;
+return;
+}
+allProducts=data||[];
+displayProducts(allProducts);
+}
+
+function displayProducts(products){
+const container=document.getElementById("products-list");
+if(!products||products.length===0){container.innerHTML='<div class="empty">No products available.</div>';return;}
+container.innerHTML="";
+products.forEach(product=>{
+const imageUrl=getProductImageUrl(product.image);
+const price=Number(product.price)||0;
+const mrp=Number(product.mrp)||0;
+const stock=Number(product.stock)||0;
+container.innerHTML+=`
+<div class="product-card">
+${imageUrl?`<img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(product.name||"Product")}" onerror="this.style.display='none';">`:""}
+<h3>${escapeHtml(product.name||"Product")}</h3>
+<p class="product-price">₹${price.toLocaleString("en-IN")}</p>
+${mrp>0?`<p class="product-mrp">MRP: ₹${mrp.toLocaleString("en-IN")}</p>`:""}
+<p><strong>Category:</strong> ${escapeHtml(product.category||"-")}</p>
+<p><strong>Brand:</strong> ${escapeHtml(product.brand||"-")}</p>
+<p><strong>Model:</strong> ${escapeHtml(product.model||"-")}</p>
+<p><strong>Warranty:</strong> ${escapeHtml(product.warranty||"-")}</p>
+<p class="product-stock">Stock: ${stock}</p>
+<div class="product-actions">
+<button type="button" class="edit-product-btn" onclick="editProduct(${Number(product.id)})">Edit Product</button>
+</div>
+</div>`;
+});
+}
+
+async function addProduct(event){
+event.preventDefault();
+
+if(!currentUser){
+showMessage("Please login first.","error");
+return;
+}
+
+if(currentUser.id!==ADMIN_USER_ID){
+showMessage("Admin access required to manage products.","error");
+return;
+}
+
+const button=document.getElementById("add-product-btn");
+const productId=document.getElementById("product-id").value;
+
+const product={
+name:document.getElementById("product-name").value.trim(),
+price:Number(document.getElementById("product-price").value),
+mrp:Number(document.getElementById("product-mrp").value)||null,
+stock:Number(document.getElementById("product-stock").value)||0,
+category:document.getElementById("product-category").value.trim(),
+image:document.getElementById("product-image").value.trim(),
+brand:document.getElementById("product-brand").value.trim(),
+model:document.getElementById("product-model").value.trim(),
+warranty:document.getElementById("product-warranty").value.trim(),
+description:document.getElementById("product-description").value.trim(),
+specs:document.getElementById("product-specs").value.trim()
+};
+
+if(!product.name||!product.price){
+showMessage("Product Name and Selling Price are required.","error");
+return;
+}
+
+button.disabled=true;
+button.textContent=productId?"Saving Changes...":"Adding Product...";
+
+let error;
+
+if(productId){
+const result=await supabaseClient
+.from("products")
+.update(product)
+.eq("id",Number(productId));
+error=result.error;
+}else{
+const result=await supabaseClient
+.from("products")
+.insert([product]);
+error=result.error;
+}
+
+if(error){
+console.error("Product Save Error:",error);
+showMessage(`Unable to save product.<br><br>${escapeHtml(error.message)}`,"error");
+button.disabled=false;
+button.textContent=productId?"Save Changes":"Add Product";
+return;
+}
+
+showMessage(
+productId
+?`Product <strong>${escapeHtml(product.name)}</strong> updated successfully.`
+:`Product <strong>${escapeHtml(product.name)}</strong> added successfully.`,
+"success"
+);
+
+cancelEdit();
+await loadProducts();
+}
+
+function editProduct(productId){
+if(!currentUser||currentUser.id!==ADMIN_USER_ID){
+showMessage("Admin access required to edit products.","error");
+return;
+}
+
+const product=allProducts.find(p=>Number(p.id)===Number(productId));
+
+if(!product){
+showMessage("Product not found.","error");
+return;
+}
+
+document.getElementById("product-id").value=product.id;
+document.getElementById("product-name").value=product.name||"";
+document.getElementById("product-price").value=product.price??"";
+document.getElementById("product-mrp").value=product.mrp??"";
+document.getElementById("product-stock").value=product.stock??0;
+document.getElementById("product-category").value=product.category||"";
+document.getElementById("product-image").value=product.image||"";
+document.getElementById("product-brand").value=product.brand||"";
+document.getElementById("product-model").value=product.model||"";
+document.getElementById("product-warranty").value=product.warranty||"";
+document.getElementById("product-description").value=product.description||"";
+document.getElementById("product-specs").value=product.specs||"";
+
+document.getElementById("add-product-btn").textContent="Save Changes";
+document.getElementById("cancel-edit-btn").style.display="inline-block";
+
+document.getElementById("product-form").scrollIntoView({
+behavior:"smooth",
+block:"start"
+});
+}
+
+function cancelEdit(){
+document.getElementById("product-form").reset();
+document.getElementById("product-id").value="";
+document.getElementById("product-stock").value=0;
+document.getElementById("add-product-btn").textContent="Add Product";
+document.getElementById("cancel-edit-btn").style.display="none";
+}
+
+document.getElementById("product-form").addEventListener("submit",addProduct);
+
+document.getElementById("product-search").addEventListener("input",function(){
+const text=this.value.toLowerCase().trim();
+if(!text){displayProducts(allProducts);return;}
+const filtered=allProducts.filter(product=>{
+const data=`${product.id||""} ${product.name||""} ${product.category||""} ${product.brand||""} ${product.model||""} ${product.warranty||""}`.toLowerCase();
+return data.includes(text);
+});
+displayProducts(filtered);
+});
+
+async function startAdmin(){
+const loggedIn=await checkLogin();
+if(!loggedIn)return;
+await loadOrders();
+if(currentUser&&currentUser.id===ADMIN_USER_ID)await loadProducts();
+}
+
+startAdmin();
+</script>
 </body>
-
 </html>
