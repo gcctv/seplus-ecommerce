@@ -127,15 +127,35 @@
             Total: ₹<span id="cart-total">0</span>
         </div>
 
-        <a href="checkout.html" class="checkout-btn">
+       <a href="#" id="checkout-btn" class="checkout-btn">
             Proceed to Checkout
-        </a>
+       </a>
 
     </div>
 
 </div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
+
+    const SUPABASE_URL = "https://uxujlcahvnzohohnjclv.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_sna7FS8E7-w7pXG3_u-rRw__q2Dcv0_";
+
+const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY
+);
+    document.getElementById("checkout-btn").addEventListener("click", async function(event) {
+    event.preventDefault();
+
+    const { data: { user } } = await supabaseClient.auth.getUser();
+
+    if (user) {
+        window.location.href = "checkout.html";
+    } else {
+        window.location.href = "login.html";
+    }
+});
     const cartData = JSON.parse(localStorage.getItem("cart")) || [];
     const cartItems = document.getElementById("cart-items");
     const cartTotal = document.getElementById("cart-total");
