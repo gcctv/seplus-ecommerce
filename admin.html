@@ -115,6 +115,39 @@
             border: 1px solid #ccc;
         }
 
+        .status-control {
+            margin-top: 15px;
+            padding: 12px;
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+        }
+
+        .status-control label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .status-select {
+            padding: 9px 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+            margin-right: 8px;
+            min-width: 170px;
+        }
+
+        .update-status-btn {
+            background: #111827;
+            color: white;
+        }
+
+        .update-status-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
         .empty {
             text-align: center;
             padding: 40px;
@@ -488,9 +521,26 @@
 
 
                         <p>
-                            <strong>Status:</strong>
+                            <strong>Current Status:</strong>
                             ${status}
                         </p>
+
+                        <div class="status-control">
+                            <label for="status-${order.id}">Update Order Status:</label>
+
+                            <select id="status-${order.id}" class="status-select">
+                                <option value="New Order" ${status === "New Order" ? "selected" : ""}>New Order</option>
+                                <option value="Confirmed" ${status === "Confirmed" ? "selected" : ""}>Confirmed</option>
+                                <option value="Processing" ${status === "Processing" ? "selected" : ""}>Processing</option>
+                                <option value="Shipped" ${status === "Shipped" ? "selected" : ""}>Shipped</option>
+                                <option value="Delivered" ${status === "Delivered" ? "selected" : ""}>Delivered</option>
+                                <option value="Cancelled" ${status === "Cancelled" ? "selected" : ""}>Cancelled</option>
+                            </select>
+
+                            <button type="button" class="update-status-btn" onclick="updateOrderStatus(${order.id})">
+                                Update Status
+                            </button>
+                        </div>
 
                     </div>
 
@@ -498,6 +548,89 @@
 
             });
 
+        }
+
+
+        // =====================================================
+        // UPDATE ORDER STATUS
+        // =====================================================
+
+        async function updateOrderStatus(orderId) {
+
+            const select = document.getElementById(`status-${orderId}`);
+
+            if (!select) {
+                return;
+            }
+
+            const newStatus = select.value;
+            const button = select.nextElementSibling;
+
+            if (button) {
+                button.disabled = true;
+                button.textContent = "Updating...";
+            }
+
+            const { error } = await supabaseClient
+                .from("orders")
+                .update({ status: newStatus })
+                .eq("id", orderId);
+
+            if (error) {
+
+                console.error("Status Update Error:", error);
+
+                showMessage(
+                    `Unable to update Order #${orderId}.<br><br>${error.message}`,
+                    "error"
+                );
+
+                if (button) {
+                    button.disabled = false;
+                    button.textContent = "Update Status";
+                }
+
+                return;
+            }
+
+            const orderIndex = allOrders.findIndex(
+                order => Number(order.id) === Number(orderId)
+            );
+
+            if (orderIndex !== -1) {
+                allOrders[orderIndex].status = newStatus;
+            }
+
+            showMessage(
+                `Order #${orderId} status updated to <strong>${newStatus}</strong>.`,
+                "success"
+            );
+
+            const searchText =
+                document.getElementById("order-search").value.toLowerCase().trim();
+
+            if (!searchText) {
+                displayOrders(allOrders);
+            } else {
+                const filteredOrders = allOrders.filter(order => {
+
+                    const searchData = `
+                        ${order.id || ""}
+                        ${order.name || ""}
+                        ${order.mobile || ""}
+                        ${order.email || ""}
+                        ${order.address || ""}
+                        ${order.city || ""}
+                        ${order.state || ""}
+                        ${order.pincode || ""}
+                        ${order.status || ""}
+                    `.toLowerCase();
+
+                    return searchData.includes(searchText);
+                });
+
+                displayOrders(filteredOrders);
+            }
         }
 
 
