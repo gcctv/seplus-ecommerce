@@ -127,9 +127,9 @@
             Total: ₹<span id="cart-total">0</span>
         </div>
 
-       <a href="#" id="checkout-btn" class="checkout-btn">
-            Proceed to Checkout
-       </a>
+       <button type="button" id="checkout-btn" class="checkout-btn">
+    Proceed to Checkout
+</button>
 
     </div>
 
@@ -145,9 +145,7 @@ const supabaseClient = window.supabase.createClient(
     SUPABASE_URL,
     SUPABASE_PUBLISHABLE_KEY
 );
-    document.getElementById("checkout-btn").addEventListener("click", async function(event) {
-    event.preventDefault();
-
+    async function goToCheckout() {
     const { data: { user } } = await supabaseClient.auth.getUser();
 
     if (user) {
@@ -155,7 +153,10 @@ const supabaseClient = window.supabase.createClient(
     } else {
         window.location.href = "login.html";
     }
-});
+}
+
+document.getElementById("checkout-btn").addEventListener("click", goToCheckout);
+
     const cartData = JSON.parse(localStorage.getItem("cart")) || [];
     const cartItems = document.getElementById("cart-items");
     const cartTotal = document.getElementById("cart-total");
@@ -225,20 +226,61 @@ const supabaseClient = window.supabase.createClient(
     }
 
 
-    function updateQuantity(index, value) {
+    async function updateQuantity(index, value) {
 
-        let quantity = Number(value);
+    let quantity = Number(value);
 
-        if (quantity < 1) {
-            quantity = 1;
-        }
+    if (quantity < 1) {
+        quantity = 1;
+    }
 
-        cartData[index].quantity = quantity;
+    const productId = cartData[index].id;
 
-localStorage.setItem("cart", JSON.stringify(cartData));
+    const { data: product, error } = await supabaseClient
+        .from("products")
+        .select("stock")
+        .eq("id", productId)
+        .single();
+
+    if (error || !product) {
+        alert("Unable to check product stock.");
+        location.reload();
+        return;
+    }
+
+    const availableStock = Number(product.stock);
+
+    if (availableStock <= 0) {
+        alert("This product is currently out of stock.");
+        cartData.splice(index, 1);
+
+        localStorage.setItem(
+            "cart",
+            JSON.stringify(cartData)
+        );
 
         location.reload();
+        return;
     }
+
+    if (quantity > availableStock) {
+        alert(
+            `Only ${availableStock} item(s) available.`
+        );
+
+        cartData[index].quantity = availableStock;
+    } else {
+        cartData[index].quantity = quantity;
+    }
+
+    localStorage.setItem(
+        "cart",
+        JSON.stringify(cartData)
+    );
+
+    location.reload();
+}
+ 
 </script>
 
 </body>
