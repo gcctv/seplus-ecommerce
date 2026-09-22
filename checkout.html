@@ -86,6 +86,33 @@
         .place-order:hover {
             background: #1f2937;
         }
+
+        .place-order:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        .order-message {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .success-message {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .error-message {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .checking-message {
+            background: #fff8e1;
+            color: #8d6e00;
+        }
     </style>
 </head>
 
@@ -138,14 +165,28 @@
                 <input type="text" id="pincode" required>
             </div>
 
-            <button type="submit" class="place-order">
+            <button type="submit" class="place-order" id="place-order-btn">
                 Place Order
             </button>
 
-        <div id="order-message" style="display:none; margin-top:20px; padding:15px; background:#e8f5e9; color:#2e7d32; border-radius:8px;">
-    Order placed successfully!
-</div>
-</form>
+            <div
+                id="order-message"
+                class="order-message success-message">
+                Order placed successfully!
+            </div>
+
+            <div
+                id="error-message"
+                class="order-message error-message">
+            </div>
+
+            <div
+                id="checking-message"
+                class="order-message checking-message">
+                Checking product stock. Please wait...
+            </div>
+
+        </form>
 
     </div>
 
@@ -154,16 +195,27 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
+
 const SUPABASE_URL = "https://uxujlcahvnzohohnjclv.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_sna7FS8E7-w7pXG3_u-rRw__q2Dcv0_";
+
+const SUPABASE_PUBLISHABLE_KEY =
+    "sb_publishable_sna7FS8E7-w7pXG3_u-rRw__q2Dcv0_";
 
 const supabaseClient = window.supabase.createClient(
     SUPABASE_URL,
     SUPABASE_PUBLISHABLE_KEY
 );
+
+
+// --------------------------------------------------
+// LOAD CUSTOMER DETAILS
+// --------------------------------------------------
+
 async function loadCustomerDetails() {
 
-    const { data: { user } } = await supabaseClient.auth.getUser();
+    const {
+        data: { user }
+    } = await supabaseClient.auth.getUser();
 
     if (!user) {
         return;
@@ -181,62 +233,422 @@ async function loadCustomerDetails() {
 
 loadCustomerDetails();
 
-document.getElementById("checkout-form").addEventListener("submit", async function(event) {
 
-    event.preventDefault();
+// --------------------------------------------------
+// SHOW MESSAGE
+// --------------------------------------------------
 
-    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+function showMessage(type, message = "") {
 
-    if (cart.length === 0) {
-        alert("Your cart is empty.");
-        return;
+    const successMessage =
+        document.getElementById("order-message");
+
+    const errorMessage =
+        document.getElementById("error-message");
+
+    const checkingMessage =
+        document.getElementById("checking-message");
+
+    successMessage.style.display = "none";
+    errorMessage.style.display = "none";
+    checkingMessage.style.display = "none";
+
+    if (type === "success") {
+
+        successMessage.style.display = "block";
+
+    } else if (type === "error") {
+
+        errorMessage.textContent = message;
+        errorMessage.style.display = "block";
+
+    } else if (type === "checking") {
+
+        checkingMessage.style.display = "block";
+    }
+}
+
+
+// --------------------------------------------------
+// CHECK PRODUCT STOCK
+// --------------------------------------------------
+
+async function checkCartStock(cart) {
+
+    for (const item of cart) {
+
+        const productId = Number(item.id);
+        const quantity = Number(item.quantity || 1);
+
+        if (!productId) {
+
+            return {
+                success: false,
+                message:
+                    `Product "${item.name}" does not have a valid product ID.`
+            };
+        }
+
+        const {
+            data: product,
+            error
+        } = await supabaseClient
+            .from("products")
+            .select("id, name, stock")
+            .eq("id", productId)
+            .single();
+
+        if (error || !product) {
+
+            console.error("Stock Check Error:", error);
+
+            return {
+                success: false,
+                message:
+                    `Unable to check stock for "${item.name}".`
+            };
+        }
+
+        const availableStock =
+            Number(product.stock || 0);
+
+        if (availableStock <= 0) {
+
+            return {
+                success: false,
+                message:
+                    `"${product.name}" is Out of Stock.`
+            };
+        }
+
+        if (quantity > availableStock) {
+
+            return {
+                success: false,
+                message:
+                    `"${product.name}" has only ${availableStock} item(s) available. You requested ${quantity}.`
+            };
+        }
     }
 
-    const order = {
-    user_id: (await supabaseClient.auth.getUser()).data.user?.id || null,
-    
-        name: document.getElementById("name").value.trim(),
-        mobile: document.getElementById("mobile").value.trim(),
-        email: document.getElementById("email").value.trim(),
-        address: document.getElementById("address").value.trim(),
-        city: document.getElementById("city").value.trim(),
-        state: document.getElementById("state").value.trim(),
-        pincode: document.getElementById("pincode").value.trim(),
-
-        products: cart.map(item => ({
-            name: item.name,
-            price: Number(item.price),
-            quantity: item.quantity || 1
-        })),
-
-        amount: cart.reduce((total, item) => {
-            return total + Number(item.price) * (item.quantity || 1);
-        }, 0),
-
-        date: new Date().toLocaleString(),
-        status: "New Order"
+    return {
+        success: true
     };
+}
 
-    const { data, error } = await supabaseClient
-        .from("orders")
-        .insert([order])
-        .select();
 
-    if (error) {
-        console.error("Order Error:", error);
-        alert("Unable to place order. Please try again.");
-        return;
+// --------------------------------------------------
+// REDUCE PRODUCT STOCK
+// --------------------------------------------------
+
+async function reduceCartStock(cart) {
+
+    for (const item of cart) {
+
+        const productId = Number(item.id);
+        const quantity = Number(item.quantity || 1);
+
+        const {
+            data,
+            error
+        } = await supabaseClient.rpc(
+            "reduce_product_stock",
+            {
+                p_product_id: productId,
+                p_quantity: quantity
+            }
+        );
+
+        if (error) {
+
+            console.error(
+                "Stock Reduction Error:",
+                error
+            );
+
+            return {
+                success: false,
+                message:
+                    `Unable to update stock for "${item.name}".`
+            };
+        }
+
+        if (data !== true) {
+
+            return {
+                success: false,
+                message:
+                    `Stock is no longer available for "${item.name}". Please try again.`
+            };
+        }
     }
 
-    console.log("Order saved:", data);
+    return {
+        success: true
+    };
+}
 
-    document.getElementById("order-message").style.display = "block";
 
-    localStorage.removeItem("cart");
+// --------------------------------------------------
+// CHECKOUT SUBMIT
+// --------------------------------------------------
 
-    this.reset();
+document
+    .getElementById("checkout-form")
+    .addEventListener("submit", async function(event) {
 
-});
+        event.preventDefault();
+
+        const placeOrderButton =
+            document.getElementById("place-order-btn");
+
+        placeOrderButton.disabled = true;
+
+        showMessage("checking");
+
+
+        // ------------------------------------------
+        // GET LOGGED-IN USER
+        // ------------------------------------------
+
+        const {
+            data: { user }
+        } = await supabaseClient.auth.getUser();
+
+        if (!user) {
+
+            showMessage(
+                "error",
+                "Please login before placing an order."
+            );
+
+            placeOrderButton.disabled = false;
+
+            return;
+        }
+
+
+        // ------------------------------------------
+        // GET CART
+        // ------------------------------------------
+
+        const cart =
+            JSON.parse(
+                localStorage.getItem("cart")
+            ) || [];
+
+
+        if (cart.length === 0) {
+
+            showMessage(
+                "error",
+                "Your cart is empty."
+            );
+
+            placeOrderButton.disabled = false;
+
+            return;
+        }
+
+
+        // ------------------------------------------
+        // CHECK STOCK
+        // ------------------------------------------
+
+        const stockCheck =
+            await checkCartStock(cart);
+
+
+        if (!stockCheck.success) {
+
+            showMessage(
+                "error",
+                stockCheck.message
+            );
+
+            placeOrderButton.disabled = false;
+
+            return;
+        }
+
+
+        // ------------------------------------------
+        // CREATE ORDER
+        // ------------------------------------------
+
+        const order = {
+
+            user_id: user.id,
+
+            name:
+                document
+                    .getElementById("name")
+                    .value
+                    .trim(),
+
+            mobile:
+                document
+                    .getElementById("mobile")
+                    .value
+                    .trim(),
+
+            email:
+                document
+                    .getElementById("email")
+                    .value
+                    .trim(),
+
+            address:
+                document
+                    .getElementById("address")
+                    .value
+                    .trim(),
+
+            city:
+                document
+                    .getElementById("city")
+                    .value
+                    .trim(),
+
+            state:
+                document
+                    .getElementById("state")
+                    .value
+                    .trim(),
+
+            pincode:
+                document
+                    .getElementById("pincode")
+                    .value
+                    .trim(),
+
+
+            products:
+                cart.map(item => ({
+
+                    id: item.id,
+
+                    name: item.name,
+
+                    price:
+                        Number(item.price),
+
+                    quantity:
+                        Number(item.quantity || 1)
+
+                })),
+
+
+            amount:
+                cart.reduce(
+                    (total, item) => {
+
+                        return total +
+                            Number(item.price) *
+                            Number(item.quantity || 1);
+
+                    },
+                    0
+                ),
+
+
+            date:
+                new Date().toLocaleString(),
+
+            status:
+                "New Order"
+        };
+
+
+        // ------------------------------------------
+        // SAVE ORDER
+        // ------------------------------------------
+
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .from("orders")
+            .insert([order])
+            .select();
+
+
+        if (error) {
+
+            console.error(
+                "Order Error:",
+                error
+            );
+
+            showMessage(
+                "error",
+                "Unable to place order. Please try again."
+            );
+
+            placeOrderButton.disabled = false;
+
+            return;
+        }
+
+
+        console.log(
+            "Order saved:",
+            data
+        );
+
+
+        // ------------------------------------------
+        // REDUCE STOCK
+        // ------------------------------------------
+
+        const stockResult =
+            await reduceCartStock(cart);
+
+
+        if (!stockResult.success) {
+
+            console.error(
+                "Stock update failed:",
+                stockResult.message
+            );
+
+            showMessage(
+                "error",
+                "Order was created, but stock update failed. Please contact admin."
+            );
+
+            placeOrderButton.disabled = false;
+
+            return;
+        }
+
+
+        // ------------------------------------------
+        // SUCCESS
+        // ------------------------------------------
+
+        showMessage("success");
+
+        localStorage.removeItem("cart");
+
+        this.reset();
+
+        placeOrderButton.disabled = true;
+
+
+        // ------------------------------------------
+        // OPTIONAL: GO TO MY ORDERS
+        // ------------------------------------------
+
+        setTimeout(function() {
+
+            window.location.href =
+                "my-orders.html";
+
+        }, 2000);
+
+    });
+
 </script>
 
 </body>
