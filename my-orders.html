@@ -100,7 +100,22 @@
             cursor: pointer;
             font-size: 14px;
         }
+        .view-details-btn {
+         display: inline-block;
+        margin-top: 15px;
+         margin-right: 8px;
+        padding: 9px 16px;
+        border-radius: 6px;
+        background: #111827;
+        color: white;
+        text-decoration: none;
+        cursor: pointer;
+        font-size: 14px;
+        }
 
+.view-details-btn:hover {
+    background: #1f2937;
+}
         .cancel-btn:hover {
             background: #b91c1c;
         }
@@ -562,20 +577,35 @@ async function loadOrders() {
 
         if (status === "New Order") {
 
-            cancelButtonHTML = `
+    cancelButtonHTML = `
+        <a
+            href="order-details.html?id=${order.id}"
+            class="view-details-btn"
+        >
+            View Details
+        </a>
 
-                <button
-                    type="button"
-                    class="cancel-btn"
-                    onclick="cancelOrder(${order.id})"
-                >
-                    Cancel Order
-                </button>
+        <button
+            type="button"
+            class="cancel-btn"
+            onclick="cancelOrder(${order.id})"
+        >
+            Cancel Order
+        </button>
+    `;
 
-            `;
+} else {
 
-        }
+    cancelButtonHTML = `
+        <a
+            href="order-details.html?id=${order.id}"
+            class="view-details-btn"
+        >
+            View Details
+        </a>
+    `;
 
+}
 
         orderCard.innerHTML = `
 

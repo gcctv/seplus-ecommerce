@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Order Details - SEPLUS</title>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f6f8;
+            color: #111827;
+        }
+
+
+        header {
+            background: #111827;
+            color: white;
+            padding: 18px 40px;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+
+        .logo {
+            font-size: 26px;
+            font-weight: bold;
+        }
+
+
+        .nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+        }
+
+
+        .container {
+            max-width: 850px;
+            margin: 35px auto;
+            padding: 0 20px;
+        }
+
+
+        .invoice {
+            background: white;
+            padding: 35px;
+            border-radius: 10px;
+
+            box-shadow:
+                0 3px 12px rgba(0, 0, 0, 0.08);
+        }
+
+
+        .invoice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+
+            border-bottom: 2px solid #111827;
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+        }
+
+
+        .invoice-header h1 {
+            margin: 0;
+        }
+
+
+        .invoice-number {
+            text-align: right;
+        }
+
+
+        .section {
+            margin-bottom: 25px;
+        }
+
+
+        .section h2 {
+            font-size: 18px;
+            margin-bottom: 12px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 8px;
+        }
+
+
+        .customer-details p {
+            margin: 6px 0;
+        }
+
+
+        .products-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+
+        .products-table th,
+        .products-table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+
+        .products-table th {
+            background: #f3f4f6;
+        }
+
+
+        .products-table .number {
+            text-align: right;
+        }
+
+
+        .total-box {
+            margin-top: 20px;
+            text-align: right;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+
+        .status {
+            display: inline-block;
+            padding: 7px 12px;
+            border-radius: 6px;
+            background: #e0f2fe;
+            color: #075985;
+            font-weight: bold;
+        }
+
+
+        .buttons {
+            margin-top: 30px;
+            display: flex;
+            gap: 12px;
+        }
+
+
+        button,
+        .back-button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+            text-decoration: none;
+        }
+
+
+        .print-button {
+            background: #111827;
+            color: white;
+        }
+
+
+        .back-button {
+            background: #e5e7eb;
+            color: #111827;
+        }
+
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: #666;
+        }
+
+
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+
+        @media (max-width: 600px) {
+
+            header {
+                padding: 15px 20px;
+            }
+
+            .nav a {
+                margin-left: 10px;
+                font-size: 13px;
+            }
+
+            .container {
+                margin: 20px auto;
+                padding: 0 10px;
+            }
+
+            .invoice {
+                padding: 20px;
+            }
+
+            .invoice-header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .invoice-number {
+                text-align: left;
+            }
+
+            .products-table {
+                font-size: 13px;
+            }
+
+            .products-table th,
+            .products-table td {
+                padding: 7px;
+            }
+
+            .buttons {
+                flex-direction: column;
+            }
+
+            button,
+            .back-button {
+                width: 100%;
+                text-align: center;
+            }
+        }
+
+
+        /* PRINT / PDF */
+
+        @media print {
+
+            body {
+                background: white;
+            }
+
+            header,
+            .buttons {
+                display: none !important;
+            }
+
+            .container {
+                max-width: 100%;
+                margin: 0;
+                padding: 0;
+            }
+
+            .invoice {
+                box-shadow: none;
+                border-radius: 0;
+                padding: 10px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<header>
+
+    <div class="logo">
+        SEPLUS
+    </div>
+
+    <div class="nav">
+
+        <a href="store.html">
+            Store
+        </a>
+
+        <a href="my-orders.html">
+            My Orders
+        </a>
+
+    </div>
+
+</header>
+
+
+
+<div class="container">
+
+    <div id="loading" class="loading">
+        Loading order details...
+    </div>
+
+
+    <div
+        id="error"
+        class="error"
+        style="display:none;"
+    ></div>
+
+
+    <div
+        id="invoice"
+        class="invoice"
+        style="display:none;"
+    >
+
+        <!-- INVOICE HEADER -->
+
+        <div class="invoice-header">
+
+            <div>
+
+                <h1>
+                    SEPLUS
+                </h1>
+
+                <p>
+                    CCTV & Security Solutions
+                </p>
+
+            </div>
+
+
+            <div class="invoice-number">
+
+                <strong>
+                    ORDER DETAILS
+                </strong>
+
+                <br>
+
+                Order #
+                <span id="order-id"></span>
+
+                <br>
+
+                Date:
+                <span id="order-date"></span>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- CUSTOMER DETAILS -->
+
+        <div class="section">
+
+            <h2>
+                Customer Details
+            </h2>
+
+
+            <div class="customer-details">
+
+                <p>
+                    <strong>Name:</strong>
+                    <span id="customer-name"></span>
+                </p>
+
+
+                <p>
+                    <strong>Mobile:</strong>
+                    <span id="customer-mobile"></span>
+                </p>
+
+
+                <p>
+                    <strong>Email:</strong>
+                    <span id="customer-email"></span>
+                </p>
+
+
+                <p>
+                    <strong>Address:</strong>
+                    <span id="customer-address"></span>
+                </p>
+
+
+                <p>
+                    <strong>City:</strong>
+                    <span id="customer-city"></span>
+                </p>
+
+
+                <p>
+                    <strong>State:</strong>
+                    <span id="customer-state"></span>
+                </p>
+
+
+                <p>
+                    <strong>Pincode:</strong>
+                    <span id="customer-pincode"></span>
+                </p>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- PRODUCTS -->
+
+        <div class="section">
+
+            <h2>
+                Order Items
+            </h2>
+
+
+            <table class="products-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Product
+                        </th>
+
+                        <th class="number">
+                            Price
+                        </th>
+
+                        <th class="number">
+                            Qty
+                        </th>
+
+                        <th class="number">
+                            Total
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="products-body">
+
+                </tbody>
+
+            </table>
+
+
+            <div class="total-box">
+
+                Total Amount:
+                ₹<span id="order-total">0</span>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- STATUS -->
+
+        <div class="section">
+
+            <h2>
+                Order Status
+            </h2>
+
+
+            <span
+                class="status"
+                id="order-status"
+            >
+            </span>
+
+        </div>
+
+
+
+        <!-- BUTTONS -->
+
+        <div class="buttons">
+
+            <button
+                class="print-button"
+                onclick="printInvoice()"
+            >
+                Print / Save as PDF
+            </button>
+
+
+            <a
+                href="my-orders.html"
+                class="back-button"
+            >
+                Back to My Orders
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+<script>
+
+
+// ==========================================
+// SUPABASE CONNECTION
+// ==========================================
+
+const SUPABASE_URL =
+    "https://uxujlcahvnzohohnjclv.supabase.co";
+
+
+const SUPABASE_PUBLISHABLE_KEY =
+    "sb_publishable_sna7FS8E7-w7pXG3_u-rRw__q2Dcv0_";
+
+
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_PUBLISHABLE_KEY
+    );
+
+
+
+// ==========================================
+// GET ORDER ID FROM URL
+// ==========================================
+
+const urlParams =
+    new URLSearchParams(
+        window.location.search
+    );
+
+
+const orderId =
+    urlParams.get("id");
+
+
+
+// ==========================================
+// LOAD ORDER
+// ==========================================
+
+async function loadOrder() {
+
+    const loading =
+        document.getElementById("loading");
+
+    const invoice =
+        document.getElementById("invoice");
+
+    const errorBox =
+        document.getElementById("error");
+
+
+    if (!orderId) {
+
+        loading.style.display = "none";
+
+        errorBox.textContent =
+            "Order ID was not provided.";
+
+        errorBox.style.display = "block";
+
+        return;
+    }
+
+
+    // --------------------------------------
+    // CHECK LOGIN
+    // --------------------------------------
+
+    const {
+        data: { user },
+        error: userError
+    } =
+        await supabaseClient.auth.getUser();
+
+
+    if (userError || !user) {
+
+        window.location.href =
+            "login.html";
+
+        return;
+    }
+
+
+    // --------------------------------------
+    // GET OWN ORDER
+    // --------------------------------------
+
+    const {
+        data: order,
+        error
+    } =
+        await supabaseClient
+            .from("orders")
+            .select("*")
+            .eq("id", Number(orderId))
+            .eq("user_id", user.id)
+            .single();
+
+
+    if (error || !order) {
+
+        console.error(
+            "Order Details Error:",
+            error
+        );
+
+        loading.style.display = "none";
+
+        errorBox.textContent =
+            "Unable to load this order. " +
+            (error?.message || "");
+
+        errorBox.style.display = "block";
+
+        return;
+    }
+
+
+    // --------------------------------------
+    // BASIC DETAILS
+    // --------------------------------------
+
+    document.getElementById("order-id")
+        .textContent = order.id;
+
+
+    document.getElementById("order-date")
+        .textContent =
+            order.date ||
+            order.created_at ||
+            "";
+
+
+    document.getElementById("customer-name")
+        .textContent =
+            order.name || "";
+
+
+    document.getElementById("customer-mobile")
+        .textContent =
+            order.mobile || "";
+
+
+    document.getElementById("customer-email")
+        .textContent =
+            order.email || "";
+
+
+    document.getElementById("customer-address")
+        .textContent =
+            order.address || "";
+
+
+    document.getElementById("customer-city")
+        .textContent =
+            order.city || "";
+
+
+    document.getElementById("customer-state")
+        .textContent =
+            order.state || "";
+
+
+    document.getElementById("customer-pincode")
+        .textContent =
+            order.pincode || "";
+
+
+
+    // --------------------------------------
+    // PRODUCTS
+    // --------------------------------------
+
+    const productsBody =
+        document.getElementById("products-body");
+
+
+    let products = order.products || [];
+
+
+    // Safety: if JSON comes as text
+    if (typeof products === "string") {
+
+        try {
+
+            products =
+                JSON.parse(products);
+
+        } catch (e) {
+
+            products = [];
+
+        }
+    }
+
+
+    productsBody.innerHTML = "";
+
+
+    products.forEach(item => {
+
+        const price =
+            Number(item.price) || 0;
+
+
+        const quantity =
+            Number(item.quantity) || 1;
+
+
+        const total =
+            price * quantity;
+
+
+        const row =
+            document.createElement("tr");
+
+
+        row.innerHTML = `
+
+            <td>
+                ${escapeHtml(item.name || "Product")}
+            </td>
+
+            <td class="number">
+                ₹${price.toLocaleString("en-IN")}
+            </td>
+
+            <td class="number">
+                ${quantity}
+            </td>
+
+            <td class="number">
+                ₹${total.toLocaleString("en-IN")}
+            </td>
+
+        `;
+
+
+        productsBody.appendChild(row);
+
+    });
+
+
+
+    // --------------------------------------
+    // TOTAL
+    // --------------------------------------
+
+    const amount =
+        Number(order.amount) || 0;
+
+
+    document.getElementById("order-total")
+        .textContent =
+            amount.toLocaleString("en-IN");
+
+
+
+    // --------------------------------------
+    // STATUS
+    // --------------------------------------
+
+    document.getElementById("order-status")
+        .textContent =
+            order.status || "New Order";
+
+
+
+    // --------------------------------------
+    // SHOW PAGE
+    // --------------------------------------
+
+    loading.style.display = "none";
+
+    invoice.style.display = "block";
+
+}
+
+
+
+// ==========================================
+// HTML ESCAPE
+// ==========================================
+
+function escapeHtml(value) {
+
+    return String(value ?? "")
+        .replace(/[&<>"']/g, function(char) {
+
+            return {
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+                "'": "&#039;"
+            }[char];
+
+        });
+
+}
+
+
+
+// ==========================================
+// PRINT / SAVE PDF
+// ==========================================
+
+function printInvoice() {
+
+    window.print();
+
+}
+
+
+
+// ==========================================
+// START
+// ==========================================
+
+loadOrder();
+
+
+</script>
+
+
+</body>
+
+</html>
