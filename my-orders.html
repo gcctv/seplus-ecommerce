@@ -7,6 +7,7 @@
     <title>My Orders - SEPLUS</title>
 
     <style>
+
         * {
             box-sizing: border-box;
             font-family: Arial, sans-serif;
@@ -65,10 +66,11 @@
 
         .order-card h3 {
             margin-top: 0;
+            margin-bottom: 12px;
         }
 
         .order-item {
-            padding: 8px 0;
+            padding: 10px 0;
             border-bottom: 1px solid #eee;
         }
 
@@ -83,7 +85,54 @@
             padding: 6px 12px;
             border-radius: 5px;
             background: #e5e7eb;
-            margin-top: 10px;
+            margin-top: 12px;
+            font-weight: bold;
+        }
+
+        .cancel-btn {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 9px 16px;
+            border: none;
+            border-radius: 6px;
+            background: #dc2626;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .cancel-btn:hover {
+            background: #b91c1c;
+        }
+
+        .cancelled {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .confirmed {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .processing {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .shipped {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .delivered {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .new-order {
+            background: #e5e7eb;
+            color: #374151;
         }
 
         .empty {
@@ -92,12 +141,66 @@
             text-align: center;
             border-radius: 10px;
         }
+
+        .order-date {
+            color: #555;
+            margin-bottom: 15px;
+        }
+
+        .message {
+            display: none;
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .message.success {
+            display: block;
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .message.error {
+            display: block;
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        @media (max-width: 600px) {
+
+            header {
+                padding: 15px 4%;
+            }
+
+            .logo {
+                font-size: 23px;
+            }
+
+            nav a {
+                margin-left: 10px;
+                font-size: 13px;
+            }
+
+            .container {
+                width: 94%;
+                margin: 25px auto;
+            }
+
+            .order-card {
+                padding: 16px;
+            }
+
+        }
+
     </style>
+
 </head>
 
 <body>
 
 <header>
+
     <div class="logo">SEPLUS</div>
 
     <nav>
@@ -105,26 +208,36 @@
         <a href="store.html">Products</a>
         <a href="cart.html">Cart</a>
     </nav>
+
 </header>
+
 
 <div class="container">
 
     <h1>My Orders</h1>
 
+    <div id="message" class="message"></div>
+
     <div id="orders-container">
+
         <p>Loading orders...</p>
+
     </div>
 
 </div>
 
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 
 <script>
 
-const SUPABASE_URL = "https://uxujlcahvnzohohnjclv.supabase.co";
+const SUPABASE_URL =
+    "https://uxujlcahvnzohohnjclv.supabase.co";
 
 const SUPABASE_PUBLISHABLE_KEY =
     "sb_publishable_sna7FS8E7-w7pXG3_u-rRw__q2Dcv0_";
+
 
 const supabaseClient =
     window.supabase.createClient(
@@ -133,10 +246,168 @@ const supabaseClient =
     );
 
 
+/* ================================
+   MESSAGE
+================================ */
+
+function showMessage(message, type = "success") {
+
+    const messageBox =
+        document.getElementById("message");
+
+    messageBox.textContent = message;
+
+    messageBox.className =
+        "message " + type;
+
+    setTimeout(() => {
+
+        messageBox.className = "message";
+
+    }, 4000);
+}
+
+
+/* ================================
+   STATUS CLASS
+================================ */
+
+function getStatusClass(status) {
+
+    switch (status) {
+
+        case "Confirmed":
+            return "confirmed";
+
+        case "Processing":
+            return "processing";
+
+        case "Shipped":
+            return "shipped";
+
+        case "Delivered":
+            return "delivered";
+
+        case "Cancelled":
+            return "cancelled";
+
+        case "New Order":
+        default:
+            return "new-order";
+    }
+}
+
+
+/* ================================
+   CANCEL ORDER
+================================ */
+
+async function cancelOrder(orderId) {
+
+    const confirmCancel =
+        confirm(
+            "Are you sure you want to cancel Order #" +
+            orderId +
+            "?"
+        );
+
+    if (!confirmCancel) {
+        return;
+    }
+
+
+    const {
+        data: { user }
+    } = await supabaseClient.auth.getUser();
+
+
+    if (!user) {
+
+        showMessage(
+            "Please login first.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    try {
+
+        const { data, error } =
+            await supabaseClient.rpc(
+                "cancel_order",
+                {
+                    p_order_id: Number(orderId)
+                }
+            );
+
+
+        if (error) {
+
+            console.error(
+                "Cancel Order Error:",
+                error
+            );
+
+            showMessage(
+                "Unable to cancel the order. " +
+                error.message,
+                "error"
+            );
+
+            return;
+        }
+
+
+        if (data !== true) {
+
+            showMessage(
+                "Order cancellation failed.",
+                "error"
+            );
+
+            return;
+        }
+
+
+        showMessage(
+            "Order #" +
+            orderId +
+            " cancelled successfully.",
+            "success"
+        );
+
+
+        // Reload orders and show updated status
+        loadOrders();
+
+    } catch (error) {
+
+        console.error(
+            "Cancel Order Error:",
+            error
+        );
+
+        showMessage(
+            "Something went wrong while cancelling the order.",
+            "error"
+        );
+    }
+}
+
+
+/* ================================
+   LOAD ORDERS
+================================ */
+
 async function loadOrders() {
 
     const ordersContainer =
-        document.getElementById("orders-container");
+        document.getElementById(
+            "orders-container"
+        );
+
 
     const {
         data: { user }
@@ -146,11 +417,21 @@ async function loadOrders() {
     if (!user) {
 
         ordersContainer.innerHTML = `
+
             <div class="empty">
-                <p>Please login to view your orders.</p>
+
+                <p>
+                    Please login to view your orders.
+                </p>
+
                 <br>
-                <a href="login.html">Login</a>
+
+                <a href="login.html">
+                    Login
+                </a>
+
             </div>
+
         `;
 
         return;
@@ -158,21 +439,35 @@ async function loadOrders() {
 
 
     const { data: orders, error } =
+
         await supabaseClient
+
             .from("orders")
+
             .select("*")
+
             .eq("user_id", user.id)
-            .order("id", { ascending: false });
+
+            .order("id", {
+                ascending: false
+            });
 
 
     if (error) {
 
-        console.error("Orders Error:", error);
+        console.error(
+            "Orders Error:",
+            error
+        );
 
         ordersContainer.innerHTML = `
+
             <div class="empty">
+
                 Unable to load your orders.
+
             </div>
+
         `;
 
         return;
@@ -182,12 +477,23 @@ async function loadOrders() {
     if (!orders || orders.length === 0) {
 
         ordersContainer.innerHTML = `
+
             <div class="empty">
+
                 <h3>No orders yet</h3>
-                <p>Your orders will appear here.</p>
+
+                <p>
+                    Your orders will appear here.
+                </p>
+
                 <br>
-                <a href="store.html">Continue Shopping</a>
+
+                <a href="store.html">
+                    Continue Shopping
+                </a>
+
             </div>
+
         `;
 
         return;
@@ -199,10 +505,13 @@ async function loadOrders() {
 
     orders.forEach(order => {
 
+
         const orderCard =
             document.createElement("div");
 
-        orderCard.className = "order-card";
+
+        orderCard.className =
+            "order-card";
 
 
         let productsHTML = "";
@@ -213,11 +522,21 @@ async function loadOrders() {
             order.products.forEach(product => {
 
                 productsHTML += `
+
                     <div class="order-item">
-                        ${product.name}
+
+                        <strong>
+                            ${product.name}
+                        </strong>
+
                         × ${product.quantity || 1}
-                        — ₹${Number(product.price).toLocaleString("en-IN")}
+
+                        — ₹${Number(
+                            product.price || 0
+                        ).toLocaleString("en-IN")}
+
                     </div>
+
                 `;
 
             });
@@ -225,34 +544,96 @@ async function loadOrders() {
         }
 
 
+        const status =
+            order.status || "New Order";
+
+
+        const statusClass =
+            getStatusClass(status);
+
+
+        let cancelButtonHTML = "";
+
+
+        /*
+           Customer can cancel only
+           New Order.
+        */
+
+        if (status === "New Order") {
+
+            cancelButtonHTML = `
+
+                <button
+                    type="button"
+                    class="cancel-btn"
+                    onclick="cancelOrder(${order.id})"
+                >
+                    Cancel Order
+                </button>
+
+            `;
+
+        }
+
+
         orderCard.innerHTML = `
 
-            <h3>Order #${order.id}</h3>
+            <h3>
+                Order #${order.id}
+            </h3>
 
-            <p>
+
+            <div class="order-date">
+
                 <strong>Date:</strong>
-                ${order.date || ""}
-            </p>
 
-            ${productsHTML}
+                ${order.date || ""}
+
+            </div>
+
+
+            <div>
+
+                ${productsHTML}
+
+            </div>
+
 
             <div class="order-total">
-                Total: ₹${Number(order.amount || 0).toLocaleString("en-IN")}
+
+                Total:
+                ₹${Number(
+                    order.amount || 0
+                ).toLocaleString("en-IN")}
+
             </div>
 
-            <div class="status">
-                ${order.status || "New Order"}
+
+            <div class="status ${statusClass}">
+
+                ${status}
+
             </div>
+
+
+            ${cancelButtonHTML}
 
         `;
 
 
-        ordersContainer.appendChild(orderCard);
+        ordersContainer.appendChild(
+            orderCard
+        );
 
     });
 
 }
 
+
+/* ================================
+   START
+================================ */
 
 loadOrders();
 
