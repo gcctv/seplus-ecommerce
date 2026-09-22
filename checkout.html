@@ -211,15 +211,25 @@ const supabaseClient = window.supabase.createClient(
 // LOAD CUSTOMER DETAILS
 // --------------------------------------------------
 
+// --------------------------------------------------
+// LOAD CUSTOMER DETAILS + SAVED PROFILE
+// --------------------------------------------------
+
 async function loadCustomerDetails() {
 
     const {
-        data: { user }
+        data: { user },
+        error: userError
     } = await supabaseClient.auth.getUser();
 
-    if (!user) {
+    if (userError || !user) {
         return;
     }
+
+
+    // ------------------------------------------
+    // DEFAULT DETAILS FROM LOGIN
+    // ------------------------------------------
 
     document.getElementById("name").value =
         user.user_metadata?.full_name || "";
@@ -229,7 +239,63 @@ async function loadCustomerDetails() {
 
     document.getElementById("email").value =
         user.email || "";
+
+
+    // ------------------------------------------
+    // LOAD SAVED PROFILE / ADDRESS
+    // ------------------------------------------
+
+    const {
+        data: profile,
+        error
+    } = await supabaseClient
+        .from("customer_profiles")
+        .select(
+            "full_name, mobile, address, city, state, pincode"
+        )
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+
+    if (error) {
+
+        console.error(
+            "Profile Load Error:",
+            error
+        );
+
+        return;
+    }
+
+
+    // ------------------------------------------
+    // AUTO-FILL SAVED DETAILS
+    // ------------------------------------------
+
+    if (profile) {
+
+        document.getElementById("name").value =
+            profile.full_name || "";
+
+        document.getElementById("mobile").value =
+            profile.mobile || "";
+
+        document.getElementById("address").value =
+            profile.address || "";
+
+        document.getElementById("city").value =
+            profile.city || "";
+
+        document.getElementById("state").value =
+            profile.state || "";
+
+        document.getElementById("pincode").value =
+            profile.pincode || "";
+    }
 }
+
+
+loadCustomerDetails();
 
 loadCustomerDetails();
 
@@ -338,54 +404,40 @@ async function checkCartStock(cart) {
 
 
 // --------------------------------------------------
-// REDUCE PRODUCT STOCK
+// ATOMIC ORDER + STOCK UPDATE
 // --------------------------------------------------
 
-async function reduceCartStock(cart) {
+async function placeOrderInDatabase(user, cart) {
 
-    for (const item of cart) {
+    const products = cart.map(item => ({
+        id: Number(item.id),
+        name: item.name,
+        price: Number(item.price),
+        quantity: Number(item.quantity || 1)
+    }));
 
-        const productId = Number(item.id);
-        const quantity = Number(item.quantity || 1);
+    const { data: orderId, error } =
+        await supabaseClient.rpc("place_order", {
+            p_name: document.getElementById("name").value.trim(),
+            p_mobile: document.getElementById("mobile").value.trim(),
+            p_email: document.getElementById("email").value.trim(),
+            p_address: document.getElementById("address").value.trim(),
+            p_city: document.getElementById("city").value.trim(),
+            p_state: document.getElementById("state").value.trim(),
+            p_pincode: document.getElementById("pincode").value.trim(),
+            p_products: products
+        });
 
-        const {
-            data,
-            error
-        } = await supabaseClient.rpc(
-            "reduce_product_stock",
-            {
-                p_product_id: productId,
-                p_quantity: quantity
-            }
-        );
-
-        if (error) {
-
-            console.error(
-                "Stock Reduction Error:",
-                error
-            );
-
-            return {
-                success: false,
-                message:
-                    `Unable to update stock for "${item.name}".`
-            };
-        }
-
-        if (data !== true) {
-
-            return {
-                success: false,
-                message:
-                    `Stock is no longer available for "${item.name}". Please try again.`
-            };
-        }
+    if (error) {
+        console.error("Place Order Error:", error);
+        return { success: false, message: error.message || "Unable to place order." };
     }
 
-    return {
-        success: true
-    };
+    if (!orderId) {
+        return { success: false, message: "Order was not created. Please try again." };
+    }
+
+    return { success: true, orderId: orderId };
 }
 
 
@@ -473,154 +525,33 @@ document
 
 
         // ------------------------------------------
-        // CREATE ORDER
+        // CREATE ORDER + REDUCE STOCK ATOMICALLY
         // ------------------------------------------
 
-        const order = {
+        const orderResult =
+            await placeOrderInDatabase(user, cart);
 
-            user_id: user.id,
-
-            name:
-                document
-                    .getElementById("name")
-                    .value
-                    .trim(),
-
-            mobile:
-                document
-                    .getElementById("mobile")
-                    .value
-                    .trim(),
-
-            email:
-                document
-                    .getElementById("email")
-                    .value
-                    .trim(),
-
-            address:
-                document
-                    .getElementById("address")
-                    .value
-                    .trim(),
-
-            city:
-                document
-                    .getElementById("city")
-                    .value
-                    .trim(),
-
-            state:
-                document
-                    .getElementById("state")
-                    .value
-                    .trim(),
-
-            pincode:
-                document
-                    .getElementById("pincode")
-                    .value
-                    .trim(),
-
-
-            products:
-                cart.map(item => ({
-
-                    id: item.id,
-
-                    name: item.name,
-
-                    price:
-                        Number(item.price),
-
-                    quantity:
-                        Number(item.quantity || 1)
-
-                })),
-
-
-            amount:
-                cart.reduce(
-                    (total, item) => {
-
-                        return total +
-                            Number(item.price) *
-                            Number(item.quantity || 1);
-
-                    },
-                    0
-                ),
-
-
-            date:
-                new Date().toLocaleString(),
-
-            status:
-                "New Order"
-        };
-
-
-        // ------------------------------------------
-        // SAVE ORDER
-        // ------------------------------------------
-
-        const {
-            data,
-            error
-        } = await supabaseClient
-            .from("orders")
-            .insert([order])
-            .select();
-
-
-        if (error) {
+        if (!orderResult.success) {
 
             console.error(
-                "Order Error:",
-                error
+                "Place Order Failed:",
+                orderResult.message
             );
 
             showMessage(
                 "error",
-                "Unable to place order. Please try again."
+                orderResult.message
             );
 
             placeOrderButton.disabled = false;
 
             return;
         }
-
 
         console.log(
-            "Order saved:",
-            data
+            "Order created successfully. Order ID:",
+            orderResult.orderId
         );
-
-
-        // ------------------------------------------
-        // REDUCE STOCK
-        // ------------------------------------------
-
-        const stockResult =
-            await reduceCartStock(cart);
-
-
-        if (!stockResult.success) {
-
-            console.error(
-                "Stock update failed:",
-                stockResult.message
-            );
-
-            showMessage(
-                "error",
-                "Order was created, but stock update failed. Please contact admin."
-            );
-
-            placeOrderButton.disabled = false;
-
-            return;
-        }
 
 
         // ------------------------------------------

@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>My Profile - SEPLUS</title>
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            color: #222;
+        }
+
+        header {
+            background: #111827;
+            color: white;
+            padding: 16px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 40px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        h2 {
+            margin-top: 0;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 7px;
+            font-weight: bold;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 7px;
+            font-size: 15px;
+        }
+
+        textarea {
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        input:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+
+        button {
+            width: 100%;
+            padding: 13px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 7px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        button:disabled {
+            background: #999;
+            cursor: not-allowed;
+        }
+
+        #message {
+            margin-bottom: 20px;
+            padding: 12px;
+            border-radius: 7px;
+            display: none;
+        }
+
+        .success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .loading {
+            text-align: center;
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                margin: 20px 12px;
+                padding: 20px;
+            }
+
+            header {
+                padding: 14px 15px;
+            }
+
+            .nav a {
+                margin-left: 10px;
+                font-size: 14px;
+            }
+
+            .logo {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo">SEPLUS</div>
+
+    <div class="nav">
+        <a href="store.html">Store</a>
+        <a href="my-orders.html">My Orders</a>
+    </div>
+</header>
+
+
+<div class="container">
+
+    <h2>My Profile & Saved Address</h2>
+
+    <div id="loading" class="loading">
+        Loading profile...
+    </div>
+
+    <div id="message"></div>
+
+    <form id="profile-form">
+
+        <div class="form-group">
+            <label for="full-name">Full Name *</label>
+            <input
+                type="text"
+                id="full-name"
+                placeholder="Enter your full name"
+                required
+            >
+        </div>
+
+
+        <div class="form-group">
+            <label for="mobile">Mobile Number *</label>
+            <input
+                type="tel"
+                id="mobile"
+                placeholder="Enter 10 digit mobile number"
+                maxlength="10"
+                required
+            >
+        </div>
+
+
+        <div class="form-group">
+            <label for="address">Address *</label>
+            <textarea
+                id="address"
+                placeholder="House No, Street, Area..."
+                required
+            ></textarea>
+        </div>
+
+
+        <div class="form-group">
+            <label for="city">City *</label>
+            <input
+                type="text"
+                id="city"
+                placeholder="Enter city"
+                required
+            >
+        </div>
+
+
+        <div class="form-group">
+            <label for="state">State *</label>
+            <input
+                type="text"
+                id="state"
+                placeholder="Enter state"
+                required
+            >
+        </div>
+
+
+        <div class="form-group">
+            <label for="pincode">Pincode *</label>
+            <input
+                type="text"
+                id="pincode"
+                placeholder="Enter 6 digit pincode"
+                maxlength="6"
+                required
+            >
+        </div>
+
+
+        <button type="submit" id="save-btn">
+            Save Address
+        </button>
+
+    </form>
+
+</div>
+
+
+<script>
+
+    // ================================
+    // SUPABASE CONNECTION
+    // ================================
+
+    const SUPABASE_URL =
+        "https://uxujlcahvnzohohnjclv.supabase.co";
+
+    const SUPABASE_PUBLISHABLE_KEY =
+        "sb_publishable_sna7FS8E7-w7pXG3_u-rRw__q2Dcv0_";
+
+    const supabaseClient =
+        window.supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_PUBLISHABLE_KEY
+        );
+
+
+    // ================================
+    // ELEMENTS
+    // ================================
+
+    const form = document.getElementById("profile-form");
+
+    const loading =
+        document.getElementById("loading");
+
+    const message =
+        document.getElementById("message");
+
+    const saveBtn =
+        document.getElementById("save-btn");
+
+
+    // ================================
+    // SHOW MESSAGE
+    // ================================
+
+    function showMessage(text, type) {
+
+        message.textContent = text;
+
+        message.className = type;
+
+        message.style.display = "block";
+
+    }
+
+
+    // ================================
+    // LOAD PROFILE
+    // ================================
+
+    async function loadProfile() {
+
+        loading.style.display = "block";
+
+        try {
+
+            const {
+                data: { user },
+                error: userError
+            } = await supabaseClient.auth.getUser();
+
+
+            if (userError || !user) {
+
+                window.location.href = "login.html";
+
+                return;
+            }
+
+
+            // Default values from Auth
+            document.getElementById("full-name").value =
+                user.user_metadata?.full_name || "";
+
+            document.getElementById("mobile").value =
+                user.user_metadata?.mobile || "";
+
+
+            // Load saved profile
+            const { data, error } =
+                await supabaseClient
+                    .from("customer_profiles")
+                    .select("*")
+                    .eq("user_id", user.id)
+                    .maybeSingle();
+
+
+            if (error) {
+
+                console.error(
+                    "Profile Load Error:",
+                    error
+                );
+
+                showMessage(
+                    "Unable to load profile. " +
+                    error.message,
+                    "error"
+                );
+
+                return;
+            }
+
+
+            // If profile already exists
+            if (data) {
+
+                document.getElementById("full-name").value =
+                    data.full_name || "";
+
+                document.getElementById("mobile").value =
+                    data.mobile || "";
+
+                document.getElementById("address").value =
+                    data.address || "";
+
+                document.getElementById("city").value =
+                    data.city || "";
+
+                document.getElementById("state").value =
+                    data.state || "";
+
+                document.getElementById("pincode").value =
+                    data.pincode || "";
+
+                saveBtn.textContent =
+                    "Update Address";
+            }
+
+
+        } catch (error) {
+
+            console.error(error);
+
+            showMessage(
+                "Something went wrong while loading profile.",
+                "error"
+            );
+
+        } finally {
+
+            loading.style.display = "none";
+        }
+    }
+
+
+    // ================================
+    // SAVE / UPDATE PROFILE
+    // ================================
+
+    form.addEventListener("submit", async function(event) {
+
+        event.preventDefault();
+
+
+        // Get values
+        const fullName =
+            document.getElementById("full-name")
+                .value.trim();
+
+        const mobile =
+            document.getElementById("mobile")
+                .value.trim();
+
+        const address =
+            document.getElementById("address")
+                .value.trim();
+
+        const city =
+            document.getElementById("city")
+                .value.trim();
+
+        const state =
+            document.getElementById("state")
+                .value.trim();
+
+        const pincode =
+            document.getElementById("pincode")
+                .value.trim();
+
+
+        // ================================
+        // VALIDATION
+        // ================================
+
+        if (!fullName) {
+
+            showMessage(
+                "Please enter your full name.",
+                "error"
+            );
+
+            return;
+        }
+
+
+        if (!/^[6-9][0-9]{9}$/.test(mobile)) {
+
+            showMessage(
+                "Please enter a valid 10 digit mobile number.",
+                "error"
+            );
+
+            return;
+        }
+
+
+        if (!address) {
+
+            showMessage(
+                "Please enter your address.",
+                "error"
+            );
+
+            return;
+        }
+
+
+        if (!city) {
+
+            showMessage(
+                "Please enter your city.",
+                "error"
+            );
+
+            return;
+        }
+
+
+        if (!state) {
+
+            showMessage(
+                "Please enter your state.",
+                "error"
+            );
+
+            return;
+        }
+
+
+        if (!/^[1-9][0-9]{5}$/.test(pincode)) {
+
+            showMessage(
+                "Please enter a valid 6 digit pincode.",
+                "error"
+            );
+
+            return;
+        }
+
+
+        // ================================
+        // GET USER
+        // ================================
+
+        const {
+            data: { user },
+            error: userError
+        } = await supabaseClient.auth.getUser();
+
+
+        if (userError || !user) {
+
+            window.location.href = "login.html";
+
+            return;
+        }
+
+
+        // ================================
+        // DISABLE BUTTON
+        // ================================
+
+        saveBtn.disabled = true;
+
+        saveBtn.textContent = "Saving...";
+
+
+        try {
+
+            // ================================
+            // UPSERT PROFILE
+            // ================================
+
+            const { error } =
+                await supabaseClient
+                    .from("customer_profiles")
+                    .upsert(
+                        {
+                            user_id: user.id,
+                            full_name: fullName,
+                            mobile: mobile,
+                            address: address,
+                            city: city,
+                            state: state,
+                            pincode: pincode,
+                            updated_at: new Date().toISOString()
+                        },
+                        {
+                            onConflict: "user_id"
+                        }
+                    );
+
+
+            if (error) {
+
+                console.error(
+                    "Save Profile Error:",
+                    error
+                );
+
+                showMessage(
+                    "Unable to save profile. " +
+                    error.message,
+                    "error"
+                );
+
+                return;
+            }
+
+
+            // ================================
+            // UPDATE AUTH USER METADATA
+            // ================================
+
+            const { error: metadataError } =
+                await supabaseClient.auth.updateUser({
+                    data: {
+                        full_name: fullName,
+                        mobile: mobile
+                    }
+                });
+
+
+            if (metadataError) {
+
+                console.warn(
+                    "Auth metadata update warning:",
+                    metadataError
+                );
+            }
+
+
+            showMessage(
+                "Profile and address saved successfully!",
+                "success"
+            );
+
+
+            saveBtn.textContent =
+                "Update Address";
+
+
+        } catch (error) {
+
+            console.error(error);
+
+            showMessage(
+                "Something went wrong while saving profile.",
+                "error"
+            );
+
+        } finally {
+
+            saveBtn.disabled = false;
+
+            if (saveBtn.textContent !== "Update Address") {
+                saveBtn.textContent = "Save Address";
+            }
+        }
+
+    });
+
+
+    // ================================
+    // START
+    // ================================
+
+    loadProfile();
+
+</script>
+
+</body>
+</html>
