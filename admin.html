@@ -34,7 +34,15 @@ button:disabled{opacity:.5;cursor:not-allowed}
 .price{font-size:18px;font-weight:bold}.mrp{text-decoration:line-through;color:#777!important}
 .stock{font-weight:bold}.order-card{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:20px;margin-bottom:18px;box-shadow:0 3px 10px rgba(0,0,0,.06)}
 .order-card h3{margin-top:0}.order-card p{margin:7px 0;color:#374151}
-.order-status-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:15px}.order-status-row select{width:auto;margin:0}
+.order-status-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:15px}
+.order-status-row select{width:auto;margin:0}
+.status-badge{display:inline-flex;align-items:center;justify-content:center;padding:6px 12px;border-radius:999px;font-size:13px;font-weight:bold;border:1px solid transparent}
+.status-new{background:#f3f4f6;color:#374151;border-color:#d1d5db}
+.status-confirmed{background:#dcfce7;color:#166534;border-color:#86efac}
+.status-processing{background:#dbeafe;color:#1d4ed8;border-color:#93c5fd}
+.status-shipped{background:#fef3c7;color:#92400e;border-color:#fcd34d}
+.status-delivered{background:#d1fae5;color:#065f46;border-color:#6ee7b7}
+.status-cancelled{background:#fee2e2;color:#991b1b;border-color:#fca5a5}
 .loading,.empty{text-align:center;padding:30px;color:#666}.small-note{font-size:13px;color:#6b7280}
 @media(max-width:900px){.products-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:650px){
@@ -176,6 +184,16 @@ allOrders=data||[];
 displayOrders(allOrders);
 }
 
+function getStatusClass(status){
+const value=String(status||"New Order").toLowerCase();
+if(value==="confirmed")return"status-confirmed";
+if(value==="processing")return"status-processing";
+if(value==="shipped")return"status-shipped";
+if(value==="delivered")return"status-delivered";
+if(value==="cancelled")return"status-cancelled";
+return"status-new";
+}
+
 function displayOrders(orders){
 const container=document.getElementById("orders");
 
@@ -214,6 +232,7 @@ ${productsHtml}
 
 <div class="order-status-row">
 <strong>Status:</strong>
+<span id="status-badge-${order.id}" class="status-badge ${getStatusClass(status)}">${escapeHtml(status)}</span>
 <select id="status-${order.id}">
 <option value="New Order" ${status==="New Order"?"selected":""}>New Order</option>
 <option value="Confirmed" ${status==="Confirmed"?"selected":""}>Confirmed</option>
@@ -228,24 +247,289 @@ container.appendChild(card);
 });
 }
 
-async function updateOrderStatus(orderId){
-if(!currentUser||currentUser.id!==ADMIN_USER_ID){
-showMessage("Admin access required.");
-return;
-}
+async function updateOrderStatus(orderId) {
 
-const select=document.getElementById("status-"+orderId);
-if(!select)return;
+    if (!currentUser || currentUser.id !== ADMIN_USER_ID) {
+        showMessage("Admin access required.");
+        return;
+    }
 
-const {error}=await supabaseClient.from("orders").update({status:select.value}).eq("id",orderId);
+    const select = document.getElementById("status-" + orderId);
 
-if(error){
-showMessage("Unable to update order status: "+error.message);
-return;
-}
+    if (!select) {
+        return;
+    }
 
-showMessage("Order #"+orderId+" status updated to "+select.value,"success");
-await loadOrders();
+    const newStatus = select.value;
+
+    // Find current order details
+    const order = allOrders.find(
+        item => Number(item.id) === Number(orderId)
+    );
+
+    if (!order) {
+        showMessage("Order not found.");
+        return;
+    }
+
+    // Update order status in Supabase
+    const { error } = await supabaseClient
+        .from("orders")
+        .update({
+            status: newStatus
+        })
+        .eq("id", orderId);
+
+    if (error) {
+        showMessage(
+            "Unable to update order status: " + error.message
+        );
+        return;
+    }
+
+    // Keep the current order data in sync immediately.
+    order.status = newStatus;
+
+    // -----------------------------------------
+    // SEND STATUS UPDATE EMAIL
+    // -----------------------------------------
+
+    if (order.email) {
+
+        let products = order.products || [];
+
+        // If products is stored as JSON text
+        if (typeof products === "string") {
+            try {
+                products = JSON.parse(products);
+            } catch (e) {
+                products = [];
+            }
+        }
+
+        let productRows = "";
+
+        products.forEach(item => {
+
+            const quantity = Number(item.quantity || 1);
+            const price = Number(item.price || 0);
+            const total = price * quantity;
+
+            productRows += `
+                <tr>
+                    <td style="padding:8px;border:1px solid #ddd;">
+                        ${item.name || item.itemName || "Product"}
+                    </td>
+
+                    <td style="padding:8px;border:1px solid #ddd;text-align:center;">
+                        ${quantity}
+                    </td>
+
+                    <td style="padding:8px;border:1px solid #ddd;text-align:right;">
+                        ₹${price.toLocaleString("en-IN")}
+                    </td>
+
+                    <td style="padding:8px;border:1px solid #ddd;text-align:right;">
+                        ₹${total.toLocaleString("en-IN")}
+                    </td>
+                </tr>
+            `;
+        });
+
+        const subject =
+            `SEPLUS - Order #${orderId} Status Updated`;
+
+        const html = `
+            <div style="
+                font-family:Arial,sans-serif;
+                max-width:600px;
+                margin:auto;
+                color:#222;
+            ">
+
+                <div style="
+                    background:#111827;
+                    color:white;
+                    padding:18px;
+                    font-size:20px;
+                    font-weight:bold;
+                ">
+                    SEPLUS - Order Status Updated
+                </div>
+
+                <div style="padding:20px;">
+
+                    <p>
+                        Dear ${order.name || "Customer"},
+                    </p>
+
+                    <p>
+                        Your order status has been updated.
+                    </p>
+
+                    <p>
+                        <strong>Order ID:</strong> #${orderId}
+                    </p>
+
+                    <p>
+                        <strong>Order Status:</strong>
+                        <span style="
+                            font-weight:bold;
+                            color:#111827;
+                        ">
+                            ${newStatus}
+                        </span>
+                    </p>
+
+                    <h3>Order Details</h3>
+
+                    <table style="
+                        width:100%;
+                        border-collapse:collapse;
+                        font-size:14px;
+                    ">
+
+                        <thead>
+                            <tr>
+                                <th style="
+                                    padding:8px;
+                                    border:1px solid #ddd;
+                                    text-align:left;
+                                ">
+                                    Product
+                                </th>
+
+                                <th style="
+                                    padding:8px;
+                                    border:1px solid #ddd;
+                                ">
+                                    Qty
+                                </th>
+
+                                <th style="
+                                    padding:8px;
+                                    border:1px solid #ddd;
+                                    text-align:right;
+                                ">
+                                    Price
+                                </th>
+
+                                <th style="
+                                    padding:8px;
+                                    border:1px solid #ddd;
+                                    text-align:right;
+                                ">
+                                    Total
+                                </th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            ${productRows}
+                        </tbody>
+
+                    </table>
+
+                    <p style="
+                        text-align:right;
+                        font-size:18px;
+                        font-weight:bold;
+                        margin-top:20px;
+                    ">
+                        Total:
+                        ₹${Number(order.amount || 0).toLocaleString("en-IN")}
+                    </p>
+
+                    <hr>
+
+                    <p>
+                        We will keep you updated about your order.
+                    </p>
+
+                    <p>
+                        Regards,<br>
+                        <strong>SEPLUS</strong>
+                    </p>
+
+                </div>
+            </div>
+        `;
+
+        try {
+
+            const { data: emailData, error: emailError } =
+                await supabaseClient.functions.invoke(
+                    "send-order-email",
+                    {
+                        body: {
+                            to: order.email,
+                            subject: subject,
+                            html: html
+                        }
+                    }
+                );
+
+            if (emailError) {
+
+                console.error(
+                    "Status Email Error:",
+                    emailError
+                );
+
+                showMessage(
+                    "Order status updated, but email could not be sent.",
+                    "success"
+                );
+
+            } else {
+
+                console.log(
+                    "Status email sent:",
+                    emailData
+                );
+
+                showMessage(
+                    "Order #" +
+                    orderId +
+                    " status updated to " +
+                    newStatus +
+                    " and email sent.",
+                    "success"
+                );
+            }
+
+        } catch (emailError) {
+
+            console.error(
+                "Status Email Exception:",
+                emailError
+            );
+
+            showMessage(
+                "Order status updated, but email could not be sent.",
+                "success"
+            );
+        }
+
+    } else {
+
+        showMessage(
+            "Order #" +
+            orderId +
+            " status updated to " +
+            newStatus +
+            ". Customer email not available.",
+            "success"
+        );
+    }
+
+    const badge = document.getElementById("status-badge-" + orderId);
+    if (badge) {
+        badge.textContent = newStatus;
+        badge.className = "status-badge " + getStatusClass(newStatus);
+    }
+
+    await loadOrders();
 }
 
 document.getElementById("order-search").addEventListener("input",function(){

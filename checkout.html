@@ -297,8 +297,6 @@ async function loadCustomerDetails() {
 
 loadCustomerDetails();
 
-loadCustomerDetails();
-
 
 // --------------------------------------------------
 // SHOW MESSAGE
@@ -442,8 +440,192 @@ async function placeOrderInDatabase(user, cart) {
 
 
 // --------------------------------------------------
+// SEND ORDER CONFIRMATION EMAIL
+// --------------------------------------------------
+
+async function sendOrderConfirmationEmail(user, orderId, cart) {
+
+    const customerName =
+        document.getElementById("name").value.trim();
+
+    const customerEmail =
+        document.getElementById("email").value.trim();
+
+    const customerMobile =
+        document.getElementById("mobile").value.trim();
+
+    const customerAddress =
+        document.getElementById("address").value.trim();
+
+    const customerCity =
+        document.getElementById("city").value.trim();
+
+    const customerState =
+        document.getElementById("state").value.trim();
+
+    const customerPincode =
+        document.getElementById("pincode").value.trim();
+
+    function escapeHtml(value) {
+        return String(value ?? "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    const productRows = cart.map(item => {
+
+        const quantity = Number(item.quantity || 1);
+        const price = Number(item.price || 0);
+        const total = price * quantity;
+
+        return `
+            <tr>
+                <td style="padding:8px;border:1px solid #ddd;">
+                    ${escapeHtml(item.name)}
+                </td>
+                <td style="padding:8px;border:1px solid #ddd;text-align:center;">
+                    ${quantity}
+                </td>
+                <td style="padding:8px;border:1px solid #ddd;text-align:right;">
+                    ₹${price.toLocaleString("en-IN")}
+                </td>
+                <td style="padding:8px;border:1px solid #ddd;text-align:right;">
+                    ₹${total.toLocaleString("en-IN")}
+                </td>
+            </tr>
+        `;
+    }).join("");
+
+    const totalAmount = cart.reduce(
+        (sum, item) =>
+            sum +
+            Number(item.price || 0) *
+            Number(item.quantity || 1),
+        0
+    );
+
+    const emailHtml = `
+        <div style="font-family:Arial,sans-serif;color:#111827;max-width:700px;margin:auto;">
+            <h2 style="background:#111827;color:white;padding:18px;margin:0;">
+                SEPLUS - Order Received
+            </h2>
+
+            <div style="padding:20px;">
+                <p>Dear <strong>${escapeHtml(customerName)}</strong>,</p>
+
+                <p>
+                    Thank you for your order. Your order has been received
+                    successfully.
+                </p>
+
+                <p>
+                    <strong>Order ID:</strong> #${escapeHtml(orderId)}
+                </p>
+
+                <h3>Order Details</h3>
+
+                <table style="width:100%;border-collapse:collapse;">
+                    <thead>
+                        <tr>
+                            <th style="padding:8px;border:1px solid #ddd;text-align:left;">Product</th>
+                            <th style="padding:8px;border:1px solid #ddd;">Qty</th>
+                            <th style="padding:8px;border:1px solid #ddd;text-align:right;">Price</th>
+                            <th style="padding:8px;border:1px solid #ddd;text-align:right;">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${productRows}
+                    </tbody>
+                </table>
+
+                <p style="text-align:right;font-size:18px;">
+                    <strong>Total: ₹${totalAmount.toLocaleString("en-IN")}</strong>
+                </p>
+
+                <h3>Customer Details</h3>
+
+                <p>
+                    <strong>Mobile:</strong> ${escapeHtml(customerMobile)}<br>
+                    <strong>Email:</strong> ${escapeHtml(customerEmail)}<br>
+                    <strong>Address:</strong> ${escapeHtml(customerAddress)}<br>
+                    <strong>City:</strong> ${escapeHtml(customerCity)}<br>
+                    <strong>State:</strong> ${escapeHtml(customerState)}<br>
+                    <strong>Pincode:</strong> ${escapeHtml(customerPincode)}
+                </p>
+
+                <p><strong>Order Status:</strong> New Order</p>
+
+                <p>
+                    We will process your order and update you when the
+                    order status changes.
+                </p>
+
+                <p>
+                    Regards,<br>
+                    <strong>SEPLUS</strong>
+                </p>
+            </div>
+        </div>
+    `;
+
+    try {
+
+        const { data, error } =
+            await supabaseClient.functions.invoke(
+                "send-order-email",
+                {
+                    body: {
+                        to: customerEmail,
+                        subject: `SEPLUS - Order #${orderId} Received`,
+                        html: emailHtml
+                    }
+                }
+            );
+
+        if (error) {
+
+            console.error(
+                "Order Email Error:",
+                error
+            );
+
+            return {
+                success: false,
+                error: error.message || "Unable to send order email."
+            };
+        }
+
+        console.log(
+            "Order confirmation email sent:",
+            data
+        );
+
+        return {
+            success: true
+        };
+
+    } catch (error) {
+
+        console.error(
+            "Order Email Exception:",
+            error
+        );
+
+        return {
+            success: false,
+            error: error.message || "Unable to send order email."
+        };
+    }
+}
+
+
+// --------------------------------------------------
 // CHECKOUT SUBMIT
 // --------------------------------------------------
+
 
 document
     .getElementById("checkout-form")
@@ -552,6 +734,27 @@ document
             "Order created successfully. Order ID:",
             orderResult.orderId
         );
+
+
+        // ------------------------------------------
+        // SEND ORDER CONFIRMATION EMAIL
+        // ------------------------------------------
+
+        const emailResult =
+            await sendOrderConfirmationEmail(
+                user,
+                orderResult.orderId,
+                cart
+            );
+
+        if (!emailResult.success) {
+
+            console.warn(
+                "Order was created, but confirmation email could not be sent:",
+                emailResult.error
+            );
+
+        }
 
 
         // ------------------------------------------
