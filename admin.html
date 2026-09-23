@@ -121,7 +121,7 @@ const SUPABASE_URL="https://uxujlcahvnzohohnjclv.supabase.co";
 const SUPABASE_KEY="sb_publishable_sna7FS8E7-w7pXG3_u-rRw__q2Dcv0_";
 const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
-const ADMIN_USER_ID="b063e9e1-779a-4305-addb-4cba887e6821";
+const ADMIN_USER_ID="1b43b097-d5e6-4352-8891-a0f76b08690b";
 let currentUser=null;
 let allOrders=[];
 let allProducts=[];
@@ -148,18 +148,24 @@ const {data:{user},error}=await supabaseClient.auth.getUser();
 if(error||!user){
 currentUser=null;
 document.getElementById("admin-user").textContent="Please login to access Admin Panel.";
-document.getElementById("products-list").innerHTML='<div class="empty">Please login first.</div>';
-document.getElementById("orders").innerHTML='<div class="empty">Please login first.</div>';
+document.getElementById("products-list").innerHTML='<div class="empty">Please login first. Redirecting to login...</div>';
+document.getElementById("orders").innerHTML='<div class="empty">Please login first. Redirecting to login...</div>';
+setTimeout(()=>{
+    window.location.href="login.html";
+},1000);
 return false;
 }
 
 currentUser=user;
 
 if(user.id!==ADMIN_USER_ID){
-document.getElementById("admin-user").textContent="Logged in, but Admin access is required.";
-document.getElementById("products-list").innerHTML='<div class="empty">Admin access required.</div>';
-document.getElementById("orders").innerHTML='<div class="empty">Admin access required.</div>';
+document.getElementById("admin-user").textContent="Admin access required.";
+document.getElementById("products-list").innerHTML='<div class="empty">Admin access required. Redirecting to Store...</div>';
+document.getElementById("orders").innerHTML='<div class="empty">Admin access required. Redirecting to Store...</div>';
 document.getElementById("product-form").style.display="none";
+setTimeout(()=>{
+    window.location.href="store.html";
+},1000);
 return false;
 }
 
