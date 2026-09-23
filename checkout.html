@@ -402,6 +402,43 @@ async function checkCartStock(cart) {
 
 
 // --------------------------------------------------
+// SAVE CUSTOMER DETAILS / PROFILE
+// --------------------------------------------------
+
+async function saveCustomerProfile(user) {
+
+    const profile = {
+        user_id: user.id,
+        full_name: document.getElementById("name").value.trim(),
+        mobile: document.getElementById("mobile").value.trim(),
+        address: document.getElementById("address").value.trim(),
+        city: document.getElementById("city").value.trim(),
+        state: document.getElementById("state").value.trim(),
+        pincode: document.getElementById("pincode").value.trim()
+    };
+
+    const { error } = await supabaseClient
+        .from("customer_profiles")
+        .upsert(
+            profile,
+            { onConflict: "user_id" }
+        );
+
+    if (error) {
+        console.error("Customer Profile Save Error:", error);
+        return {
+            success: false,
+            error: error.message
+        };
+    }
+
+    return {
+        success: true
+    };
+}
+
+
+// --------------------------------------------------
 // ATOMIC ORDER + STOCK UPDATE
 // --------------------------------------------------
 
@@ -734,6 +771,23 @@ document
             "Order created successfully. Order ID:",
             orderResult.orderId
         );
+
+
+        // ------------------------------------------
+        // SAVE CUSTOMER DETAILS FOR FUTURE ORDERS
+        // ------------------------------------------
+
+        const profileResult =
+            await saveCustomerProfile(user);
+
+        if (!profileResult.success) {
+
+            console.warn(
+                "Order was created, but customer profile could not be saved:",
+                profileResult.error
+            );
+
+        }
 
 
         // ------------------------------------------
