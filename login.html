@@ -4,12 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Customer Login - SEPLUS</title>
+    <title>SEPLUS - Login</title>
 
     <style>
-        * {
-            box-sizing: border-box;
-        }
+        * { box-sizing: border-box; }
 
         body {
             margin: 0;
@@ -64,8 +62,11 @@
             cursor: pointer;
         }
 
-        button:hover {
-            opacity: 0.9;
+        button:hover { opacity: 0.9; }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
         }
 
         #message {
@@ -88,48 +89,49 @@
 
 <body>
 
-    <div class="login-container">
+<div class="login-container">
 
-        <h1>SEPLUS</h1>
+    <h1>SEPLUS</h1>
 
-        <p>Customer Login</p>
+    <p>Customer / Admin Login</p>
 
-        <form id="loginForm">
+    <form id="loginForm">
 
-            <label for="email">Email</label>
+        <label for="email">Email</label>
 
-            <input
-                type="email"
-                id="email"
-                placeholder="Enter your email"
-                required
-            >
+        <input
+            type="email"
+            id="email"
+            placeholder="Enter your email"
+            required
+        >
 
-            <label for="password">Password</label>
+        <label for="password">Password</label>
 
-            <input
-                type="password"
-                id="password"
-                placeholder="Enter your password"
-                required
-            >
+        <input
+            type="password"
+            id="password"
+            placeholder="Enter your password"
+            required
+        >
 
-            <button type="submit">Login</button>
+        <button type="submit" id="loginButton">Login</button>
 
-            <div style="text-align:center; margin-top:12px;">
+        <div style="text-align:center; margin-top:12px;">
             <a href="#" id="forgotPassword">Forgot Password?</a>
-            </div>
-
-            </form>
-
-        <div id="message"></div>
-
-        <div class="signup-link">
-            Don't have an account?
-            <a href="signup.html">Create Account</a>
         </div>
 
+    </form>
+
+    <div id="message"></div>
+
+    <div class="signup-link">
+        Don't have an account?
+        <a href="signup.html">Create Account</a>
     </div>
+
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
@@ -141,16 +143,20 @@ const supabaseClient = window.supabase.createClient(
     SUPABASE_PUBLISHABLE_KEY
 );
 
+// IMPORTANT: This must match the Admin Auth user's UUID
+const ADMIN_USER_ID = "1b43b097-d5e6-4352-8891-a0f76b08690b";
+
 document.getElementById("loginForm").addEventListener("submit", async function(event) {
 
     event.preventDefault();
 
     const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value;
-
     const message = document.getElementById("message");
+    const loginButton = document.getElementById("loginButton");
 
     message.textContent = "Logging in...";
+    loginButton.disabled = true;
 
     const { data, error } = await supabaseClient.auth.signInWithPassword({
         email: email,
@@ -160,13 +166,28 @@ document.getElementById("loginForm").addEventListener("submit", async function(e
     if (error) {
         console.error("Login error:", error);
         message.textContent = error.message;
+        loginButton.disabled = false;
+        return;
+    }
+
+    const user = data.user;
+
+    if (!user) {
+        message.textContent = "Login successful, but user information was not found.";
+        loginButton.disabled = false;
         return;
     }
 
     message.textContent = "Login successful!";
 
-    window.location.href = "store.html";
+    // Separate Admin and Customer routing
+    if (user.id === ADMIN_USER_ID) {
+        window.location.href = "admin.html";
+    } else {
+        window.location.href = "store.html";
+    }
 });
+
 document.getElementById("forgotPassword").addEventListener("click", async function(event) {
 
     event.preventDefault();
@@ -181,9 +202,12 @@ document.getElementById("forgotPassword").addEventListener("click", async functi
 
     message.textContent = "Sending password reset email...";
 
+    // Resolve reset-password.html relative to the current login page.
+    // This works on GitHub Pages, localhost and a custom domain.
+    const resetUrl = new URL("reset-password.html", window.location.href).href;
+
     const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
-        redirectTo: window.location.origin + "/seplus-ecommerce/reset-password.html"
-        
+        redirectTo: resetUrl
     });
 
     if (error) {
@@ -195,5 +219,6 @@ document.getElementById("forgotPassword").addEventListener("click", async functi
     message.textContent = "Password reset email sent. Please check your email.";
 });
 </script>
+
 </body>
 </html>
