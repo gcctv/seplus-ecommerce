@@ -390,8 +390,14 @@ async function loadAdminProducts() {
         card.className = "product";
         card.dataset.category = product.category || "Accessories";
 
+        const imageUrl = product.image
+            ? (product.image.startsWith("http://") || product.image.startsWith("https://")
+                ? product.image
+                : `images/${product.image}`)
+            : "images/no-image.png";
+
         card.innerHTML = `
-            <img src="images/${product.image}" alt="${product.name}">
+            <img src="${imageUrl}" alt="${product.name}">
 
             <a href="product.html?id=${product.id}">
                 <h3>${product.name}</h3>
