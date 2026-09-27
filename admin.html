@@ -30,6 +30,11 @@ button:disabled{opacity:.5;cursor:not-allowed}
 .product-card{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:18px;box-shadow:0 3px 10px rgba(0,0,0,.06)}
 .product-card img{width:100%;height:190px;object-fit:contain;border-radius:8px;background:#fafafa;margin-bottom:10px}
 .product-card h3{margin:5px 0 12px}.product-card p{margin:7px 0;color:#374151}
+.gallery-preview{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+.gallery-thumb{position:relative;width:90px;height:90px;border:1px solid #d1d5db;border-radius:8px;overflow:hidden;background:#fafafa}
+.gallery-thumb img{width:100%;height:100%;object-fit:contain}
+.gallery-thumb button{position:absolute;right:3px;top:3px;width:24px;height:24px;padding:0;border-radius:50%;background:#dc2626;color:#fff;font-size:12px}
+.gallery-empty{padding:10px;border:1px dashed #d1d5db;border-radius:8px;color:#6b7280;font-size:13px}
 .product-actions{display:flex;gap:8px;margin-top:15px}.product-actions button{flex:1}
 .price{font-size:18px;font-weight:bold}.mrp{text-decoration:line-through;color:#777!important}
 .stock{font-weight:bold}.order-card{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:20px;margin-bottom:18px;box-shadow:0 3px 10px rgba(0,0,0,.06)}
@@ -103,7 +108,13 @@ header{padding:15px 20px}.logo{font-size:22px}.admin-title{font-size:15px}
 <div><label>Selling Price</label><input type="number" id="product-price" min="0" step="0.01" required></div>
 <div><label>MRP</label><input type="number" id="product-mrp" min="0" step="0.01"></div>
 <div><label>Stock</label><input type="number" id="product-stock" min="0" step="1" required></div>
-<div><label>Product Image</label><input type="file" id="product-image-file" accept="image/*"><input type="hidden" id="product-image"><div id="image-preview" class="small-note">No new image selected.</div></div>
+<div><label>Product Image</label><input type="file" id="product-image-file" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"><input type="hidden" id="product-image"><div id="image-preview" class="small-note">No new image selected.</div></div>
+<div class="full-width">
+<label>Additional Product Images</label>
+<input type="file" id="product-gallery-files" multiple accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp">
+<div id="gallery-file-preview" class="small-note">Select multiple JPG, JPEG, PNG or WEBP images (max 5 MB each).</div>
+<div id="existing-gallery" class="gallery-preview"><div class="gallery-empty">No additional images.</div></div>
+</div>
 <div><label>Brand</label><input type="text" id="product-brand" placeholder="Hikvision"></div>
 <div><label>Model</label><input type="text" id="product-model" placeholder="Model Number"></div>
 <div><label>Warranty</label><input type="text" id="product-warranty" placeholder="1 Year"></div>
@@ -783,8 +794,12 @@ document.getElementById("category-name").addEventListener("keydown",function(eve
 async function uploadProductImage(file){
     if(!file) return null;
 
-    if(!file.type || !file.type.startsWith("image/")){
-        throw new Error("Please select a valid image file.");
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+    const allowedExtensions = ["jpg", "jpeg", "png", "webp"];
+    const fileExtension = (file.name || "").split(".").pop().toLowerCase();
+
+    if(!allowedTypes.includes(file.type) || !allowedExtensions.includes(fileExtension)){
+        throw new Error("Only JPG, JPEG, PNG and WEBP image files are allowed.");
     }
 
     const maxSize = 5 * 1024 * 1024;
@@ -825,6 +840,145 @@ async function uploadProductImage(file){
     }
 
     return publicData.publicUrl;
+}
+
+async function uploadProductGalleryImages(files, productId){
+    if(!files || !files.length || !productId) return;
+
+    const maxSize=5*1024*1024;
+    const allowedTypes=["image/jpeg","image/png","image/webp"];
+    const allowedExtensions=["jpg","jpeg","png","webp"];
+
+    for(const file of Array.from(files)){
+        const ext=(file.name||"").split(".").pop().toLowerCase();
+        if(!allowedTypes.includes(file.type)||!allowedExtensions.includes(ext)){
+            throw new Error("Only JPG, JPEG, PNG and WEBP image files are allowed.");
+        }
+        if(file.size>maxSize){
+            throw new Error("Each gallery image must be 5 MB or less.");
+        }
+    }
+
+    const existingResult=await supabaseClient
+        .from("product_images")
+        .select("sort_order")
+        .eq("product_id",Number(productId))
+        .order("sort_order",{ascending:false})
+        .limit(1);
+
+    if(existingResult.error){
+        throw new Error("Unable to read existing gallery: "+existingResult.error.message);
+    }
+
+    let nextSortOrder=existingResult.data&&existingResult.data.length
+        ? Number(existingResult.data[0].sort_order||0)+1 : 0;
+
+    for(const file of Array.from(files)){
+        const originalName=file.name||"image";
+        const extension=originalName.includes(".")
+            ? originalName.split(".").pop().toLowerCase() : "jpg";
+        const safeName="gallery-"+Number(productId)+"-"+Date.now()+"-"+
+            Math.random().toString(36).slice(2,8)+"."+extension;
+
+        const {data,error}=await supabaseClient.storage
+            .from("product-images")
+            .upload(safeName,file,{cacheControl:"3600",upsert:false});
+
+        if(error) throw new Error("Gallery image upload failed: "+error.message);
+
+        const {data:publicData}=supabaseClient.storage
+            .from("product-images").getPublicUrl(data.path);
+
+        if(!publicData||!publicData.publicUrl){
+            throw new Error("Unable to create gallery image URL.");
+        }
+
+        const {error:insertError}=await supabaseClient
+            .from("product_images")
+            .insert([{
+                product_id:Number(productId),
+                image_url:publicData.publicUrl,
+                sort_order:nextSortOrder
+            }]);
+
+        if(insertError){
+            throw new Error("Gallery image database save failed: "+insertError.message);
+        }
+        nextSortOrder++;
+    }
+}
+
+async function loadProductGallery(productId){
+    const container=document.getElementById("existing-gallery");
+    if(!container)return;
+
+    if(!productId){
+        container.innerHTML='<div class="gallery-empty">No additional images.</div>';
+        return;
+    }
+
+    container.innerHTML='<div class="gallery-empty">Loading additional images...</div>';
+
+    const {data,error}=await supabaseClient
+        .from("product_images")
+        .select("id,image_url,sort_order")
+        .eq("product_id",Number(productId))
+        .order("sort_order",{ascending:true})
+        .order("id",{ascending:true});
+
+    if(error){
+        console.error("Product gallery load error:",error);
+        container.innerHTML='<div class="gallery-empty">Unable to load additional images.</div>';
+        return;
+    }
+
+    if(!data||data.length===0){
+        container.innerHTML='<div class="gallery-empty">No additional images.</div>';
+        return;
+    }
+
+    container.innerHTML="";
+    data.forEach(image=>{
+        const item=document.createElement("div");
+        item.className="gallery-thumb";
+
+        const img=document.createElement("img");
+        img.src=image.image_url;
+        img.alt="Product gallery image";
+        img.onerror=()=>{img.style.display="none";};
+
+        const deleteBtn=document.createElement("button");
+        deleteBtn.type="button";
+        deleteBtn.textContent="×";
+        deleteBtn.title="Remove this gallery image";
+        deleteBtn.addEventListener("click",()=>deleteProductGalleryImage(image.id,Number(productId)));
+
+        item.appendChild(img);
+        item.appendChild(deleteBtn);
+        container.appendChild(item);
+    });
+}
+
+async function deleteProductGalleryImage(imageId,productId){
+    if(!currentUser||currentUser.id!==ADMIN_USER_ID){
+        showMessage("Admin access required.");
+        return;
+    }
+    if(!confirm("Remove this additional product image?"))return;
+
+    const {error}=await supabaseClient
+        .from("product_images")
+        .delete()
+        .eq("id",Number(imageId))
+        .eq("product_id",Number(productId));
+
+    if(error){
+        showMessage("Unable to remove gallery image: "+error.message);
+        return;
+    }
+
+    showMessage("Additional image removed.","success");
+    await loadProductGallery(productId);
 }
 
 async function loadProducts(){
@@ -950,6 +1104,7 @@ try {
     };
 
     let result;
+    let savedProductId=productId?Number(productId):null;
 
     if(productId){
         result=await supabaseClient
@@ -959,11 +1114,23 @@ try {
     }else{
         result=await supabaseClient
             .from("products")
-            .insert([productData]);
+            .insert([productData])
+            .select("id")
+            .single();
+
+        if(!result.error&&result.data){
+            savedProductId=Number(result.data.id);
+        }
     }
 
     if(result.error){
-        throw new Error("Product save failed: " + result.error.message);
+        throw new Error("Product save failed: "+result.error.message);
+    }
+
+    const galleryInput=document.getElementById("product-gallery-files");
+    if(galleryInput&&galleryInput.files.length){
+        showMessage("Uploading additional product images...","success");
+        await uploadProductGalleryImages(galleryInput.files,savedProductId);
     }
 
     showMessage(
@@ -991,7 +1158,7 @@ try {
 }
 });
 
-function editProduct(productId){
+async function editProduct(productId){
 const product=allProducts.find(item=>Number(item.id)===Number(productId));
 
 if(!product){
@@ -1019,6 +1186,9 @@ document.getElementById("product-model").value=product.model||"";
 document.getElementById("product-warranty").value=product.warranty||"";
 document.getElementById("product-description").value=product.description||"";
 document.getElementById("product-specs").value=product.specs||"";
+    document.getElementById("product-gallery-files").value="";
+    document.getElementById("gallery-file-preview").textContent="No new gallery images selected.";
+    await loadProductGallery(Number(product.id));
 
 document.getElementById("add-product-btn").textContent="Update Product";
 document.getElementById("cancel-edit-btn").style.display="inline-block";
@@ -1067,6 +1237,16 @@ document.getElementById("product-image-file").addEventListener("change",function
     }
 
     preview.textContent="Selected: " + file.name + " (" + Math.round(file.size / 1024) + " KB)";
+});
+
+document.getElementById("product-gallery-files").addEventListener("change",function(){
+    const files=Array.from(this.files||[]);
+    const preview=document.getElementById("gallery-file-preview");
+    if(!files.length){
+        preview.textContent="No new gallery images selected.";
+        return;
+    }
+    preview.textContent=files.length+" image(s) selected: "+files.map(file=>file.name).join(", ");
 });
 
 document.getElementById("cancel-edit-btn").addEventListener("click",resetProductForm);
