@@ -3,12 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SEPLUS - Cart</title>
+    <title>SEPLUS - Shopping Cart</title>
 
     <style>
-        * {
-            box-sizing: border-box;
-        }
+        * { box-sizing: border-box; }
 
         body {
             margin: 0;
@@ -20,7 +18,7 @@
         header {
             background: #111827;
             color: white;
-            padding: 20px 60px;
+            padding: 18px 60px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -29,81 +27,254 @@
         .logo {
             font-size: 28px;
             font-weight: bold;
+            letter-spacing: .5px;
         }
 
         header a {
             color: white;
             text-decoration: none;
+            font-size: 15px;
         }
 
+        header a:hover { text-decoration: underline; }
+
         .cart-container {
-            max-width: 1000px;
-            margin: 40px auto;
+            max-width: 1180px;
+            margin: 35px auto;
             padding: 0 20px;
         }
 
-        h1 {
-            text-align: center;
-            margin-bottom: 30px;
+        .page-title {
+            margin: 0 0 25px;
+            font-size: 30px;
+        }
+
+        .cart-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 340px;
+            gap: 24px;
+            align-items: start;
+        }
+
+        .cart-box,
+        .summary-box {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,.07);
         }
 
         .cart-box {
-            background: white;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            padding: 10px 25px;
         }
 
         .cart-item {
-            display: flex;
-            justify-content: space-between;
+            display: grid;
+            grid-template-columns: 100px minmax(0, 1fr) auto;
+            gap: 18px;
             align-items: center;
-            padding: 18px 0;
-            border-bottom: 1px solid #ddd;
+            padding: 20px 0;
+            border-bottom: 1px solid #e5e7eb;
         }
 
-        .cart-item h3 {
-            margin: 0 0 6px;
+        .cart-item:last-child { border-bottom: none; }
+
+        .cart-image {
+            width: 100px;
+            height: 100px;
+            object-fit: contain;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            background: #f8fafc;
+            padding: 8px;
         }
 
-        .cart-item p {
+        .product-name {
+            margin: 0 0 8px;
+            font-size: 18px;
+        }
+
+        .unit-price {
+            margin: 0 0 12px;
+            color: #4b5563;
+            font-size: 14px;
+        }
+
+        .item-total {
             margin: 0;
-            color: #555;
+            font-weight: bold;
+            font-size: 17px;
+        }
+
+        .quantity-control {
+            display: inline-flex;
+            align-items: center;
+            border: 1px solid #d1d5db;
+            border-radius: 7px;
+            overflow: hidden;
+            height: 38px;
+        }
+
+        .quantity-control button {
+            width: 38px;
+            height: 38px;
+            border: none;
+            background: #f3f4f6;
+            cursor: pointer;
+            font-size: 19px;
+            color: #111827;
+        }
+
+        .quantity-control button:hover { background: #e5e7eb; }
+
+        .quantity-value {
+            min-width: 42px;
+            text-align: center;
+            font-weight: bold;
         }
 
         .remove-btn {
-            background: #dc2626;
-            color: white;
+            display: block;
+            margin-top: 10px;
             border: none;
-            padding: 8px 14px;
-            border-radius: 6px;
+            background: none;
+            color: #dc2626;
+            padding: 0;
             cursor: pointer;
+            font-size: 13px;
         }
 
-        .total {
-            text-align: right;
-            font-size: 22px;
+        .remove-btn:hover { text-decoration: underline; }
+
+        .summary-box {
+            padding: 24px;
+            position: sticky;
+            top: 20px;
+        }
+
+        .summary-box h2 {
+            margin: 0 0 20px;
+            font-size: 21px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            margin: 13px 0;
+            color: #4b5563;
+        }
+
+        .summary-row.total-row {
+            color: #111827;
+            font-size: 21px;
             font-weight: bold;
-            margin-top: 25px;
+            border-top: 1px solid #e5e7eb;
+            padding-top: 18px;
+            margin-top: 18px;
+        }
+
+        .delivery-note {
+            background: #f3f4f6;
+            border-radius: 8px;
+            padding: 11px;
+            margin: 18px 0;
+            font-size: 13px;
+            color: #374151;
         }
 
         .checkout-btn {
-            display: block;
             width: 100%;
+            border: none;
             background: #111827;
             color: white;
             padding: 14px;
-            margin-top: 20px;
-            border-radius: 6px;
+            border-radius: 7px;
             font-size: 16px;
-            text-align: center;
-            text-decoration: none;
+            cursor: pointer;
+            font-weight: bold;
         }
+
+        .checkout-btn:hover { background: #1f2937; }
+
+        .continue-btn {
+            display: block;
+            width: 100%;
+            text-align: center;
+            margin-top: 12px;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 7px;
+            color: #111827;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .continue-btn:hover { background: #f9fafb; }
 
         .empty {
             text-align: center;
-            padding: 30px;
-            color: #666;
+            padding: 65px 20px;
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .empty h2 {
+            margin: 0 0 10px;
+        }
+
+        .empty p {
+            color: #6b7280;
+            margin-bottom: 22px;
+        }
+
+        .empty-btn {
+            display: inline-block;
+            background: #111827;
+            color: white;
+            text-decoration: none;
+            padding: 12px 22px;
+            border-radius: 7px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #6b7280;
+        }
+
+        .stock-warning {
+            color: #dc2626;
+            font-size: 12px;
+            margin-top: 7px;
+        }
+
+        @media (max-width: 850px) {
+            header { padding: 16px 22px; }
+            .cart-layout { grid-template-columns: 1fr; }
+            .summary-box { position: static; }
+        }
+
+        @media (max-width: 600px) {
+            .cart-container { margin: 20px auto; padding: 0 12px; }
+            .page-title { font-size: 25px; }
+            .cart-box { padding: 0 15px; }
+
+            .cart-item {
+                grid-template-columns: 75px minmax(0, 1fr);
+                gap: 12px;
+            }
+
+            .cart-image {
+                width: 75px;
+                height: 75px;
+            }
+
+            .cart-actions {
+                grid-column: 2;
+            }
         }
     </style>
 </head>
@@ -112,40 +283,256 @@
 
 <header>
     <div class="logo">SEPLUS</div>
-    <a href="index.html">← Continue Shopping</a>
+    <a href="store.html">← Continue Shopping</a>
 </header>
 
 <div class="cart-container">
+    <h1 class="page-title">Shopping Cart</h1>
 
-    <h1>Your Cart</h1>
+    <div id="loading" class="loading">Loading cart...</div>
 
-    <div class="cart-box">
+    <div id="cart-content" style="display:none;">
+        <div class="cart-layout">
 
-        <div id="cart-items"></div>
+            <div class="cart-box">
+                <div id="cart-items"></div>
+            </div>
 
-        <div class="total">
-            Total: ₹<span id="cart-total">0</span>
+            <div class="summary-box">
+                <h2>Order Summary</h2>
+
+                <div class="summary-row">
+                    <span>Subtotal</span>
+                    <strong>₹<span id="cart-subtotal">0</span></strong>
+                </div>
+
+                <div class="summary-row">
+                    <span>Delivery</span>
+                    <strong id="delivery-charge">Free</strong>
+                </div>
+
+                <div class="summary-row total-row">
+                    <span>Total</span>
+                    <span>₹<span id="cart-total">0</span></span>
+                </div>
+
+                <div class="delivery-note">
+                    Delivery charges, if applicable, will be confirmed during checkout.
+                </div>
+
+                <button type="button" id="checkout-btn" class="checkout-btn">
+                    Proceed to Checkout
+                </button>
+
+                <a href="store.html" class="continue-btn">Continue Shopping</a>
+            </div>
+
         </div>
-
-       <button type="button" id="checkout-btn" class="checkout-btn">
-    Proceed to Checkout
-</button>
-
     </div>
 
+    <div id="empty-content" style="display:none;">
+        <div class="cart-box empty">
+            <div class="empty-icon">🛒</div>
+            <h2>Your cart is empty</h2>
+            <p>Add some products to your cart and they will appear here.</p>
+            <a href="store.html" class="empty-btn">Start Shopping</a>
+        </div>
+    </div>
 </div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
-
-    const SUPABASE_URL = "https://uxujlcahvnzohohnjclv.supabase.co";
+const SUPABASE_URL = "https://uxujlcahvnzohohnjclv.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_sna7FS8E7-w7pXG3_u-rRw__q2Dcv0_";
 
 const supabaseClient = window.supabase.createClient(
     SUPABASE_URL,
     SUPABASE_PUBLISHABLE_KEY
 );
-    async function goToCheckout() {
+
+let cartData = JSON.parse(localStorage.getItem("cart")) || [];
+
+function formatPrice(value) {
+    return Number(value || 0).toLocaleString("en-IN");
+}
+
+function getImageUrl(image) {
+    if (!image) return "images/dome-camera.jpg";
+
+    if (
+        image.startsWith("http://") ||
+        image.startsWith("https://") ||
+        image.startsWith("data:")
+    ) {
+        return image;
+    }
+
+    return "images/" + image;
+}
+
+async function enrichCartProducts() {
+    for (const item of cartData) {
+        if (item.id && item.image) continue;
+
+        const { data: product } = await supabaseClient
+            .from("products")
+            .select("id,image,stock")
+            .eq("name", item.name)
+            .limit(1)
+            .maybeSingle();
+
+        if (product) {
+            item.id = product.id;
+            item.image = product.image;
+            item.stock = product.stock;
+        }
+    }
+
+    localStorage.setItem("cart", JSON.stringify(cartData));
+}
+
+function renderCart() {
+    const loading = document.getElementById("loading");
+    const content = document.getElementById("cart-content");
+    const emptyContent = document.getElementById("empty-content");
+    const cartItems = document.getElementById("cart-items");
+
+    loading.style.display = "none";
+
+    if (cartData.length === 0) {
+        content.style.display = "none";
+        emptyContent.style.display = "block";
+        return;
+    }
+
+    emptyContent.style.display = "none";
+    content.style.display = "block";
+
+    cartItems.innerHTML = "";
+
+    let subtotal = 0;
+
+    cartData.forEach((item, index) => {
+        const price = Number(item.price || 0);
+        const quantity = Math.max(1, Number(item.quantity || 1));
+        const itemTotal = price * quantity;
+
+        subtotal += itemTotal;
+
+        cartItems.innerHTML += `
+            <div class="cart-item">
+                <img
+                    class="cart-image"
+                    src="${getImageUrl(item.image)}"
+                    alt="${escapeHtml(item.name)}"
+                    onerror="this.src='images/dome-camera.jpg'"
+                >
+
+                <div class="cart-product-info">
+                    <h3 class="product-name">${escapeHtml(item.name)}</h3>
+
+                    <p class="unit-price">
+                        ₹${formatPrice(price)} each
+                    </p>
+
+                    <div class="quantity-control">
+                        <button type="button" onclick="changeQuantity(${index}, -1)">−</button>
+                        <span class="quantity-value">${quantity}</span>
+                        <button type="button" onclick="changeQuantity(${index}, 1)">+</button>
+                    </div>
+
+                    <button type="button" class="remove-btn" onclick="removeItem(${index})">
+                        Remove
+                    </button>
+
+                    ${
+                        item.stock !== undefined && quantity >= Number(item.stock)
+                        ? `<div class="stock-warning">Maximum available stock: ${Number(item.stock)}</div>`
+                        : ""
+                    }
+                </div>
+
+                <div class="cart-actions">
+                    <p class="item-total">₹${formatPrice(itemTotal)}</p>
+                </div>
+            </div>
+        `;
+    });
+
+    document.getElementById("cart-subtotal").textContent = formatPrice(subtotal);
+    document.getElementById("cart-total").textContent = formatPrice(subtotal);
+}
+
+function escapeHtml(value) {
+    return String(value || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+async function changeQuantity(index, change) {
+    const item = cartData[index];
+    if (!item) return;
+
+    let newQuantity = Number(item.quantity || 1) + change;
+
+    if (newQuantity < 1) newQuantity = 1;
+
+    let availableStock = Number(item.stock);
+
+    if (!item.id || !Number.isFinite(availableStock)) {
+        const { data: product, error } = await supabaseClient
+            .from("products")
+            .select("id,image,stock")
+            .eq("name", item.name)
+            .limit(1)
+            .maybeSingle();
+
+        if (!error && product) {
+            item.id = product.id;
+            item.image = product.image;
+            item.stock = product.stock;
+            availableStock = Number(product.stock);
+        }
+    }
+
+    if (Number.isFinite(availableStock)) {
+        if (availableStock <= 0) {
+            alert("This product is currently out of stock.");
+            cartData.splice(index, 1);
+            saveAndRender();
+            return;
+        }
+
+        if (newQuantity > availableStock) {
+            alert(`Only ${availableStock} item(s) available.`);
+            newQuantity = availableStock;
+        }
+    }
+
+    item.quantity = newQuantity;
+    saveAndRender();
+}
+
+function removeItem(index) {
+    cartData.splice(index, 1);
+    saveAndRender();
+}
+
+function saveAndRender() {
+    localStorage.setItem("cart", JSON.stringify(cartData));
+    renderCart();
+}
+
+async function goToCheckout() {
+    if (cartData.length === 0) {
+        alert("Your cart is empty.");
+        return;
+    }
+
     const { data: { user } } = await supabaseClient.auth.getUser();
 
     if (user) {
@@ -157,130 +544,15 @@ const supabaseClient = window.supabase.createClient(
 
 document.getElementById("checkout-btn").addEventListener("click", goToCheckout);
 
-    const cartData = JSON.parse(localStorage.getItem("cart")) || [];
-    const cartItems = document.getElementById("cart-items");
-    const cartTotal = document.getElementById("cart-total");
-
-    let total = 0;
-
-    if (cartData.length === 0) {
-
-        cartItems.innerHTML = `
-            <div class="empty">
-                Your cart is empty.
-            </div>
-        `;
-
-    } else {
-
-        cartData.forEach((item, index) => {
-
-            const price = Number(item.price);
-            const quantity = item.quantity || 1;
-
-            total += price * quantity;
-
-            cartItems.innerHTML += `
-                <div class="cart-item">
-
-                    <div>
-                        <h3>${item.name}</h3>
-
-                        <p>
-                            ₹${price.toLocaleString("en-IN")} ×
-
-                            <input
-                                type="number"
-                                value="${quantity}"
-                                min="1"
-                                onchange="updateQuantity(${index}, this.value)"
-                                style="width:60px; padding:5px;"
-                            >
-                        </p>
-                    </div>
-
-                    <button
-                        class="remove-btn"
-                        onclick="removeItem(${index})">
-                        Remove
-                    </button>
-
-                </div>
-            `;
-        });
+async function initCart() {
+    if (cartData.length > 0) {
+        await enrichCartProducts();
     }
 
-    cartTotal.textContent = total.toLocaleString("en-IN");
-
-
-    function removeItem(index) {
-
-        cartData.splice(index, 1);
-
-        localStorage.setItem(
-            "cart",
-            JSON.stringify(cartData)
-        );
-
-        location.reload();
-    }
-
-
-    async function updateQuantity(index, value) {
-
-    let quantity = Number(value);
-
-    if (quantity < 1) {
-        quantity = 1;
-    }
-
-    const productId = cartData[index].id;
-
-    const { data: product, error } = await supabaseClient
-        .from("products")
-        .select("stock")
-        .eq("id", productId)
-        .single();
-
-    if (error || !product) {
-        alert("Unable to check product stock.");
-        location.reload();
-        return;
-    }
-
-    const availableStock = Number(product.stock);
-
-    if (availableStock <= 0) {
-        alert("This product is currently out of stock.");
-        cartData.splice(index, 1);
-
-        localStorage.setItem(
-            "cart",
-            JSON.stringify(cartData)
-        );
-
-        location.reload();
-        return;
-    }
-
-    if (quantity > availableStock) {
-        alert(
-            `Only ${availableStock} item(s) available.`
-        );
-
-        cartData[index].quantity = availableStock;
-    } else {
-        cartData[index].quantity = quantity;
-    }
-
-    localStorage.setItem(
-        "cart",
-        JSON.stringify(cartData)
-    );
-
-    location.reload();
+    renderCart();
 }
- 
+
+initCart();
 </script>
 
 </body>

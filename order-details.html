@@ -14,11 +14,7 @@
 
 
     <style>
-
-        * {
-            box-sizing: border-box;
-        }
-
+        * { box-sizing: border-box; }
 
         body {
             margin: 0;
@@ -27,23 +23,16 @@
             color: #111827;
         }
 
-
         header {
             background: #111827;
             color: white;
             padding: 18px 40px;
-
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-
-        .logo {
-            font-size: 26px;
-            font-weight: bold;
-        }
-
+        .logo { font-size: 26px; font-weight: 700; }
 
         .nav a {
             color: white;
@@ -51,142 +40,237 @@
             margin-left: 20px;
         }
 
-
         .container {
-            max-width: 850px;
-            margin: 35px auto;
+            max-width: 1100px;
+            margin: 30px auto;
             padding: 0 20px;
         }
 
+        .page-title {
+            margin: 0 0 22px;
+            font-size: 30px;
+        }
 
         .invoice {
             background: white;
-            padding: 35px;
-            border-radius: 10px;
-
-            box-shadow:
-                0 3px 12px rgba(0, 0, 0, 0.08);
+            padding: 28px;
+            border-radius: 14px;
+            box-shadow: 0 4px 18px rgba(0,0,0,.08);
         }
-
 
         .invoice-header {
             display: flex;
             justify-content: space-between;
+            gap: 25px;
             align-items: flex-start;
-
-            border-bottom: 2px solid #111827;
-            padding-bottom: 20px;
-            margin-bottom: 25px;
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 22px;
+            margin-bottom: 24px;
         }
 
-
-        .invoice-header h1 {
+        .brand-title {
             margin: 0;
+            font-size: 28px;
         }
 
+        .brand-subtitle {
+            margin: 7px 0 0;
+            color: #64748b;
+        }
 
-        .invoice-number {
+        .order-number {
             text-align: right;
+            line-height: 1.8;
+            color: #475569;
         }
 
+        .order-number strong { color: #111827; }
 
         .section {
             margin-bottom: 25px;
         }
 
-
         .section h2 {
-            font-size: 18px;
-            margin-bottom: 12px;
-            border-bottom: 1px solid #ddd;
-            padding-bottom: 8px;
+            font-size: 19px;
+            margin: 0 0 13px;
         }
 
-
-        .customer-details p {
-            margin: 6px 0;
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
         }
 
+        .info-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 17px;
+            background: #fff;
+        }
+
+        .info-card h3 {
+            margin: 0 0 12px;
+            font-size: 16px;
+        }
+
+        .info-card p {
+            margin: 7px 0;
+            line-height: 1.5;
+        }
+
+        .muted { color: #64748b; }
+
+        .address-text {
+            white-space: pre-line;
+            line-height: 1.55;
+        }
+
+        .status-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 15px 17px;
+        }
+
+        .status-label { font-weight: 700; }
+
+        .status {
+            display: inline-block;
+            padding: 8px 13px;
+            border-radius: 999px;
+            background: #e0f2fe;
+            color: #075985;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .status.confirmed {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status.processing {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .status.shipped {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status.delivered {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status.cancelled {
+            background: #fee2e2;
+            color: #991b1b;
+        }
 
         .products-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
+            overflow: hidden;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
         }
-
 
         .products-table th,
         .products-table td {
-            border: 1px solid #ddd;
-            padding: 10px;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 13px;
             text-align: left;
+            vertical-align: middle;
         }
-
 
         .products-table th {
-            background: #f3f4f6;
+            background: #f8fafc;
+            font-size: 14px;
         }
 
+        .products-table tr:last-child td { border-bottom: 0; }
 
-        .products-table .number {
-            text-align: right;
+        .number { text-align: right !important; }
+
+        .product-cell {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 220px;
         }
 
+        .product-thumb {
+            width: 58px;
+            height: 58px;
+            object-fit: contain;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            background: white;
+            flex-shrink: 0;
+        }
 
         .total-box {
-            margin-top: 20px;
-            text-align: right;
-            font-size: 20px;
-            font-weight: bold;
+            margin-top: 16px;
+            margin-left: auto;
+            max-width: 360px;
+            border-top: 1px solid #e5e7eb;
+            padding-top: 15px;
         }
 
-
-        .status {
-            display: inline-block;
-            padding: 7px 12px;
-            border-radius: 6px;
-            background: #e0f2fe;
-            color: #075985;
-            font-weight: bold;
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            margin: 9px 0;
+            color: #475569;
         }
 
+        .summary-row.total {
+            margin-top: 14px;
+            padding-top: 14px;
+            border-top: 1px solid #e5e7eb;
+            color: #111827;
+            font-size: 21px;
+            font-weight: 700;
+        }
 
         .buttons {
-            margin-top: 30px;
+            margin-top: 28px;
             display: flex;
             gap: 12px;
+            flex-wrap: wrap;
         }
 
-
-        button,
-        .back-button {
-            padding: 12px 20px;
-            border: none;
-            border-radius: 6px;
+        button, .back-button {
+            padding: 12px 19px;
+            border: 0;
+            border-radius: 7px;
             cursor: pointer;
             font-size: 15px;
             text-decoration: none;
+            display: inline-block;
         }
-
 
         .print-button {
             background: #111827;
             color: white;
         }
 
-
         .back-button {
             background: #e5e7eb;
             color: #111827;
         }
-
 
         .loading {
             text-align: center;
             padding: 50px;
             color: #666;
         }
-
 
         .error {
             background: #fee2e2;
@@ -195,12 +279,8 @@
             border-radius: 8px;
         }
 
-
-        @media (max-width: 600px) {
-
-            header {
-                padding: 15px 20px;
-            }
+        @media (max-width: 700px) {
+            header { padding: 15px 20px; }
 
             .nav a {
                 margin-left: 10px;
@@ -212,67 +292,50 @@
                 padding: 0 10px;
             }
 
-            .invoice {
-                padding: 20px;
-            }
+            .invoice { padding: 18px; }
 
             .invoice-header {
                 flex-direction: column;
-                gap: 15px;
             }
 
-            .invoice-number {
+            .order-number {
                 text-align: left;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
             }
 
             .products-table {
                 font-size: 13px;
-            }
-
-            .products-table th,
-            .products-table td {
-                padding: 7px;
+                display: block;
+                overflow-x: auto;
             }
 
             .buttons {
                 flex-direction: column;
             }
 
-            button,
-            .back-button {
+            button, .back-button {
                 width: 100%;
                 text-align: center;
             }
         }
 
-
-        /* PRINT / PDF */
-
         @media print {
-
-            body {
-                background: white;
-            }
-
-            header,
-            .buttons {
-                display: none !important;
-            }
-
+            body { background: white; }
+            header, .buttons { display: none !important; }
             .container {
                 max-width: 100%;
                 margin: 0;
                 padding: 0;
             }
-
             .invoice {
                 box-shadow: none;
                 border-radius: 0;
                 padding: 10px;
             }
-
         }
-
     </style>
 
 </head>
@@ -305,238 +368,125 @@
 
 <div class="container">
 
+    <h1 class="page-title">Order Details</h1>
+
     <div id="loading" class="loading">
         Loading order details...
     </div>
 
+    <div id="error" class="error" style="display:none;"></div>
 
-    <div
-        id="error"
-        class="error"
-        style="display:none;"
-    ></div>
-
-
-    <div
-        id="invoice"
-        class="invoice"
-        style="display:none;"
-    >
-
-        <!-- INVOICE HEADER -->
+    <div id="invoice" class="invoice" style="display:none;">
 
         <div class="invoice-header">
-
             <div>
-
-                <h1>
-                    SEPLUS
-                </h1>
-
-                <p>
-                    CCTV & Security Solutions
-                </p>
-
+                <h1 class="brand-title">SEPLUS</h1>
+                <p class="brand-subtitle">CCTV & Security Solutions</p>
             </div>
 
-
-            <div class="invoice-number">
-
-                <strong>
-                    ORDER DETAILS
-                </strong>
-
-                <br>
-
-                Order #
-                <span id="order-id"></span>
-
-                <br>
-
-                Date:
-                <span id="order-date"></span>
-
+            <div class="order-number">
+                <strong>ORDER #<span id="order-id"></span></strong><br>
+                Date: <span id="order-date"></span>
             </div>
-
         </div>
 
-
-
-        <!-- CUSTOMER DETAILS -->
-
         <div class="section">
+            <h2>Customer & Delivery Details</h2>
 
-            <h2>
-                Customer Details
-            </h2>
+            <div class="info-grid">
 
+                <div class="info-card">
+                    <h3>Customer Details</h3>
 
-            <div class="customer-details">
+                    <p><strong>Name:</strong> <span id="customer-name"></span></p>
+                    <p><strong>Mobile:</strong> <span id="customer-mobile"></span></p>
+                    <p><strong>Email:</strong> <span id="customer-email"></span></p>
+                </div>
 
-                <p>
-                    <strong>Name:</strong>
-                    <span id="customer-name"></span>
-                </p>
+                <div class="info-card">
+                    <h3>Delivery Address</h3>
 
-
-                <p>
-                    <strong>Mobile:</strong>
-                    <span id="customer-mobile"></span>
-                </p>
-
-
-                <p>
-                    <strong>Email:</strong>
-                    <span id="customer-email"></span>
-                </p>
-
-
-                <p>
-                    <strong>Address:</strong>
-                    <span id="customer-address"></span>
-                </p>
-
-
-                <p>
-                    <strong>City:</strong>
-                    <span id="customer-city"></span>
-                </p>
-
-
-                <p>
-                    <strong>State:</strong>
-                    <span id="customer-state"></span>
-                </p>
-
-
-                <p>
-                    <strong>Pincode:</strong>
-                    <span id="customer-pincode"></span>
-                </p>
+                    <div class="address-text">
+                        <strong id="address-name"></strong>
+                        <br>
+                        <span id="customer-address"></span>
+                        <br>
+                        <span id="customer-city"></span>,
+                        <span id="customer-state"></span>
+                        - <span id="customer-pincode"></span>
+                        <br>
+                        <strong>Phone:</strong> <span id="address-mobile"></span>
+                    </div>
+                </div>
 
             </div>
-
         </div>
 
+        <div class="section">
+            <h2>Order Status</h2>
 
-
-        <!-- PRODUCTS -->
+            <div class="status-row">
+                <span class="status-label">Current Status</span>
+                <span class="status" id="order-status"></span>
+            </div>
+        </div>
 
         <div class="section">
-
-            <h2>
-                Order Items
-            </h2>
-
+            <h2>Order Items</h2>
 
             <table class="products-table">
-
                 <thead>
-
                     <tr>
-
-                        <th>
-                            Product
-                        </th>
-
-                        <th class="number">
-                            Price
-                        </th>
-
-                        <th class="number">
-                            Qty
-                        </th>
-
-                        <th class="number">
-                            Total
-                        </th>
-
+                        <th>Product</th>
+                        <th class="number">Price</th>
+                        <th class="number">Qty</th>
+                        <th class="number">Total</th>
                     </tr>
-
                 </thead>
 
-
-                <tbody id="products-body">
-
-                </tbody>
-
+                <tbody id="products-body"></tbody>
             </table>
 
-
             <div class="total-box">
+                <div class="summary-row">
+                    <span>Subtotal</span>
+                    <strong>₹<span id="order-subtotal">0</span></strong>
+                </div>
 
-                Total Amount:
-                ₹<span id="order-total">0</span>
+                <div class="summary-row">
+                    <span>Delivery</span>
+                    <strong>Free</strong>
+                </div>
 
+                <div class="summary-row total">
+                    <span>Total Amount</span>
+                    <span>₹<span id="order-total">0</span></span>
+                </div>
             </div>
-
         </div>
-
-
-
-        <!-- STATUS -->
-
-        <div class="section">
-
-            <h2>
-                Order Status
-            </h2>
-
-
-            <span
-                class="status"
-                id="order-status"
-            >
-            </span>
-
-        </div>
-
-
-
-        <!-- BUTTONS -->
 
         <div class="buttons">
-
-            <button
-                class="print-button"
-                onclick="printInvoice()"
-            >
+            <button class="print-button" onclick="printInvoice()">
                 Print / Save as PDF
             </button>
 
-
-            <a
-                href="my-orders.html"
-                class="back-button"
-            >
-                Back to My Orders
+            <a href="my-orders.html" class="back-button">
+                ← Back to My Orders
             </a>
-
         </div>
 
     </div>
-
 </div>
-
-
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 
 <script>
-
-
-// ==========================================
-// SUPABASE CONNECTION
-// ==========================================
-
 const SUPABASE_URL =
     "https://uxujlcahvnzohohnjclv.supabase.co";
 
-
 const SUPABASE_PUBLISHABLE_KEY =
     "sb_publishable_sna7FS8E7-w7pXG3_u-rRw__q2Dcv0_";
-
 
 const supabaseClient =
     window.supabase.createClient(
@@ -544,26 +494,59 @@ const supabaseClient =
         SUPABASE_PUBLISHABLE_KEY
     );
 
-
-
-// ==========================================
-// GET ORDER ID FROM URL
-// ==========================================
-
 const urlParams =
-    new URLSearchParams(
-        window.location.search
-    );
-
+    new URLSearchParams(window.location.search);
 
 const orderId =
     urlParams.get("id");
 
+function escapeHtml(value) {
+    return String(value ?? "")
+        .replace(/[&<>"']/g, function(char) {
+            return {
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+                "'": "&#039;"
+            }[char];
+        });
+}
 
+function getProductImageUrl(image) {
+    if (!image) {
+        return "images/dome-camera.jpg";
+    }
 
-// ==========================================
-// LOAD ORDER
-// ==========================================
+    if (
+        image.startsWith("http://") ||
+        image.startsWith("https://")
+    ) {
+        return image;
+    }
+
+    return "images/" + image;
+}
+
+function setStatusStyle(element, status) {
+    const value = String(status || "New Order")
+        .toLowerCase()
+        .replace(/\s+/g, " ");
+
+    element.className = "status";
+
+    if (value.includes("confirm")) {
+        element.classList.add("confirmed");
+    } else if (value.includes("process")) {
+        element.classList.add("processing");
+    } else if (value.includes("ship")) {
+        element.classList.add("shipped");
+    } else if (value.includes("deliver")) {
+        element.classList.add("delivered");
+    } else if (value.includes("cancel")) {
+        element.classList.add("cancelled");
+    }
+}
 
 async function loadOrder() {
 
@@ -576,62 +559,36 @@ async function loadOrder() {
     const errorBox =
         document.getElementById("error");
 
-
     if (!orderId) {
-
         loading.style.display = "none";
-
         errorBox.textContent =
             "Order ID was not provided.";
-
         errorBox.style.display = "block";
-
         return;
     }
-
-
-    // --------------------------------------
-    // CHECK LOGIN
-    // --------------------------------------
 
     const {
         data: { user },
         error: userError
-    } =
-        await supabaseClient.auth.getUser();
-
+    } = await supabaseClient.auth.getUser();
 
     if (userError || !user) {
-
-        window.location.href =
-            "login.html";
-
+        window.location.href = "login.html";
         return;
     }
-
-
-    // --------------------------------------
-    // GET OWN ORDER
-    // --------------------------------------
 
     const {
         data: order,
         error
-    } =
-        await supabaseClient
-            .from("orders")
-            .select("*")
-            .eq("id", Number(orderId))
-            .eq("user_id", user.id)
-            .single();
-
+    } = await supabaseClient
+        .from("orders")
+        .select("*")
+        .eq("id", Number(orderId))
+        .eq("user_id", user.id)
+        .single();
 
     if (error || !order) {
-
-        console.error(
-            "Order Details Error:",
-            error
-        );
+        console.error("Order Details Error:", error);
 
         loading.style.display = "none";
 
@@ -640,18 +597,11 @@ async function loadOrder() {
             (error?.message || "");
 
         errorBox.style.display = "block";
-
         return;
     }
 
-
-    // --------------------------------------
-    // BASIC DETAILS
-    // --------------------------------------
-
     document.getElementById("order-id")
         .textContent = order.id;
-
 
     document.getElementById("order-date")
         .textContent =
@@ -659,95 +609,120 @@ async function loadOrder() {
             order.created_at ||
             "";
 
-
     document.getElementById("customer-name")
-        .textContent =
-            order.name || "";
-
+        .textContent = order.name || "";
 
     document.getElementById("customer-mobile")
-        .textContent =
-            order.mobile || "";
-
+        .textContent = order.mobile || "";
 
     document.getElementById("customer-email")
-        .textContent =
-            order.email || "";
+        .textContent = order.email || "";
 
+    document.getElementById("address-name")
+        .textContent = order.name || "";
 
     document.getElementById("customer-address")
-        .textContent =
-            order.address || "";
-
+        .textContent = order.address || "";
 
     document.getElementById("customer-city")
-        .textContent =
-            order.city || "";
-
+        .textContent = order.city || "";
 
     document.getElementById("customer-state")
-        .textContent =
-            order.state || "";
-
+        .textContent = order.state || "";
 
     document.getElementById("customer-pincode")
-        .textContent =
-            order.pincode || "";
+        .textContent = order.pincode || "";
 
+    document.getElementById("address-mobile")
+        .textContent = order.mobile || "";
 
+    const status =
+        order.status || "New Order";
 
-    // --------------------------------------
-    // PRODUCTS
-    // --------------------------------------
+    const statusElement =
+        document.getElementById("order-status");
+
+    statusElement.textContent = status;
+    setStatusStyle(statusElement, status);
+
+    let products = order.products || [];
+
+    if (typeof products === "string") {
+        try {
+            products = JSON.parse(products);
+        } catch (e) {
+            products = [];
+        }
+    }
+
+    if (!Array.isArray(products)) {
+        products = [];
+    }
 
     const productsBody =
         document.getElementById("products-body");
 
-
-    let products = order.products || [];
-
-
-    // Safety: if JSON comes as text
-    if (typeof products === "string") {
-
-        try {
-
-            products =
-                JSON.parse(products);
-
-        } catch (e) {
-
-            products = [];
-
-        }
-    }
-
-
     productsBody.innerHTML = "";
 
+    let calculatedSubtotal = 0;
+
+    // Try to load current product images for the order items.
+    const productNames = products
+        .map(item => item.name)
+        .filter(Boolean);
+
+    let productImageMap = {};
+
+    if (productNames.length > 0) {
+        const { data: productRows } =
+            await supabaseClient
+                .from("products")
+                .select("name,image")
+                .in("name", productNames);
+
+        if (productRows) {
+            productRows.forEach(product => {
+                productImageMap[product.name] =
+                    product.image;
+            });
+        }
+    }
 
     products.forEach(item => {
 
         const price =
             Number(item.price) || 0;
 
-
         const quantity =
             Number(item.quantity) || 1;
 
-
-        const total =
+        const itemTotal =
             price * quantity;
 
+        calculatedSubtotal += itemTotal;
+
+        const image =
+            item.image ||
+            productImageMap[item.name] ||
+            "";
 
         const row =
             document.createElement("tr");
 
-
         row.innerHTML = `
-
             <td>
-                ${escapeHtml(item.name || "Product")}
+                <div class="product-cell">
+                    <img
+                        class="product-thumb"
+                        src="${escapeHtml(getProductImageUrl(image))}"
+                        alt="${escapeHtml(item.name || "Product")}"
+                        onerror="this.style.display='none'"
+                    >
+
+                    <strong>
+                        ${escapeHtml(item.name || "Product")}
+                    </strong>
+                </div>
             </td>
 
             <td class="number">
@@ -759,96 +734,40 @@ async function loadOrder() {
             </td>
 
             <td class="number">
-                ₹${total.toLocaleString("en-IN")}
+                <strong>
+                    ₹${itemTotal.toLocaleString("en-IN")}
+                </strong>
             </td>
-
         `;
 
-
         productsBody.appendChild(row);
-
     });
 
+    const orderAmount =
+        Number(order.amount);
 
+    const finalAmount =
+        Number.isFinite(orderAmount) && orderAmount > 0
+            ? orderAmount
+            : calculatedSubtotal;
 
-    // --------------------------------------
-    // TOTAL
-    // --------------------------------------
-
-    const amount =
-        Number(order.amount) || 0;
-
+    document.getElementById("order-subtotal")
+        .textContent =
+            calculatedSubtotal.toLocaleString("en-IN");
 
     document.getElementById("order-total")
         .textContent =
-            amount.toLocaleString("en-IN");
-
-
-
-    // --------------------------------------
-    // STATUS
-    // --------------------------------------
-
-    document.getElementById("order-status")
-        .textContent =
-            order.status || "New Order";
-
-
-
-    // --------------------------------------
-    // SHOW PAGE
-    // --------------------------------------
+            finalAmount.toLocaleString("en-IN");
 
     loading.style.display = "none";
-
     invoice.style.display = "block";
-
 }
-
-
-
-// ==========================================
-// HTML ESCAPE
-// ==========================================
-
-function escapeHtml(value) {
-
-    return String(value ?? "")
-        .replace(/[&<>"']/g, function(char) {
-
-            return {
-                "&": "&amp;",
-                "<": "&lt;",
-                ">": "&gt;",
-                '"': "&quot;",
-                "'": "&#039;"
-            }[char];
-
-        });
-
-}
-
-
-
-// ==========================================
-// PRINT / SAVE PDF
-// ==========================================
 
 function printInvoice() {
-
     window.print();
-
 }
 
-
-
-// ==========================================
-// START
-// ==========================================
-
 loadOrder();
-
-
 </script>
 
 
