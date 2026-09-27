@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product Details - SEPLUS</title>
+    <link rel="icon" href="data:,">
 
     <style>
         * {
@@ -142,6 +143,193 @@
                 font-size: 26px;
             }
         }
+    
+        /* Modern Product Page */
+        body {
+            background: linear-gradient(180deg, #f8fafc 0%, #eef2f7 100%);
+        }
+
+        .product-details {
+            max-width: 1180px;
+            margin: 32px auto;
+            padding: 34px;
+            gap: 46px;
+            border: 1px solid #e5e7eb;
+            border-radius: 18px;
+            box-shadow: 0 12px 35px rgba(15, 23, 42, 0.08);
+        }
+
+        .product-image {
+            height: 500px;
+            background: #f8fafc;
+            border-radius: 14px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .product-thumbnail {
+            width: 88px;
+            height: 88px;
+            border-radius: 10px;
+            transition: .18s ease;
+        }
+
+        .product-thumbnail:hover {
+            transform: translateY(-2px);
+            border-color: #64748b;
+            box-shadow: 0 5px 12px rgba(15, 23, 42, .10);
+        }
+
+        .product-thumbnail.active {
+            border: 2px solid #0f172a;
+            box-shadow: 0 0 0 3px rgba(15, 23, 42, .08);
+        }
+
+        .product-info h1 {
+            font-size: 36px;
+            line-height: 1.2;
+            letter-spacing: -0.5px;
+            margin-bottom: 12px;
+        }
+
+        .product-info #product-price {
+            color: #0f172a;
+            font-size: 32px;
+            margin: 10px 0 18px;
+        }
+
+        .product-meta {
+            margin: 8px 0;
+            padding: 8px 12px;
+            border-radius: 8px;
+            background: #f8fafc;
+        }
+
+        .product-info h3 {
+            margin-top: 26px;
+            margin-bottom: 10px;
+        }
+
+        .product-info li {
+            margin-bottom: 6px;
+        }
+
+        .product-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 24px;
+        }
+
+        .product-actions button {
+            margin: 0;
+            min-height: 48px;
+            padding: 12px 22px;
+            border-radius: 9px;
+            font-weight: 600;
+            transition: .18s ease;
+        }
+
+        .product-actions button:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 7px 16px rgba(15, 23, 42, .14);
+        }
+
+        #add-to-cart-btn {
+            background: #0f172a;
+        }
+
+        #buy-now-btn {
+            background: #1d4ed8;
+        }
+
+        #back-store-btn {
+            background: #475569;
+        }
+
+        .stock-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 4px;
+            padding: 7px 11px;
+            border-radius: 999px;
+            background: #ecfdf5;
+            color: #15803d;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .stock-status.low {
+            background: #fff7ed;
+            color: #b45309;
+        }
+
+        .stock-status.out {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+
+        .toast-message {
+            position: fixed;
+            right: 24px;
+            bottom: 24px;
+            z-index: 3000;
+            max-width: 380px;
+            padding: 14px 18px;
+            border-radius: 10px;
+            color: #fff;
+            background: #15803d;
+            box-shadow: 0 10px 28px rgba(0,0,0,.20);
+            font-size: 15px;
+            font-weight: 600;
+            opacity: 0;
+            transform: translateY(12px);
+            pointer-events: none;
+            transition: opacity .2s ease, transform .2s ease;
+        }
+
+        .toast-message.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .toast-message.warning {
+            background: #b45309;
+        }
+
+        @media (max-width: 768px) {
+            .product-details {
+                margin: 14px;
+                padding: 18px;
+                gap: 24px;
+                border-radius: 14px;
+            }
+
+            .product-image {
+                height: 360px;
+            }
+
+            .product-info h1 {
+                font-size: 28px;
+            }
+
+            .product-info #product-price {
+                font-size: 28px;
+            }
+
+            .product-actions button {
+                flex: 1 1 100%;
+            }
+
+            .toast-message {
+                left: 16px;
+                right: 16px;
+                bottom: 16px;
+                max-width: none;
+                text-align: center;
+            }
+        }
+
     </style>
 </head>
 
@@ -166,7 +354,8 @@
         <p><strong>Brand:</strong> <span id="product-brand">Hikvision</span></p>
         <p><strong>Model:</strong> <span id="product-model">DS-2CD</span></p>
         <p><strong>Warranty:</strong> <span id="product-warranty">2 Years</span></p>
-        <p><strong>Stock:</strong> <span id="product-stock">20</span></p>
+
+        <div id="product-stock" class="stock-status">Checking stock...</div>
 
         <h3>Specifications</h3>
 
@@ -186,9 +375,11 @@
             4MP Full HD IP Dome Camera
         </p>
 
-        <button onclick="addToCart()">Add to Cart</button>
-        <button onclick="buyNow()">Buy Now</button>
-        <button onclick="window.location.href='store.html'">Back to Store</button>
+        <div class="product-actions">
+            <button id="add-to-cart-btn" type="button" onclick="addToCart()">Add to Cart</button>
+            <button id="buy-now-btn" type="button" onclick="buyNow()">Buy Now</button>
+            <button id="back-store-btn" type="button" onclick="window.location.href='store.html'">Back to Store</button>
+        </div>
     </div>
 
 </div>
@@ -198,6 +389,7 @@
 <script>
 const params = new URLSearchParams(window.location.search);
 const productId = params.get("id");
+let currentProduct = null;
 
 const SUPABASE_URL = "https://uxujlcahvnzohohnjclv.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_sna7FS8E7-w7pXG3_u-rRw__q2Dcv0_";
@@ -241,20 +433,16 @@ function setMainImage(url, selectedButton = null) {
 /* Load additional product images from product_images table */
 async function loadProductGallery(productId, mainImageUrl) {
     const thumbnails = document.getElementById("product-thumbnails");
+
+    if (!thumbnails) return;
+
     thumbnails.innerHTML = "";
 
-    const { data: galleryImages, error } = await supabaseClient
-        .from("product_images")
-        .select("id, image_url, sort_order")
-        .eq("product_id", productId)
-        .order("sort_order", { ascending: true });
-
-    if (error) {
-        console.error("Product gallery loading error:", error);
-        return;
-    }
-
-    /* Main image thumbnail */
+    /*
+     * Always show the main product image as the first thumbnail.
+     * This keeps the gallery usable even if the additional-image
+     * database query fails.
+     */
     const mainButton = document.createElement("button");
     mainButton.type = "button";
     mainButton.className = "product-thumbnail active";
@@ -271,9 +459,34 @@ async function loadProductGallery(productId, mainImageUrl) {
 
     thumbnails.appendChild(mainButton);
 
-    /* Additional images */
+    /*
+     * Load additional images saved by the Admin Product Gallery.
+     * Use a numeric product id so the filter exactly matches the
+     * bigint product_id column.
+     */
+    const numericProductId = Number(productId);
+
+    if (!Number.isFinite(numericProductId)) {
+        console.error("Invalid product id for gallery:", productId);
+        return;
+    }
+
+    const { data: galleryImages, error } = await supabaseClient
+        .from("product_images")
+        .select("id,image_url,sort_order")
+        .eq("product_id", numericProductId)
+        .order("sort_order", { ascending: true })
+        .order("id", { ascending: true });
+
+    if (error) {
+        console.error("Product gallery loading error:", error);
+        return;
+    }
+
     (galleryImages || []).forEach((item) => {
-        const imageUrl = item.image_url;
+        if (!item || !item.image_url) return;
+
+        const imageUrl = getProductImageUrl(item.image_url);
 
         const button = document.createElement("button");
         button.type = "button";
@@ -285,7 +498,8 @@ async function loadProductGallery(productId, mainImageUrl) {
         img.alt = "Product image";
 
         img.onerror = () => {
-            img.style.display = "none";
+            console.error("Gallery image failed to load:", imageUrl);
+            button.remove();
         };
 
         button.appendChild(img);
@@ -319,6 +533,28 @@ async function loadProduct() {
         return;
     }
 
+    currentProduct = product;
+
+    const stockElement = document.getElementById("product-stock");
+    const addButton = document.getElementById("add-to-cart-btn");
+    const buyButton = document.getElementById("buy-now-btn");
+    const availableStock = Number(product.stock || 0);
+
+    if (availableStock <= 0) {
+        stockElement.textContent = "● Out of Stock";
+        stockElement.className = "stock-status out";
+        addButton.disabled = true;
+        buyButton.disabled = true;
+        addButton.textContent = "Out of Stock";
+        buyButton.textContent = "Unavailable";
+    } else if (availableStock <= 3) {
+        stockElement.textContent = `● Only ${availableStock} left in stock`;
+        stockElement.className = "stock-status low";
+    } else {
+        stockElement.textContent = `● ${availableStock} items in stock`;
+        stockElement.className = "stock-status";
+    }
+
     const mainImageUrl = getProductImageUrl(product.image);
 
     document.getElementById("product-image").src = mainImageUrl;
@@ -348,9 +584,6 @@ async function loadProduct() {
     document.getElementById("product-warranty").textContent =
         product.warranty || "N/A";
 
-    document.getElementById("product-stock").textContent =
-        product.stock ?? 0;
-
     document.getElementById("product-description").textContent =
         product.description || "No description available";
 
@@ -373,41 +606,99 @@ async function loadProduct() {
     await loadProductGallery(product.id, mainImageUrl);
 }
 
+/* Professional cart feedback */
+function showToast(message, type = "success") {
+    let toast = document.getElementById("toast-message");
+
+    if (!toast) {
+        toast = document.createElement("div");
+        toast.id = "toast-message";
+        toast.className = "toast-message";
+        document.body.appendChild(toast);
+    }
+
+    toast.textContent = message;
+    toast.className = "toast-message " + type + " show";
+
+    clearTimeout(window.productToastTimer);
+    window.productToastTimer = setTimeout(() => {
+        toast.classList.remove("show");
+    }, 2600);
+}
+
 /* Add current product to cart */
 function addToCart() {
-    const productName =
-        document.getElementById("product-name").textContent;
+    if (!currentProduct) {
+        showToast("Product is still loading. Please try again.", "warning");
+        return false;
+    }
 
-    const productPrice = Number(
-        document.getElementById("product-price")
-            .textContent
-            .replace("₹", "")
-            .replace(/,/g, "")
-    );
+    const productIdNumber = Number(currentProduct.id);
+    const availableStock = Number(currentProduct.stock || 0);
+
+    if (!Number.isFinite(availableStock) || availableStock <= 0) {
+        showToast("This product is currently out of stock.", "warning");
+        return false;
+    }
 
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
-
     const existingProduct = cart.find(
-        item => item.name === productName
+        item => Number(item.id) === productIdNumber
     );
 
+    const currentQuantity = existingProduct
+        ? Number(existingProduct.quantity || 0)
+        : 0;
+
+    if (currentQuantity >= availableStock) {
+        showToast(
+            `Only ${availableStock} item${availableStock === 1 ? "" : "s"} available in stock.`,
+            "warning"
+        );
+        return false;
+    }
+
     if (existingProduct) {
-        existingProduct.quantity += 1;
+        existingProduct.quantity = currentQuantity + 1;
+        existingProduct.stock = availableStock;
+        existingProduct.name = currentProduct.name;
+        existingProduct.price = Number(currentProduct.price);
     } else {
         cart.push({
-            name: productName,
-            price: productPrice,
-            quantity: 1
+            id: productIdNumber,
+            name: currentProduct.name,
+            price: Number(currentProduct.price),
+            quantity: 1,
+            stock: availableStock
         });
     }
 
     localStorage.setItem("cart", JSON.stringify(cart));
+
+    const addButton = document.getElementById("add-to-cart-btn");
+    const newQuantity = currentQuantity + 1;
+
+    if (newQuantity >= availableStock) {
+        addButton.disabled = true;
+        addButton.textContent = "Stock Limit Reached";
+    } else {
+        addButton.textContent = "✓ Added to Cart";
+        setTimeout(() => {
+            if (document.body.contains(addButton) && !addButton.disabled) {
+                addButton.textContent = "Add to Cart";
+            }
+        }, 1000);
+    }
+
+    showToast("✓ Product added to your cart.", "success");
+    return true;
 }
 
 /* Buy Now */
 function buyNow() {
-    addToCart();
-    window.location.href = "cart.html";
+    if (addToCart()) {
+        window.location.href = "cart.html";
+    }
 }
 
 loadProduct();

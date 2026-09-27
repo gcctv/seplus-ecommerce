@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SEPLUS - CCTV Store</title>
+    <link rel="icon" href="data:,">
     <style>
         * {
             box-sizing: border-box;
@@ -253,6 +254,24 @@
             overflow: hidden;
         }
 
+        #dynamic-products .product-image-link {
+            display: block;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        #dynamic-products .product-image-link img {
+            cursor: pointer;
+        }
+
+        #dynamic-products .product-image-link + a {
+            text-decoration: none;
+        }
+
+        #dynamic-products .product-image-link + a h3 {
+            color: inherit;
+        }
+
         #dynamic-products .product img {
             display: block;
             width: 100%;
@@ -372,6 +391,112 @@
                 padding: 12px;
             }
         }
+    
+        /* Professional Store UI */
+        .product {
+            transition: transform .2s ease, box-shadow .2s ease;
+            border: 1px solid #e5e7eb;
+        }
+        .product:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 24px rgba(15,23,42,.12);
+        }
+        .product h3 {
+            color: #111827;
+            font-size: 18px;
+            line-height: 1.35;
+            min-height: 48px;
+        }
+        .product-image-link {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 8px;
+            margin-bottom: 12px;
+        }
+        .product .price {
+            color: #0f172a;
+            font-size: 21px;
+            margin: 8px 0;
+        }
+        .stock-available { color: #15803d; font-weight: 600; }
+        .stock-low { color: #b45309; font-weight: 600; }
+        .stock-out { color: #dc2626; font-weight: 700; }
+        .add-cart {
+            transition: background .2s ease, transform .15s ease;
+            font-weight: 600;
+        }
+        .add-cart:hover:not(:disabled) {
+            background: #1e293b;
+            transform: translateY(-1px);
+        }
+        .add-cart.added { background: #15803d; }
+        .store-filters input:focus,
+        .store-filters select:focus {
+            outline: none;
+            border-color: #0f172a;
+            box-shadow: 0 0 0 3px rgba(15,23,42,.08);
+        }
+        .toast-message {
+            position: fixed;
+            right: 24px;
+            bottom: 24px;
+            z-index: 3000;
+            max-width: 360px;
+            padding: 14px 18px;
+            border-radius: 10px;
+            color: #fff;
+            background: #0f172a;
+            box-shadow: 0 10px 28px rgba(0,0,0,.20);
+            font-size: 15px;
+            font-weight: 600;
+            opacity: 0;
+            transform: translateY(12px);
+            pointer-events: none;
+            transition: opacity .2s ease, transform .2s ease;
+        }
+        .toast-message.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .toast-message.success { background: #15803d; }
+        .toast-message.warning { background: #b45309; }
+        @media (max-width: 600px) {
+            .toast-message {
+                left: 16px;
+                right: 16px;
+                bottom: 16px;
+                max-width: none;
+                text-align: center;
+            }
+        }
+
+    
+        /* Compact product card spacing */
+        #dynamic-products .product {
+            padding: 16px;
+        }
+
+        #dynamic-products .product-image-link {
+            margin-bottom: 8px;
+        }
+
+        #dynamic-products .product h3 {
+            margin: 6px 0 8px;
+            min-height: auto;
+        }
+
+        #dynamic-products .product p {
+            margin: 6px 0;
+        }
+
+        #dynamic-products .product .price {
+            margin: 5px 0;
+        }
+
+        #dynamic-products .product .add-cart {
+            margin-top: 10px;
+        }
+
     </style>
 </head>
 
@@ -471,33 +596,99 @@ const supabaseClient = window.supabase.createClient(
 
 console.log("Supabase connected");
 
-function addToCart(id, name, price) {
+function showToast(message, type = "success") {
+    let toast = document.getElementById("toast-message");
+
+    if (!toast) {
+        toast = document.createElement("div");
+        toast.id = "toast-message";
+        toast.className = "toast-message";
+        document.body.appendChild(toast);
+    }
+
+    toast.textContent = message;
+    toast.className = "toast-message " + type + " show";
+
+    clearTimeout(window.toastTimer);
+    window.toastTimer = setTimeout(() => {
+        toast.classList.remove("show");
+    }, 2600);
+}
+
+async function addToCart(id, name, price, stock, button = null) {
+    const availableStock = Number(stock);
+
+    if (!Number.isFinite(availableStock) || availableStock <= 0) {
+        showToast("This product is currently out of stock.", "warning");
+        return;
+    }
 
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    const productId = Number(id);
+    const existingProduct = cart.find(item => Number(item.id) === productId);
+    const currentQuantity = existingProduct
+        ? Number(existingProduct.quantity || 0)
+        : 0;
 
-    const existingProduct = cart.find(item => item.id === id);
+    if (currentQuantity >= availableStock) {
+        showToast(
+            `Only ${availableStock} item${availableStock === 1 ? "" : "s"} available in stock.`,
+            "warning"
+        );
+
+        if (button) {
+            button.disabled = true;
+            button.textContent = "Stock Limit Reached";
+        }
+        return;
+    }
 
     if (existingProduct) {
-
-        existingProduct.quantity += 1;
-
+        existingProduct.quantity = currentQuantity + 1;
+        existingProduct.stock = availableStock;
     } else {
-
         cart.push({
-            id: Number(id),
+            id: productId,
             name: name,
             price: Number(price),
-            quantity: 1
+            quantity: 1,
+            stock: availableStock
         });
-
     }
 
     localStorage.setItem("cart", JSON.stringify(cart));
-
     updateCartCount();
 
-    alert("Product added to cart!");
+    if (button) {
+        button.classList.add("added");
+        button.textContent = "✓ Added to Cart";
+
+        setTimeout(() => {
+            if (!document.body.contains(button)) return;
+
+            const latestCart = JSON.parse(localStorage.getItem("cart")) || [];
+            const latestItem = latestCart.find(
+                item => Number(item.id) === productId
+            );
+            const latestQty = latestItem
+                ? Number(latestItem.quantity || 0)
+                : 0;
+
+            if (latestQty >= availableStock) {
+                button.disabled = true;
+                button.textContent = "Stock Limit Reached";
+            } else {
+                button.disabled = false;
+                button.textContent = "Add to Cart";
+            }
+
+            button.classList.remove("added");
+        }, 1000);
+    }
+
+    showToast("✓ Product added to your cart.", "success");
 }
+
 function updateCartCount() {
     const cart = JSON.parse(localStorage.getItem("cart")) || [];
 
@@ -548,7 +739,9 @@ async function loadAdminProducts() {
         card.dataset.category = product.category || "Accessories";
 
         card.innerHTML = `
-            <img src="${getProductImageUrl(product.image)}" alt="${product.name}">
+            <a href="product.html?id=${product.id}" class="product-image-link" aria-label="View ${product.name}">
+                <img src="${getProductImageUrl(product.image)}" alt="${product.name}">
+            </a>
 
             <a href="product.html?id=${product.id}">
                 <h3>${product.name}</h3>
@@ -571,22 +764,57 @@ async function loadAdminProducts() {
                 }% OFF
             </p>
 
-            <p>
+            <p class="${
+                Number(product.stock) <= 0
+                    ? "stock-out"
+                    : Number(product.stock) <= 3
+                        ? "stock-low"
+                        : "stock-available"
+            }">
                 ${
                     Number(product.stock) <= 0
-                    ? "<strong>Out of Stock</strong>"
-                    : "Stock: " + product.stock
+                    ? "Out of Stock"
+                    : Number(product.stock) <= 3
+                        ? `Only ${product.stock} left in stock`
+                        : `${product.stock} items in stock`
                 }
             </p>
 
            <button class="add-cart"
     ${Number(product.stock) <= 0 ? "disabled" : ""}
-    onclick="addToCart(${product.id}, ${JSON.stringify(product.name)}, ${product.price})">
+    data-product-id="${product.id}">
     ${Number(product.stock) <= 0 ? "Out of Stock" : "Add to Cart"}
 </button>
         `;
 
         container.appendChild(card);
+
+        const addButton = card.querySelector(".add-cart");
+
+        if (addButton && Number(product.stock) > 0) {
+            addButton.addEventListener("click", function () {
+                addToCart(
+                    product.id,
+                    product.name,
+                    product.price,
+                    product.stock,
+                    addButton
+                );
+            });
+
+            const currentCart = JSON.parse(localStorage.getItem("cart")) || [];
+            const currentItem = currentCart.find(
+                item => Number(item.id) === Number(product.id)
+            );
+
+            if (
+                currentItem &&
+                Number(currentItem.quantity || 0) >= Number(product.stock)
+            ) {
+                addButton.disabled = true;
+                addButton.textContent = "Stock Limit Reached";
+            }
+        }
     });
 }
 loadAdminProducts();

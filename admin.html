@@ -1222,9 +1222,13 @@ await loadProducts();
 function resetProductForm(){
 document.getElementById("product-form").reset();
 document.getElementById("product-id").value="";
+document.getElementById("product-image").value="";
 document.getElementById("product-stock").value="0";
 document.getElementById("add-product-btn").textContent="Add Product";
 document.getElementById("cancel-edit-btn").style.display="none";
+document.getElementById("image-preview").textContent="No new image selected.";
+document.getElementById("gallery-file-preview").textContent="Select multiple JPG, JPEG, PNG or WEBP images (max 5 MB each).";
+document.getElementById("existing-gallery").innerHTML='<div class="gallery-empty">No additional images.</div>';
 }
 
 document.getElementById("product-image-file").addEventListener("change",function(){

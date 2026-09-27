@@ -439,7 +439,9 @@ function renderCart() {
                     <div class="quantity-control">
                         <button type="button" onclick="changeQuantity(${index}, -1)">−</button>
                         <span class="quantity-value">${quantity}</span>
-                        <button type="button" onclick="changeQuantity(${index}, 1)">+</button>
+                        <button type="button"
+                            onclick="changeQuantity(${index}, 1)"
+                            ${item.stock !== undefined && quantity >= Number(item.stock) ? "disabled" : ""}>+</button>
                     </div>
 
                     <button type="button" class="remove-btn" onclick="removeItem(${index})">
@@ -547,6 +549,22 @@ document.getElementById("checkout-btn").addEventListener("click", goToCheckout);
 async function initCart() {
     if (cartData.length > 0) {
         await enrichCartProducts();
+
+        // Keep any old/local cart quantity within the current database stock.
+        cartData.forEach(item => {
+            const stock = Number(item.stock);
+
+            if (Number.isFinite(stock)) {
+                if (stock <= 0) {
+                    item.quantity = 0;
+                } else if (Number(item.quantity || 1) > stock) {
+                    item.quantity = stock;
+                }
+            }
+        });
+
+        cartData = cartData.filter(item => Number(item.quantity || 0) > 0);
+        localStorage.setItem("cart", JSON.stringify(cartData));
     }
 
     renderCart();
