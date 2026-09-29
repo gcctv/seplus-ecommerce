@@ -105,6 +105,23 @@
             cursor: not-allowed;
         }
 
+        .mobile-verify { display: flex; gap: 10px; align-items: stretch; }
+        .mobile-verify input { flex: 1; }
+        #verify-mobile-btn { width: auto; min-width: 130px; background: #16a34a; }
+        #verify-mobile-btn:hover { background: #15803d; }
+        .verify-status { margin-top: 8px; font-size: 14px; font-weight: 600; }
+        .verify-success { color: #166534; }
+        .verify-pending { color: #92400e; }
+        .otp-box { display: none; margin-top: 10px; }
+        .otp-row { display: flex; gap: 10px; }
+        #otp-input { flex: 1; letter-spacing: 4px; text-align: center; font-weight: bold; }
+        #confirm-otp-btn { width: auto; min-width: 130px; background: #2563eb; }
+
+        @media (max-width: 600px) {
+            .mobile-verify, .otp-row { flex-direction: column; }
+            #verify-mobile-btn, #confirm-otp-btn { width: 100%; }
+        }
+
         #message {
             margin-bottom: 20px;
             padding: 12px;
@@ -187,13 +204,17 @@
 
         <div class="form-group">
             <label for="mobile">Mobile Number *</label>
-            <input
-                type="tel"
-                id="mobile"
-                placeholder="Enter 10 digit mobile number"
-                maxlength="10"
-                required
-            >
+            <div class="mobile-verify">
+                <input type="tel" id="mobile" placeholder="Enter 10 digit mobile number" maxlength="10" required>
+                <button type="button" id="verify-mobile-btn">Verify Mobile</button>
+            </div>
+            <div id="verify-status" class="verify-status verify-pending">Mobile number is not verified.</div>
+            <div id="otp-box" class="otp-box">
+                <div class="otp-row">
+                    <input type="text" id="otp-input" placeholder="Enter 6 digit OTP" maxlength="6" inputmode="numeric" autocomplete="one-time-code">
+                    <button type="button" id="confirm-otp-btn">Verify OTP</button>
+                </div>
+            </div>
         </div>
 
 
@@ -284,6 +305,17 @@
     const saveBtn =
         document.getElementById("save-btn");
 
+    const mobileInput = document.getElementById("mobile");
+    const verifyMobileBtn = document.getElementById("verify-mobile-btn");
+    const verifyStatus = document.getElementById("verify-status");
+    const otpBox = document.getElementById("otp-box");
+    const otpInput = document.getElementById("otp-input");
+    const confirmOtpBtn = document.getElementById("confirm-otp-btn");
+
+    let currentUser = null;
+    let pendingPhone = null;
+    let mobileVerified = false;
+
 
     // ================================
     // SHOW MESSAGE
@@ -299,6 +331,190 @@
 
     }
 
+
+    // ================================
+    // MOBILE OTP VERIFICATION
+    // ================================
+
+    function normalizeIndianPhone(value) {
+        const digits = String(value || "").replace(/\D/g, "");
+        if (digits.length === 10 && /^[6-9]/.test(digits)) return "+91" + digits;
+        if (digits.length === 12 && digits.startsWith("91")) return "+" + digits;
+        return null;
+    }
+
+    // Supabase/Auth may display/store the phone as 919052688596 or
+    // +919052688596. Compare both forms using the final 10 digits.
+    function indianPhoneDigits(value) {
+        const digits = String(value || "").replace(/\D/g, "");
+        if (digits.length === 10 && /^[6-9]/.test(digits)) return digits;
+        if (digits.length === 12 && digits.startsWith("91")) return digits.slice(2);
+        return null;
+    }
+
+    function setVerificationStatus(text, type = "pending") {
+        verifyStatus.textContent = text;
+        verifyStatus.className = "verify-status " + (type === "success" ? "verify-success" : "verify-pending");
+    }
+
+    async function refreshAuthPhoneStatus(user) {
+        try {
+            // getUser() reads the authenticated user from Supabase Auth.
+            // Do not force refreshSession() here; immediately after phone_change
+            // verification it can briefly return stale session information.
+            const {
+                data: { user: freshUser },
+                error
+            } = await supabaseClient.auth.getUser();
+
+            if (error) {
+                console.error("Auth user check error:", error);
+            }
+
+            currentUser = freshUser || user;
+
+            const currentPhone = indianPhoneDigits(currentUser?.phone);
+            const profilePhone = indianPhoneDigits(mobileInput.value);
+
+            mobileVerified = !!currentPhone && !!profilePhone && currentPhone === profilePhone;
+
+            setVerificationStatus(
+                mobileVerified
+                    ? "✓ Mobile number verified"
+                    : "Mobile number is not verified.",
+                mobileVerified ? "success" : "pending"
+            );
+
+            return currentUser;
+        } catch (error) {
+            console.error("Auth phone check error:", error);
+            mobileVerified = false;
+            setVerificationStatus("Mobile number is not verified.", "pending");
+            return user;
+        }
+    }
+
+    verifyMobileBtn.addEventListener("click", async function() {
+        const phone = normalizeIndianPhone(mobileInput.value);
+        if (!phone) { setVerificationStatus("Please enter a valid 10 digit Indian mobile number."); return; }
+        const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
+        if (userError || !user) { window.location.href = "login.html"; return; }
+        currentUser = user; pendingPhone = phone;
+        verifyMobileBtn.disabled = true; verifyMobileBtn.textContent = "Sending OTP...";
+        try {
+            const { error } = await supabaseClient.auth.updateUser({ phone });
+            if (error) {
+                console.error("Send Mobile OTP Error:", error);
+                setVerificationStatus(error.message || "Unable to send OTP. Please try again.");
+                return;
+            }
+            otpBox.style.display = "block"; otpInput.focus();
+            setVerificationStatus("OTP sent to " + phone + ". Enter the OTP below.");
+        } catch (error) {
+            console.error(error); setVerificationStatus("Unable to send OTP. Please try again.");
+        } finally {
+            verifyMobileBtn.disabled = false; verifyMobileBtn.textContent = "Resend OTP";
+        }
+    });
+
+    confirmOtpBtn.addEventListener("click", async function() {
+        const otp = otpInput.value.trim();
+        if (!pendingPhone) { setVerificationStatus("Please request an OTP first."); return; }
+        if (!/^\d{6}$/.test(otp)) { setVerificationStatus("Please enter the 6 digit OTP."); return; }
+        confirmOtpBtn.disabled = true; confirmOtpBtn.textContent = "Verifying...";
+        try {
+            const { data, error } = await supabaseClient.auth.verifyOtp({ phone: pendingPhone, token: otp, type: "phone_change" });
+            if (error) {
+                console.error("Verify Mobile OTP Error:", error);
+                setVerificationStatus(error.message || "Invalid or expired OTP.");
+                return;
+            }
+            const verifiedUser = data?.user || currentUser;
+
+            if (!verifiedUser) {
+                setVerificationStatus("OTP verified, but user session could not be confirmed.");
+                return;
+            }
+
+            // Get the latest authenticated user after phone_change verification.
+            // Do not force a session refresh here because the verifyOtp response
+            // already contains the latest authentication state.
+            const {
+                data: { user: latestUser },
+                error: latestUserError
+            } = await supabaseClient.auth.getUser();
+
+            if (latestUserError) {
+                console.warn("Latest Auth User Error:", latestUserError);
+            }
+
+            currentUser = latestUser || verifiedUser;
+            mobileInput.value = pendingPhone.replace("+91", "");
+
+            // Keep the verified state in this page session. The Save handler
+            // will use this state instead of immediately replacing it with a
+            // possibly stale cached session.
+            mobileVerified =
+                indianPhoneDigits(currentUser?.phone) ===
+                indianPhoneDigits(pendingPhone);
+
+            // Sync the verified number to customer_profiles.
+            const { error: profileError } =
+                await supabaseClient
+                    .from("customer_profiles")
+                    .update({
+                        mobile: pendingPhone.replace("+91", "")
+                    })
+                    .eq("user_id", currentUser.id);
+
+            if (profileError) {
+                console.error("Profile Mobile Sync Error:", profileError);
+                setVerificationStatus(
+                    "Mobile verified, but profile update failed: " +
+                    profileError.message
+                );
+                return;
+            }
+
+            // If Supabase returned the verified user with the new phone,
+            // mark it verified immediately. Otherwise keep the OTP success
+            // state for the current page and let the next load re-check Auth.
+            if (mobileVerified || verifiedUser?.phone === pendingPhone) {
+                mobileVerified = true;
+                setVerificationStatus(
+                    "✓ Mobile number verified successfully",
+                    "success"
+                );
+            } else {
+                // OTP itself was accepted, so allow the current form save.
+                // A fresh page load will re-check the Auth user's phone.
+                mobileVerified = true;
+                setVerificationStatus(
+                    "✓ Mobile number verified successfully",
+                    "success"
+                );
+            }
+
+            otpBox.style.display = "none";
+            otpInput.value = "";
+
+            if (mobileVerified) {
+                setVerificationStatus(
+                    "✓ Mobile number verified successfully",
+                    "success"
+                );
+            } else {
+                setVerificationStatus(
+                    "OTP verified, but Auth phone status is still refreshing. Please wait a moment and try again.",
+                    "pending"
+                );
+            }
+        } catch (error) {
+            console.error(error); setVerificationStatus("Unable to verify OTP. Please try again.");
+        } finally {
+            confirmOtpBtn.disabled = false; confirmOtpBtn.textContent = "Verify OTP";
+        }
+    });
 
     // ================================
     // LOAD PROFILE
@@ -322,6 +538,9 @@
 
                 return;
             }
+
+            currentUser = user;
+            await refreshAuthPhoneStatus(user);
 
 
             // Default values from Auth
@@ -382,6 +601,9 @@
                 saveBtn.textContent =
                     "Update Address";
             }
+
+            // Check Auth phone only after the profile mobile field has been loaded.
+            await refreshAuthPhoneStatus(currentUser);
 
 
         } catch (error) {
@@ -460,6 +682,45 @@
             return;
         }
 
+        const authPhone = normalizeIndianPhone(mobile);
+        const authPhoneDigits = indianPhoneDigits(mobile);
+
+        const {
+            data: { user: saveUser },
+            error: saveUserError
+        } = await supabaseClient.auth.getUser();
+
+        if (saveUserError || !saveUser) {
+            showMessage("Unable to verify your login session. Please login again.", "error");
+            return;
+        }
+
+        currentUser = saveUser;
+
+        // Auth phone is the permanent verification proof.
+        // pendingPhone is only needed during the OTP flow; after a page reload
+        // it is null, so it must NOT be required for an already verified user.
+        const savedAuthPhoneDigits = indianPhoneDigits(saveUser?.phone);
+        const authPhoneMatches =
+            !!savedAuthPhoneDigits &&
+            !!authPhoneDigits &&
+            savedAuthPhoneDigits === authPhoneDigits;
+
+        const pageOtpMatches =
+            mobileVerified &&
+            !!pendingPhone &&
+            indianPhoneDigits(pendingPhone) === authPhoneDigits;
+
+        if (!authPhoneMatches && !pageOtpMatches) {
+            showMessage("Please verify your mobile number with OTP before saving.", "error");
+            setVerificationStatus("Please verify this mobile number with OTP.", "pending");
+            mobileVerified = false;
+            return;
+        }
+
+        mobileVerified = true;
+        setVerificationStatus("✓ Mobile number verified", "success");
+
 
         if (!address) {
 
@@ -509,16 +770,10 @@
         // GET USER
         // ================================
 
-        const {
-            data: { user },
-            error: userError
-        } = await supabaseClient.auth.getUser();
+        const user = currentUser;
 
-
-        if (userError || !user) {
-
+        if (!user) {
             window.location.href = "login.html";
-
             return;
         }
 
@@ -598,7 +853,7 @@
 
 
             showMessage(
-                "Profile and address saved successfully!",
+                "Profile, address and verified mobile number saved successfully!",
                 "success"
             );
 
