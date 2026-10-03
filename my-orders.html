@@ -738,9 +738,9 @@ async function loadOrders() {
             .select("*")
 
             .eq("user_id", user.id)
-
+            .or("payment_status.eq.paid,razorpay_order_id.is.null")
             .order("id", {
-                ascending: false
+            ascending: false
             });
 
 
