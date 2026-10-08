@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>SEPLUS - Installation Requests</title>
+
+<style>
+
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f5f7fb;color:#111827}header{background:#111827;color:#fff;padding:16px 28px;display:flex;align-items:center;justify-content:space-between;gap:20px}.logo{font-size:24px;font-weight:700}.header-right{display:flex;gap:16px;align-items:center}.header-right a{color:#fff;text-decoration:none}.container{max-width:1250px;margin:28px auto;padding:0 18px}h1{margin:0 0 6px}.sub{color:#6b7280;margin:0 0 20px}.toolbar{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px}.btn{border:0;border-radius:8px;padding:10px 14px;cursor:pointer;font-weight:600}.primary{background:#111827;color:#fff}.secondary{background:#fff;border:1px solid #d1d5db}.danger{background:#fee2e2;color:#991b1b}.panel{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:20px;margin-bottom:18px;box-shadow:0 3px 12px rgba(0,0,0,.04)}.filters{display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:10px}.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.field label{display:block;font-size:13px;font-weight:700;margin-bottom:6px}.field input,.field select,.field textarea{width:100%;padding:10px;border:1px solid #d1d5db;border-radius:8px;font:inherit}.field textarea{min-height:90px;resize:vertical}.full{grid-column:1/-1}.actions{display:flex;justify-content:flex-end;gap:10px;margin-top:18px}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:900px}th,td{padding:11px 10px;border-bottom:1px solid #e5e7eb;text-align:left;font-size:13px}th{background:#f9fafb;font-size:12px}.status{display:inline-block;padding:4px 8px;border-radius:999px;background:#eef2ff;font-size:12px}.notice,.error{padding:12px 14px;border-radius:9px;margin-bottom:15px}.notice{background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af}.error{background:#fee2e2;border:1px solid #fecaca;color:#991b1b}.hidden{display:none}.modal.hidden{display:none !important}.modal{position:fixed;inset:0;background:rgba(15,23,42,.58);backdrop-filter:blur(2px);display:flex;align-items:center;justify-content:center;padding:24px;z-index:1000}.modal.hidden{display:none !important}.modal-card{background:#fff;border:1px solid #e5e7eb;border-radius:16px;max-width:900px;width:100%;max-height:92vh;overflow:auto;padding:24px;box-shadow:0 24px 70px rgba(15,23,42,.25)}.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid #e5e7eb}.modal-head h2{margin:0;font-size:22px;color:#111827}.close{width:36px;height:36px;display:inline-flex;align-items:center;justify-content:center;border:1px solid #e5e7eb;border-radius:9px;background:#fff;color:#475569;font-size:24px;line-height:1;cursor:pointer;transition:.15s}.close:hover{background:#f8fafc;color:#111827;border-color:#cbd5e1}@media(max-width:800px){.filters,.form-grid{grid-template-columns:1fr}.container{padding:0 12px}header{padding:14px 16px}.header-right{gap:9px;font-size:13px}}
+
+</style>
+
+</head>
+
+<body>
+
+<header><div class="logo">SEPLUS</div><div class="header-right"><span id="user-name">Checking...</span><a href="service-dashboard.html">Service Dashboard</a><a href="store.html">E-commerce</a><a href="#" id="logout">Logout</a></div></header>
+
+<main class="container">
+
+<h1>Installation Requests</h1><p class="sub">Create, track and update new installation requests.</p>
+
+<div id="message"></div>
+
+<div class="toolbar"><div></div><button class="btn primary" id="newBtn">+ New Installation Request</button></div>
+
+<section class="panel"><div class="filters"><input id="search" placeholder="Search request no, customer, site..."><select id="statusFilter"><option value="">All Status</option><option>New</option><option>Survey</option><option>Quotation</option><option>Approval</option><option>Scheduled</option><option>In Progress</option><option>Completed</option><option>Cancelled</option></select><select id="priorityFilter"><option value="">All Priority</option><option>Low</option><option>Medium</option><option>High</option><option>Critical</option></select><button class="btn secondary" id="refreshBtn">Refresh</button></div></section>
+
+<section class="panel table-wrap"><table><thead><tr><th>Request No</th><th>Date</th><th>Customer</th><th>Site</th><th>Type</th><th>Priority</th><th>Status</th><th>Expected Date</th><th>Action</th></tr></thead><tbody id="rows"><tr><td colspan="9">Loading...</td></tr></tbody></table></section>
+
+</main>
+
+<div class="modal hidden" id="modal"><div class="modal-card"><div class="modal-head"><h2 id="modalTitle">New Installation Request</h2><button class="close" id="closeBtn">&times;</button></div><form id="form"><input type="hidden" id="editId"><div class="form-grid">
+
+<div class="field"><label>Request No</label><input id="requestNo" readonly></div>
+
+<div class="field"><label>Request Date *</label><input id="requestDate" type="date" required></div>
+
+<div class="field"><label>Customer *</label><select id="customer" required><option value="">Select customer</option></select></div>
+
+<div class="field"><label>Site / Branch *</label><select id="site" required><option value="">Select customer first</option></select></div>
+
+<div class="field"><label>Requested By</label><input id="requestedBy" maxlength="120"></div>
+
+<div class="field"><label>Installation Type</label><input id="installationType" placeholder="New Installation / Expansion / Replacement"></div>
+
+<div class="field"><label>Site Survey Required</label><select id="survey"><option value="true">Yes</option><option value="false">No</option></select></div>
+
+<div class="field"><label>Priority</label><select id="priority"><option>Low</option><option selected>Medium</option><option>High</option><option>Critical</option></select></div>
+
+<div class="field"><label>Expected Installation Date</label><input id="expectedDate" type="date"></div>
+
+<div class="field"><label>Assigned Technician</label><select id="technician"><option value="">Not assigned</option></select></div>
+
+<div class="field"><label>Status</label><select id="status"><option>New</option><option>Survey</option><option>Quotation</option><option>Approval</option><option>Scheduled</option><option>In Progress</option><option>Completed</option><option>Cancelled</option></select></div>
+
+<div class="field full"><label>Description</label><textarea id="description"></textarea></div>
+
+<div class="field full"><label>Remarks</label><textarea id="remarks"></textarea></div>
+
+</div><div class="actions"><button type="button" class="btn secondary" id="cancelBtn">Cancel</button><button class="btn primary" type="submit">Save Request</button></div></form></div></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+
+const SUPABASE_URL="https://uxujlcahvnzohohnjclv.supabase.co";
+
+const SUPABASE_PUBLISHABLE_KEY="sb_publishable_sna7FS8E7-w7pXG3_u-rRw__q2Dcv0_";
+
+const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
+
+const ADMIN_USER_ID="1b43b097-d5e6-4352-8891-a0f76b08690b";
+
+let currentUser=null, customers=[], technicians=[];
+
+const $=id=>document.getElementById(id);
+
+function showMessage(text,error=false){$('message').innerHTML=`<div class="${error?'error':'notice'}">${text}</div>`;setTimeout(()=>{$('message').innerHTML=''},3500)}
+
+function makeRequestNo(){const d=new Date();return `IR-${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}-${Math.random().toString(36).slice(2,7).toUpperCase()}`}
+
+async function requireAccess(){const {data:{user}}=await supabaseClient.auth.getUser();if(!user){location.href='login.html';return false}currentUser=user;const isAdmin=user.id===ADMIN_USER_ID;if(!isAdmin){const {data,error}=await supabaseClient.rpc('has_service_role',{required_role:'Service Manager'});if(error||data!==true){location.href='store.html';return false}}$('user-name').textContent=user.user_metadata?.full_name||user.email||'User';return true}
+
+async function loadCustomers(){const {data,error}=await supabaseClient.from('customer_profiles').select('id,full_name,mobile,email').order('full_name');if(error)throw error;customers=data||[];$('customer').innerHTML='<option value="">Select customer</option>'+customers.map(c=>`<option value="${c.id}">${escapeHtml(c.full_name||'Unnamed')} — ${escapeHtml(c.mobile||c.email||'')}</option>`).join('')}
+
+async function loadTechnicians(){const {data,error}=await supabaseClient.from('technicians').select('id,full_name,technician_code').eq('status','Active').order('full_name');if(error)throw error;technicians=data||[];$('technician').innerHTML='<option value="">Not assigned</option>'+technicians.map(t=>`<option value="${t.id}">${escapeHtml(t.full_name)} (${escapeHtml(t.technician_code)})</option>`).join('')}
+
+async function loadSites(customerId,selected=''){if(!customerId){$('site').innerHTML='<option value="">Select customer first</option>';return}const {data,error}=await supabaseClient.from('service_sites').select('id,site_code,site_name,city,status').eq('customer_id',customerId).order('site_name');if(error)throw error;$('site').innerHTML='<option value="">Select site</option>'+(data||[]).map(s=>`<option value="${s.id}" ${String(s.id)===String(selected)?'selected':''}>${escapeHtml(s.site_code||'')} — ${escapeHtml(s.site_name||'')} ${s.city?'('+escapeHtml(s.city)+')':''}</option>`).join('')}
+
+function escapeHtml(v){return String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
+
+async function loadRequests(){const search=$('search').value.trim().toLowerCase(), sf=$('statusFilter').value, pf=$('priorityFilter').value;let q=supabaseClient.from('installation_requests').select('id,request_no,request_date,customer_id,site_id,installation_type,priority,status,expected_installation_date,description,requested_by,site_survey_required,assigned_to,remarks').order('created_at',{ascending:false});if(sf)q=q.eq('status',sf);if(pf)q=q.eq('priority',pf);const {data,error}=await q;if(error)throw error;let list=data||[];if(search){list=list.filter(r=>{const c=customers.find(x=>x.id===r.customer_id);return [r.request_no,r.installation_type,r.priority,r.status,r.requested_by,c?.full_name,c?.mobile].join(' ').toLowerCase().includes(search)})}const siteIds=[...new Set(list.map(x=>x.site_id).filter(Boolean))];let sites=[];if(siteIds.length){const res=await supabaseClient.from('service_sites').select('id,site_code,site_name').in('id',siteIds);if(res.error)throw res.error;sites=res.data||[]}const siteMap=Object.fromEntries(sites.map(s=>[s.id,s]));$('rows').innerHTML=list.length?list.map(r=>{const c=customers.find(x=>x.id===r.customer_id),s=siteMap[r.site_id];return `<tr><td><strong>${escapeHtml(r.request_no)}</strong></td><td>${escapeHtml(r.request_date||'')}</td><td>${escapeHtml(c?.full_name||'—')}</td><td>${escapeHtml(s?.site_name||'—')}</td><td>${escapeHtml(r.installation_type||'—')}</td><td><span class="status">${escapeHtml(r.priority)}</span></td><td><span class="status">${escapeHtml(r.status)}</span></td><td>${escapeHtml(r.expected_installation_date||'—')}</td><td><button class="btn secondary" onclick="editRequest(${r.id})">Edit</button></td></tr>`}).join(''):'<tr><td colspan="9">No installation requests found.</td></tr>'}
+
+function resetForm(){ $('form').reset();$('editId').value='';$('requestNo').value=makeRequestNo();$('requestDate').value=new Date().toISOString().slice(0,10);$('priority').value='Medium';$('survey').value='true';$('status').value='New';$('site').innerHTML='<option value="">Select customer first</option>';$('modalTitle').textContent='New Installation Request'}
+
+async function openNew(){resetForm();$('modal').classList.remove('hidden')}
+
+async function editRequest(id){const {data,error}=await supabaseClient.from('installation_requests').select('*').eq('id',id).single();if(error){showMessage(error.message,true);return}$('editId').value=data.id;$('requestNo').value=data.request_no;$('requestDate').value=data.request_date||'';$('customer').value=data.customer_id||'';await loadSites(data.customer_id,data.site_id);$('requestedBy').value=data.requested_by||'';$('installationType').value=data.installation_type||'';$('survey').value=String(data.site_survey_required??true);$('priority').value=data.priority||'Medium';$('expectedDate').value=data.expected_installation_date||'';$('technician').value=data.assigned_to||'';$('status').value=data.status||'New';$('description').value=data.description||'';$('remarks').value=data.remarks||'';$('modalTitle').textContent='Edit Installation Request';$('modal').classList.remove('hidden')}
+
+window.editRequest=editRequest;
+
+$('customer').addEventListener('change',e=>loadSites(e.target.value));
+
+$('form').addEventListener('submit',async e=>{e.preventDefault();const payload={request_no:$('requestNo').value.trim(),request_date:$('requestDate').value,customer_id:Number($('customer').value),site_id:Number($('site').value),requested_by:$('requestedBy').value.trim()||null,installation_type:$('installationType').value.trim()||null,site_survey_required:$('survey').value==='true',priority:$('priority').value,expected_installation_date:$('expectedDate').value||null,assigned_to:$('technician').value?Number($('technician').value):null,status:$('status').value,description:$('description').value.trim()||null,remarks:$('remarks').value.trim()||null};if(!payload.customer_id||!payload.site_id){showMessage('Customer and Site are required.',true);return}let res;if($('editId').value)res=await supabaseClient.from('installation_requests').update(payload).eq('id',$('editId').value);else res=await supabaseClient.from('installation_requests').insert(payload);if(res.error){showMessage(res.error.message,true);return}$('modal').classList.add('hidden');showMessage($('editId').value?'Request updated successfully.':'Installation request created successfully.');await loadRequests()});
+
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('modal').classList.contains('hidden'))$('modal').classList.add('hidden')});
+
+$('newBtn').onclick=openNew;$('refreshBtn').onclick=loadRequests;$('search').oninput=()=>loadRequests();$('statusFilter').onchange=loadRequests;$('priorityFilter').onchange=loadRequests;$('closeBtn').onclick=()=>$('modal').classList.add('hidden');$('cancelBtn').onclick=()=>$('modal').classList.add('hidden');$('modal').addEventListener('click',e=>{if(e.target.id==='modal')$('modal').classList.add('hidden')});$('logout').onclick=async e=>{e.preventDefault();await supabaseClient.auth.signOut();location.href='login.html'};
+
+(async()=>{try{if(!await requireAccess())return;await Promise.all([loadCustomers(),loadTechnicians()]);await loadRequests()}catch(e){console.error(e);showMessage('Could not load installation request data: '+e.message,true)}})();
+
+</script>
+
+</body></html>

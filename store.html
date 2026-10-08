@@ -513,6 +513,7 @@
         <a href="#products">Products</a>
         <a href="cart.html">🛒 Cart <span id="cart-count">0</span></a>
         <a href="my-orders.html">My Orders</a>
+        <a href="service-dashboard.html" id="service-management-link" style="display:none;">Service Management</a>
         <span id="user-name">Account</span>
         <a href="#" id="logout-btn">Logout</a>
     </nav>
@@ -883,6 +884,21 @@ async function loadUserAccount() {
     if (user) {
         const name = user.user_metadata?.full_name || user.email;
         userName.textContent = "Welcome, " + name;
+
+        // Show Service Management only to Admin / Service Manager.
+        const serviceLink = document.getElementById("service-management-link");
+        const isAdmin = user.id === "1b43b097-d5e6-4352-8891-a0f76b08690b";
+        let isServiceManager = false;
+        if(!isAdmin){
+            const {data:roleResult,error:roleError}=await supabaseClient.rpc(
+                "has_service_role",
+                {required_role:"Service Manager"}
+            );
+            isServiceManager = !roleError && roleResult === true;
+        }
+        if(serviceLink && (isAdmin || isServiceManager)){
+            serviceLink.style.display = "inline-block";
+        }
 
         logoutBtn.addEventListener("click", async function(event) {
             event.preventDefault();

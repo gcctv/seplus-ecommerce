@@ -688,6 +688,8 @@ function toggleAddressForm() {
 function placeOrderWithSavedAddress() {
     const checkbox = document.getElementById("use-saved-address");
     const form = document.getElementById("checkout-form");
+    const savedButton = document.getElementById("saved-place-order-btn");
+    const wrap = document.getElementById("address-form-wrap");
 
     if (!checkbox || !checkbox.checked) {
         alert("Please tick 'Use this address for this order' before placing the order.");
@@ -696,8 +698,21 @@ function placeOrderWithSavedAddress() {
 
     if (!form) return;
 
-    // Submit the same checkout form so stock checking, order creation,
-    // profile saving and confirmation email continue through one flow.
+    // The real checkout form is intentionally hidden while using a saved address.
+    // Open it temporarily so browser validation can run and the existing submit
+    // handler can continue with stock check -> order -> Razorpay.
+    if (wrap) wrap.classList.add("open");
+
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+
+    if (savedButton) {
+        savedButton.disabled = true;
+        savedButton.textContent = "Processing...";
+    }
+
     if (form.requestSubmit) {
         form.requestSubmit();
     } else {
@@ -1215,8 +1230,14 @@ document
 
         const placeOrderButton =
             document.getElementById("place-order-btn");
+        const savedPlaceOrderButton =
+            document.getElementById("saved-place-order-btn");
 
         placeOrderButton.disabled = true;
+        if (savedPlaceOrderButton) {
+            savedPlaceOrderButton.disabled = true;
+            savedPlaceOrderButton.textContent = "Processing...";
+        }
 
         showMessage("checking");
 
@@ -1237,6 +1258,10 @@ document
             );
 
             placeOrderButton.disabled = false;
+            if (savedPlaceOrderButton) {
+                savedPlaceOrderButton.disabled = false;
+                savedPlaceOrderButton.textContent = "Place Order with this Address";
+            }
 
             return;
         }
@@ -1260,6 +1285,10 @@ document
             );
 
             placeOrderButton.disabled = false;
+            if (savedPlaceOrderButton) {
+                savedPlaceOrderButton.disabled = false;
+                savedPlaceOrderButton.textContent = "Place Order with this Address";
+            }
 
             return;
         }
@@ -1281,6 +1310,10 @@ document
             );
 
             placeOrderButton.disabled = false;
+            if (savedPlaceOrderButton) {
+                savedPlaceOrderButton.disabled = false;
+                savedPlaceOrderButton.textContent = "Place Order with this Address";
+            }
 
             return;
         }
@@ -1306,6 +1339,10 @@ document
             );
 
             placeOrderButton.disabled = false;
+            if (savedPlaceOrderButton) {
+                savedPlaceOrderButton.disabled = false;
+                savedPlaceOrderButton.textContent = "Place Order with this Address";
+            }
 
             return;
         }
@@ -1344,6 +1381,10 @@ document
             );
 
             placeOrderButton.disabled = false;
+            if (savedPlaceOrderButton) {
+                savedPlaceOrderButton.disabled = false;
+                savedPlaceOrderButton.textContent = "Place Order with this Address";
+            }
 
             return;
         }
@@ -1377,6 +1418,10 @@ document
             );
 
             placeOrderButton.disabled = false;
+            if (savedPlaceOrderButton) {
+                savedPlaceOrderButton.disabled = false;
+                savedPlaceOrderButton.textContent = "Place Order with this Address";
+            }
 
             return;
         }
@@ -1434,6 +1479,10 @@ document
         this.reset();
 
         placeOrderButton.disabled = true;
+        if (savedPlaceOrderButton) {
+            savedPlaceOrderButton.disabled = true;
+            savedPlaceOrderButton.textContent = "Order Confirmed";
+        }
 
 
         // ------------------------------------------

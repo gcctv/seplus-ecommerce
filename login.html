@@ -121,10 +121,28 @@ const emailTab=document.getElementById("emailTab");
 const mobileTab=document.getElementById("mobileTab");
 const message=document.getElementById("message");
 
-function routeUser(user){
+async function routeUser(user){
     if(!user){message.textContent="Login successful, but user information was not found.";return;}
-    if(user.id===ADMIN_USER_ID) window.location.href="admin.html";
-    else window.location.href="store.html";
+
+    // Existing Admin routing remains unchanged.
+    if(user.id===ADMIN_USER_ID){
+        window.location.href="admin.html";
+        return;
+    }
+
+    // Service Manager gets the separate Service Management module.
+    const {data:isServiceManager,error:roleError}=await supabaseClient.rpc(
+        "has_service_role",
+        {required_role:"Service Manager"}
+    );
+
+    if(!roleError && isServiceManager===true){
+        window.location.href="service-dashboard.html";
+        return;
+    }
+
+    // Normal customers continue to the existing e-commerce store.
+    window.location.href="store.html";
 }
 
 function normalizeIndianPhone(value){

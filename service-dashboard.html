@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SEPLUS - Service Management</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f5f7fb;color:#111827}
+header{background:#111827;color:#fff;padding:16px 28px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.logo{font-size:26px;font-weight:700}.header-right{display:flex;align-items:center;gap:18px;font-size:14px}
+.header-right a{color:#fff;text-decoration:none}.header-right a:hover{text-decoration:underline}
+.container{max-width:1200px;margin:30px auto;padding:0 20px}h1{margin:0 0 8px}.subtitle{color:#6b7280;margin:0 0 28px}
+.notice{background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af;padding:14px 16px;border-radius:10px;margin:22px 0}
+.error{background:#fee2e2;border:1px solid #fecaca;color:#991b1b;padding:14px 16px;border-radius:10px;margin:12px 0}
+.cards,.modules{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.card,.module{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:20px;box-shadow:0 3px 12px rgba(0,0,0,.06)}
+.card .label{color:#6b7280;font-size:14px}.card .value{font-size:30px;font-weight:700;margin-top:8px}
+.modules{margin-top:28px}.module{text-decoration:none;color:inherit;transition:.18s;min-height:125px}
+.module:hover{transform:translateY(-2px);box-shadow:0 7px 20px rgba(0,0,0,.09);border-color:#cbd5e1}
+.module h3{margin:0 0 7px}.module p{margin:0;color:#6b7280;font-size:13px;line-height:1.5}
+.section-title{margin-top:32px;margin-bottom:12px;font-size:18px}
+.locked{opacity:.58;cursor:not-allowed}.locked:hover{transform:none;box-shadow:0 3px 12px rgba(0,0,0,.06)}
+@media(max-width:900px){.cards,.modules{grid-template-columns:repeat(2,1fr)}}@media(max-width:600px){header{padding:14px 16px}.container{padding:0 14px}.cards,.modules{grid-template-columns:1fr}.header-right{gap:10px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">SEPLUS</div>
+  <div class="header-right">
+    <span id="user-name">Checking...</span>
+    <a href="store.html">E-commerce</a>
+    <a href="#" id="logout-btn">Logout</a>
+  </div>
+</header>
+
+<main class="container">
+  <h1>Service Management</h1>
+  <p class="subtitle">Installation, AMC & Customer Complaint Management</p>
+  <div id="status"></div>
+
+  <div class="cards">
+    <div class="card"><div class="label">Sites / Branches</div><div class="value" id="sites-count">—</div></div>
+    <div class="card"><div class="label">Installation Requests</div><div class="value" id="requests-count">—</div></div>
+    <div class="card"><div class="label">Open Complaints</div><div class="value" id="complaints-count">—</div></div>
+    <div class="card"><div class="label">Active AMC</div><div class="value" id="amc-count">—</div></div>
+  </div>
+
+  <div class="section-title">Service Modules</div>
+  <div class="modules">
+    <a class="module" href="installation-requests.html"><h3>Installations</h3><p>Requests, surveys, quotations and completion tracking.</p></a>
+    <a class="module" href="technicians.html"><h3>Technicians</h3><p>Register technicians, manage service area, skills and active status.</p></a>
+
+    <div class="module locked"><h3>Customers & Sites</h3><p>Coming next — customer service locations and branch management.</p></div>
+    <div class="module locked"><h3>Equipment</h3><p>Coming next — installed equipment, serial numbers and warranty.</p></div>
+    <div class="module locked"><h3>AMC</h3><p>Coming next — contracts, terms, renewal and technician assignment.</p></div>
+    <div class="module locked"><h3>Complaints</h3><p>Coming next — complaint assignment, visits and resolution.</p></div>
+    <div class="module locked"><h3>Quotations</h3><p>Coming next — service and installation quotation management.</p></div>
+    <div class="module locked"><h3>Reports</h3><p>Coming next — service reports and customer confirmation records.</p></div>
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL="https://uxujlcahvnzohohnjclv.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY="sb_publishable_sna7FS8E7-w7pXG3_u-rRw__q2Dcv0_";
+const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
+const ADMIN_USER_ID="1b43b097-d5e6-4352-8891-a0f76b08690b";
+
+async function getCount(table, extraFilter){
+  let query=supabaseClient.from(table).select("id",{count:"exact",head:true});
+  if(extraFilter) query=extraFilter(query);
+  const {count,error}=await query;
+  if(error) throw error;
+  return count || 0;
+}
+async function start(){
+  const status=document.getElementById("status");
+  const {data:{user},error}=await supabaseClient.auth.getUser();
+  if(error || !user){window.location.href="login.html";return;}
+  const isAdmin=user.id===ADMIN_USER_ID;
+  let isManager=false;
+  if(!isAdmin){
+    const r=await supabaseClient.rpc("has_service_role",{required_role:"Service Manager"});
+    isManager=!r.error && r.data===true;
+  }
+  if(!isAdmin && !isManager){window.location.href="store.html";return;}
+  document.getElementById("user-name").textContent=user.user_metadata?.full_name||user.email||"User";
+  status.innerHTML=`<div class="notice">Logged in as <strong>${isAdmin?"Admin":"Service Manager"}</strong>. Service Management access is active.</div>`;
+  try{
+    const [sites,requests,complaints,amc]=await Promise.all([
+      getCount("service_sites"),
+      getCount("installation_requests"),
+      getCount("complaints",q=>q.in("status",["Open","Assigned","In Progress","Waiting"])),
+      getCount("amc_contracts",q=>q.eq("status","Active"))
+    ]);
+    document.getElementById("sites-count").textContent=sites;
+    document.getElementById("requests-count").textContent=requests;
+    document.getElementById("complaints-count").textContent=complaints;
+    document.getElementById("amc-count").textContent=amc;
+  }catch(e){
+    console.error(e);
+    status.innerHTML+=`<div class="error">Service summary could not be loaded. Please check RLS policies.</div>`;
+  }
+}
+document.getElementById("logout-btn").addEventListener("click",async e=>{
+  e.preventDefault();await supabaseClient.auth.signOut();window.location.href="login.html";
+});
+start();
+</script>
+</body>
+</html>
