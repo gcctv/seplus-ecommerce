@@ -734,9 +734,7 @@ async function loadOrders() {
         await supabaseClient
 
             .from("orders")
-
             .select("*")
-
             .eq("user_id", user.id)
             .order("id", {
             ascending: false
