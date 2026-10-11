@@ -1,1531 +1,3098 @@
 <!DOCTYPE html>
+
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>SEPLUS - Checkout</title>
 
+
+
     <style>
-        * { box-sizing: border-box; }
+
+        \* { box-sizing: border-box; }
+
+
 
         body {
+
             margin: 0;
+
             font-family: Arial, sans-serif;
+
             background: #f5f6f8;
+
             color: #111827;
+
         }
+
+
 
         header {
+
             background: #111827;
+
             color: white;
+
             padding: 18px 50px;
+
             display: flex;
+
             justify-content: space-between;
+
             align-items: center;
+
         }
+
+
 
         .logo {
+
             font-size: 28px;
+
             font-weight: bold;
+
             letter-spacing: .5px;
+
         }
+
+
 
         .header-link {
+
             color: white;
+
             text-decoration: none;
+
             font-size: 14px;
+
         }
+
+
 
         .checkout-container {
+
             max-width: 1180px;
+
             margin: 35px auto 60px;
+
             padding: 0 20px;
+
         }
+
+
 
         .page-title {
+
             margin: 0 0 25px;
+
             font-size: 30px;
+
         }
+
+
 
         .checkout-grid {
+
             display: grid;
+
             grid-template-columns: minmax(0, 1.55fr) minmax(320px, .75fr);
+
             gap: 25px;
+
             align-items: start;
+
         }
 
+
+
         .card {
+
             background: white;
+
             border-radius: 12px;
+
             box-shadow: 0 3px 14px rgba(0,0,0,.08);
+
             padding: 25px;
+
         }
+
+
 
         .card + .card { margin-top: 20px; }
 
+
+
         .section-title {
+
             margin: 0 0 20px;
+
             font-size: 20px;
+
         }
+
+
 
         .section-subtitle {
+
             margin: -10px 0 20px;
+
             color: #6b7280;
+
             font-size: 14px;
+
         }
+
+
 
         .form-grid {
+
             display: grid;
+
             grid-template-columns: 1fr 1fr;
+
             gap: 18px;
+
         }
+
+
 
         .form-group {
+
             margin-bottom: 0;
+
         }
+
+
 
         .full-width {
+
             grid-column: 1 / -1;
+
         }
+
+
 
         label {
+
             display: block;
+
             margin-bottom: 7px;
+
             font-size: 14px;
+
             font-weight: bold;
+
         }
+
+
 
         input, textarea, select {
+
             width: 100%;
+
             padding: 12px 13px;
+
             border: 1px solid #d1d5db;
+
             border-radius: 7px;
+
             font-size: 15px;
+
             outline: none;
+
             background: white;
+
         }
+
+
 
         input:focus, textarea:focus, select:focus {
+
             border-color: #111827;
+
             box-shadow: 0 0 0 2px rgba(17,24,39,.08);
+
         }
+
+
 
         textarea {
+
             min-height: 105px;
+
             resize: vertical;
+
         }
+
+
 
         .summary-card {
+
             position: sticky;
+
             top: 20px;
+
         }
+
+
 
         .summary-row {
+
             display: flex;
+
             justify-content: space-between;
+
             gap: 15px;
+
             padding: 11px 0;
+
             font-size: 15px;
+
         }
+
+
 
         .summary-row span:first-child {
+
             color: #6b7280;
+
         }
+
+
 
         .summary-total {
+
             display: flex;
+
             justify-content: space-between;
+
             border-top: 1px solid #e5e7eb;
+
             margin-top: 10px;
+
             padding-top: 18px;
+
             font-size: 21px;
+
             font-weight: bold;
+
         }
+
+
 
         .delivery-note {
+
             margin-top: 16px;
+
             padding: 12px;
+
             background: #f3f4f6;
+
             border-radius: 8px;
+
             color: #374151;
+
             font-size: 13px;
+
             line-height: 1.45;
+
         }
 
+
+
         .place-order {
+
             width: 100%;
+
             padding: 15px;
+
             margin-top: 18px;
+
             background: #111827;
+
             color: white;
+
             border: none;
+
             border-radius: 7px;
+
             font-size: 17px;
+
             font-weight: bold;
+
             cursor: pointer;
+
         }
+
+
 
         .place-order:hover { background: #1f2937; }
 
+
+
         .place-order:disabled {
+
             background: #9ca3af;
+
             cursor: not-allowed;
+
         }
 
+
+
         .back-cart {
+
             display: block;
+
             width: 100%;
+
             margin-top: 10px;
+
             padding: 13px;
+
             border: 1px solid #d1d5db;
+
             border-radius: 7px;
+
             text-align: center;
+
             text-decoration: none;
+
             color: #111827;
+
             background: white;
+
         }
+
+
+
 
 
         .saved-address-card {
+
             border: 1px solid #d1d5db;
+
             border-radius: 10px;
+
             padding: 16px;
+
             margin-bottom: 22px;
+
             background: #fff;
+
         }
+
+
 
         .saved-address-header {
+
             display: flex;
+
             justify-content: space-between;
+
             align-items: center;
+
             gap: 12px;
+
             margin-bottom: 12px;
+
         }
+
+
 
         .saved-address-title {
+
             font-size: 16px;
+
             font-weight: bold;
+
             margin: 0;
+
         }
+
+
 
         .address-selected {
+
             display: inline-flex;
+
             align-items: center;
+
             gap: 6px;
+
             color: #166534;
+
             font-size: 13px;
+
             font-weight: bold;
+
         }
+
+
 
         .address-details {
+
             line-height: 1.6;
+
             color: #374151;
+
             font-size: 14px;
+
         }
+
+
 
         .address-details strong {
+
             color: #111827;
+
         }
+
+
 
         .saved-address-actions {
+
             margin-top: 14px;
+
             padding-top: 14px;
+
             border-top: 1px solid #e5e7eb;
+
         }
+
+
 
         .use-address-option {
+
             display: flex;
+
             align-items: center;
+
             gap: 9px;
+
             margin-bottom: 12px;
+
             color: #111827;
+
             font-size: 14px;
+
             font-weight: bold;
+
             cursor: pointer;
+
         }
+
+
 
         .use-address-option input {
+
             width: 17px;
+
             height: 17px;
+
             cursor: pointer;
+
             accent-color: #111827;
+
         }
+
+
 
         .saved-place-order-btn {
+
             width: 100%;
+
             border: none;
+
             background: #111827;
+
             color: white;
+
             padding: 12px 14px;
+
             border-radius: 7px;
+
             cursor: pointer;
+
             font-weight: bold;
+
             font-size: 14px;
+
             margin-bottom: 10px;
+
         }
+
+
 
         .saved-place-order-btn:hover {
+
             background: #1f2937;
+
         }
+
+
 
         .saved-place-order-btn:disabled {
+
             opacity: 0.6;
+
             cursor: not-allowed;
+
         }
 
+
+
         .edit-address-btn {
+
             border: 1px solid #9ca3af;
+
             background: white;
+
             color: #111827;
+
+            padding: 7px 12px;
+
+            border-radius: 6px;
+
+            cursor: pointer;
+
+            font-weight: bold;
+
+        }
+
+
+
+        .edit-address-btn:hover {
+
+            background: #f3f4f6;
+
+        }
+
+
+
+        .address-action-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .add-address-btn {
+            border: 1px solid #047857;
+            background: #ecfdf5;
+            color: #047857;
             padding: 7px 12px;
             border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
         }
 
-        .edit-address-btn:hover {
-            background: #f3f4f6;
+        .add-address-btn:hover { background: #d1fae5; }
+
+        @media (max-width: 600px) {
+            .address-action-row > button { flex: 1 1 auto; }
         }
 
         .address-form-wrap {
+
             display: none;
+
             margin-top: 8px;
+
             padding-top: 18px;
+
             border-top: 1px solid #e5e7eb;
+
         }
+
+
 
         .address-form-wrap.open {
+
             display: block;
+
         }
+
+
 
         .no-address {
+
             color: #6b7280;
+
             font-size: 14px;
+
             line-height: 1.5;
+
         }
+
+
 
         .address-badge {
+
             display: inline-block;
+
             background: #e8f5e9;
+
             color: #166534;
+
             padding: 3px 8px;
+
             border-radius: 20px;
+
             font-size: 12px;
+
             margin-bottom: 8px;
+
         }
+
+
 
         .secure-note {
+
             margin-top: 15px;
+
             text-align: center;
+
             color: #6b7280;
+
             font-size: 12px;
+
         }
+
+
 
         .order-message {
+
             display: none;
+
             margin-top: 18px;
+
             padding: 13px 15px;
+
             border-radius: 8px;
+
             font-size: 14px;
+
             line-height: 1.45;
+
         }
+
+
 
         .success-message { background: #e8f5e9; color: #2e7d32; }
+
         .error-message { background: #ffebee; color: #c62828; }
+
         .checking-message { background: #fff8e1; color: #8d6e00; }
 
+
+
         @media (max-width: 850px) {
+
             header { padding: 16px 22px; }
+
             .checkout-container { margin-top: 25px; }
+
             .checkout-grid { grid-template-columns: 1fr; }
+
             .summary-card { position: static; }
+
         }
 
+
+
         @media (max-width: 600px) {
+
             .form-grid { grid-template-columns: 1fr; }
+
             .full-width { grid-column: auto; }
+
             .card { padding: 18px; }
+
             .page-title { font-size: 26px; }
+
         }
+
     </style>
+
 </head>
+
+
 
 <body>
 
+
+
 <header>
+
     <div class="logo">SEPLUS</div>
+
     <a class="header-link" href="cart.html">← Back to Cart</a>
+
 </header>
+
+
 
 <div class="checkout-container">
 
+
+
     <h1 class="page-title">Checkout</h1>
+
+
 
     <div class="checkout-grid">
 
+
+
         <div>
+
             <div class="card">
+
                 <h2 class="section-title">Customer Details</h2>
+
                 <p class="section-subtitle">Select or confirm your delivery address before placing the order.</p>
 
+
+
                 <div class="saved-address-card" id="saved-address-card">
+
                     <div class="saved-address-header">
+
                         <h3 class="saved-address-title">Delivery Address</h3>
+
                         <span class="address-selected" id="address-selected-status">● Selected</span>
+
                     </div>
+
+
 
                     <div id="saved-address-content">
+
                         <div class="no-address">
+
                             No saved delivery address found for this account.
+
                             Please enter your address below. It will be saved for future orders.
+
                         </div>
+
                     </div>
+
+
 
                     <div class="saved-address-actions" id="saved-address-actions" style="display:none;">
+
                         <label class="use-address-option">
+
                             <input type="checkbox" id="use-saved-address">
+
                             <span>Use this address for this order</span>
+
                         </label>
 
-                        <button type="button"
-                                class="saved-place-order-btn"
-                                id="saved-place-order-btn"
-                                onclick="placeOrderWithSavedAddress()">
-                            Place Order with this Address
-                        </button>
+
 
                         <button type="button"
-                                class="edit-address-btn"
-                                id="edit-address-btn"
-                                onclick="toggleAddressForm()">
-                            Edit Address
+
+                                class="saved-place-order-btn"
+
+                                id="saved-place-order-btn"
+
+                                onclick="placeOrderWithSavedAddress()">
+
+                            Place Order with this Address
+
                         </button>
+
+
+
+                        <div class="address-action-row">
+                            <button type="button" class="edit-address-btn" id="edit-address-btn" onclick="toggleAddressForm()">Edit Address</button>
+                            <button type="button" class="add-address-btn" id="add-address-btn" onclick="addNewAddress()">+ Add New Address</button>
+                        </div>
+
                     </div>
+
                 </div>
 
+
+
                 <div class="address-form-wrap" id="address-form-wrap">
+
                 <form id="checkout-form">
+
+
 
                     <div class="form-grid">
 
+
+
                         <div class="form-group">
+
                             <label for="name">Full Name</label>
+
                             <input type="text" id="name" autocomplete="name" required>
+
                         </div>
 
+
+
                         <div class="form-group">
+
                             <label for="mobile">Mobile Number</label>
+
                             <input type="tel" id="mobile" inputmode="numeric" autocomplete="tel" required>
+
                         </div>
 
+
+
                         <div class="form-group full-width">
+
                             <label for="email">Email Address</label>
+
                             <input type="email" id="email" autocomplete="email" required>
+
                         </div>
+
+
 
                         <div class="form-group full-width">
+
                             <label for="address">Delivery Address</label>
+
                             <textarea id="address" autocomplete="street-address" required></textarea>
+
                         </div>
 
+
+
                         <div class="form-group">
+
                             <label for="city">City</label>
+
                             <input type="text" id="city" autocomplete="address-level2" required>
+
                         </div>
 
+
+
                         <div class="form-group">
+
                             <label for="state">State</label>
+
                             <input type="text" id="state" autocomplete="address-level1" required>
+
                         </div>
 
+
+
                         <div class="form-group">
+
                             <label for="pincode">Pincode</label>
+
                             <input type="text" id="pincode" inputmode="numeric" autocomplete="postal-code" required>
+
                         </div>
+
+
 
                     </div>
+
+
 
                     <div id="order-message" class="order-message success-message">
+
                         Payment successful! Your order has been confirmed!
+
                     </div>
+
+
 
                     <div id="error-message" class="order-message error-message"></div>
 
+
+
                     <div id="checking-message" class="order-message checking-message">
+
                         Checking product stock. Please wait...
+
                     </div>
+
+
 
                     <button type="submit" class="place-order" id="place-order-btn">
+
                         Pay Online
+
                     </button>
 
+
+
                     <div class="secure-note" style="text-align:left;margin-top:12px;">
+
                         Your delivery address is saved securely to your SEPLUS account for future orders.
+
                     </div>
+
                 </form>
+
                 </div>
+
             </div>
+
         </div>
 
+
+
         <aside>
+
             <div class="card summary-card">
+
                 <h2 class="section-title">Order Summary</h2>
 
+
+
                 <div class="summary-row">
+
                     <span>Items</span>
+
                     <strong id="summary-items">Cart items</strong>
+
                 </div>
 
+
+
                 <div class="summary-row">
+
                     <span>Subtotal</span>
+
                     <strong id="summary-subtotal">₹0</strong>
+
                 </div>
 
+
+
                 <div class="summary-row">
+
                     <span>Delivery</span>
+
                     <strong>Free</strong>
+
                 </div>
+
+
 
                 <div class="summary-total">
+
                     <span>Total</span>
+
                     <span id="summary-total">₹0</span>
+
                 </div>
 
+
+
                 <div class="delivery-note">
+
                     Delivery charges, if applicable, will be confirmed before order processing.
+
                 </div>
+
+
 
                 <a href="cart.html" class="back-cart">← Review Cart</a>
 
+
+
                 <div class="secure-note">
+
                     Your order will be securely saved to your SEPLUS account.
+
                 </div>
+
             </div>
+
         </aside>
 
+
+
     </div>
+
 </div>
 
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+
+<script src="https\://checkout.razorpay.com/v1/checkout.js"></script>
+
 <script src="razorpay-config.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="https\://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
 
 <script>
 
-const SUPABASE_URL = "https://uxujlcahvnzohohnjclv.supabase.co";
+
+
+const SUPABASE_URL = "https\://uxujlcahvnzohohnjclv.supabase.co";
+
+
 
 const SUPABASE_PUBLISHABLE_KEY =
-    "sb_publishable_sna7FS8E7-w7pXG3_u-rRw__q2Dcv0_";
 
-const supabaseClient = window.supabase.createClient(
+    "sb_publishable_sna7FS8E7-w7pXG3_u-rRw__q2Dcv0\_";
+
+
+
+const supabaseClient = window\.supabase.createClient(
+
     SUPABASE_URL,
+
     SUPABASE_PUBLISHABLE_KEY
+
 );
 
 
+
+
+
 // --------------------------------------------------
+
 // RAZORPAY TEST MODE
+
 // --------------------------------------------------
+
 // Key ID is safe to use in the browser. NEVER put the Razorpay
+
 // Key Secret in this file. The secret stays in Supabase Edge Function secrets.
-const RAZORPAY_KEY_ID = window.SEPLUS_RAZORPAY_KEY_ID || "";
+
+const RAZORPAY_KEY_ID = window\.SEPLUS_RAZORPAY_KEY_ID || "";
+
+
 
 async function createRazorpayOrder(localOrderId) {
+
     const { data, error } = await supabaseClient.functions.invoke(
+
         "create-razorpay-order",
+
         { body: { order_id: Number(localOrderId) } }
+
     );
 
+
+
     if (error) {
+
         throw new Error(error.message || "Unable to create Razorpay order.");
+
     }
+
+
 
     if (!data || !data.order_id) {
+
         throw new Error("Razorpay order was not created.");
+
     }
 
+
+
     return data;
+
 }
+
+
 
 async function cancelUnpaidOrder(localOrderId) {
+
     const { error } = await supabaseClient.rpc("cancel_unpaid_order", {
+
         p_order_id: Number(localOrderId)
+
     });
 
+
+
     if (error) {
+
         console.error("Unpaid order cancellation error:", error);
+
     }
+
 }
+
+
 
 async function verifyRazorpayPayment(localOrderId, response) {
+
     const { data, error } = await supabaseClient.functions.invoke(
+
         "verify-razorpay-payment",
+
         {
+
             body: {
+
                 order_id: Number(localOrderId),
+
                 razorpay_order_id: response.razorpay_order_id,
+
                 razorpay_payment_id: response.razorpay_payment_id,
+
                 razorpay_signature: response.razorpay_signature
+
             }
+
         }
+
     );
 
+
+
     if (error) {
+
         throw new Error(error.message || "Payment verification failed.");
+
     }
+
+
 
     if (!data || !data.success) {
+
         throw new Error(data?.message || "Payment verification failed.");
+
     }
 
+
+
     return data;
+
 }
 
+
+
 function openRazorpayCheckout(localOrderId, razorpayOrder, user, cart) {
+
     return new Promise((resolve, reject) => {
+
         const customerName = document.getElementById("name").value.trim();
+
         const customerEmail = document.getElementById("email").value.trim();
+
         const customerMobile = document.getElementById("mobile").value.trim();
 
+
+
         const options = {
+
             key: RAZORPAY_KEY_ID,
+
             amount: razorpayOrder.amount,
+
             currency: razorpayOrder.currency || "INR",
+
             name: "SEPLUS",
-            description: `SEPLUS Order #${localOrderId}`,
+
+            description: \`SEPLUS Order #${localOrderId}\`,
+
             order_id: razorpayOrder.order_id,
+
             prefill: {
+
                 name: customerName,
+
                 email: customerEmail,
+
                 contact: customerMobile
+
             },
+
             notes: {
+
                 seplus_order_id: String(localOrderId)
+
             },
+
             theme: {
+
                 color: "#111827"
+
             },
+
             handler: async function(response) {
+
                 try {
+
                     await verifyRazorpayPayment(localOrderId, response);
+
                     resolve(response);
+
                 } catch (error) {
+
                     reject(error);
+
                 }
+
             },
+
             modal: {
+
                 ondismiss: function() {
+
                     reject(new Error("Payment cancelled by customer."));
+
                 }
+
             }
+
         };
+
+
 
         const razorpay = new Razorpay(options);
 
+
+
         razorpay.on("payment.failed", function(response) {
+
             const description = response?.error?.description || "Payment failed.";
+
             reject(new Error(description));
+
         });
 
+
+
         razorpay.open();
+
     });
+
 }
 
 
+
+
+
 // --------------------------------------------------
+
 // SAVED DELIVERY ADDRESS UI
+
 // --------------------------------------------------
+
+
 
 function formatSavedAddress(profile) {
+
     if (!profile) return "";
 
+
+
     const name = profile.full_name || "";
+
     const address = profile.address || "";
+
     const city = profile.city || "";
+
     const state = profile.state || "";
+
     const pincode = profile.pincode || "";
+
     const mobile = profile.mobile || "";
 
-    return `
+
+
+    return \`
+
         <span class="address-badge">Default Delivery Address</span>
+
         <div class="address-details">
+
             <strong>${escapeAddressHtml(name)}</strong><br>
+
             ${escapeAddressHtml(address)}<br>
+
             ${escapeAddressHtml(city)}, ${escapeAddressHtml(state)} - ${escapeAddressHtml(pincode)}<br>
+
             <strong>Phone:</strong> ${escapeAddressHtml(mobile)}
+
         </div>
-    `;
+
+    \`;
+
 }
+
+
 
 function escapeAddressHtml(value) {
+
     return String(value || "")
+
         .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
+
+        .replace(/\</g, "&lt;")
+
         .replace(/>/g, "&gt;")
+
         .replace(/"/g, "&quot;")
+
         .replace(/'/g, "&#039;");
+
 }
 
+
+
 function toggleAddressForm() {
+
     const wrap = document.getElementById("address-form-wrap");
+
     const btn = document.getElementById("edit-address-btn");
+
+
 
     if (!wrap) return;
 
+
+
     const opening = !wrap.classList.contains("open");
+
     wrap.classList.toggle("open", opening);
 
+
+
     if (opening) {
+
         const checkbox = document.getElementById("use-saved-address");
+
         if (checkbox) checkbox.checked = false;
+
     }
 
+
+
     if (btn) {
+
         btn.textContent = opening ? "Hide Address Form" : "Edit Address";
+
     }
+
+}
+
+
+
+function addNewAddress() {
+    const wrap = document.getElementById("address-form-wrap");
+    const editBtn = document.getElementById("edit-address-btn");
+    const checkbox = document.getElementById("use-saved-address");
+
+    // Current database design stores one default address per customer profile.
+    // This opens the existing form to enter/replace that saved address.
+    if (checkbox) checkbox.checked = false;
+    if (wrap) wrap.classList.add("open");
+
+    ["address", "city", "state", "pincode"].forEach(function(id) {
+        const field = document.getElementById(id);
+        if (field) field.value = "";
+    });
+
+    if (editBtn) editBtn.textContent = "Hide Address Form";
+    const firstField = document.getElementById("address");
+    if (firstField) firstField.focus();
+    if (wrap) wrap.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 function placeOrderWithSavedAddress() {
+
     const checkbox = document.getElementById("use-saved-address");
+
     const form = document.getElementById("checkout-form");
+
     const savedButton = document.getElementById("saved-place-order-btn");
+
     const wrap = document.getElementById("address-form-wrap");
 
+
+
     if (!checkbox || !checkbox.checked) {
+
         alert("Please tick 'Use this address for this order' before placing the order.");
+
         return;
+
     }
+
+
 
     if (!form) return;
 
+
+
     // The real checkout form is intentionally hidden while using a saved address.
+
     // Open it temporarily so browser validation can run and the existing submit
+
     // handler can continue with stock check -> order -> Razorpay.
+
     if (wrap) wrap.classList.add("open");
 
+
+
     if (!form.checkValidity()) {
+
         form.reportValidity();
+
         return;
+
     }
+
+
 
     if (savedButton) {
+
         savedButton.disabled = true;
+
         savedButton.textContent = "Processing...";
+
     }
+
+
 
     if (form.requestSubmit) {
+
         form.requestSubmit();
+
     } else {
+
         form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+
     }
+
 }
 
+
+
 function showSavedAddress(profile) {
+
     const content = document.getElementById("saved-address-content");
+
     const actions = document.getElementById("saved-address-actions");
+
     const editBtn = document.getElementById("edit-address-btn");
+
     const status = document.getElementById("address-selected-status");
+
     const wrap = document.getElementById("address-form-wrap");
+
     const checkbox = document.getElementById("use-saved-address");
+
+
 
     if (!content) return;
 
+
+
     const hasAddress =
+
         profile &&
+
         profile.full_name &&
+
         profile.address &&
+
         profile.city &&
+
         profile.state &&
+
         profile.pincode;
 
+
+
     if (hasAddress) {
+
         content.innerHTML = formatSavedAddress(profile);
 
+
+
         if (actions) actions.style.display = "block";
+
         if (status) status.style.display = "inline-flex";
+
         if (checkbox) checkbox.checked = false;
 
+
+
         if (wrap) wrap.classList.remove("open");
+
         if (editBtn) editBtn.textContent = "Edit Address";
+
     } else {
-        content.innerHTML = `
+
+        content.innerHTML = \`
+
             <div class="no-address">
+
                 No saved delivery address found for this account.
+
                 Please enter your address below. It will be saved for future orders.
+
             </div>
-        `;
+
+        \`;
+
+
 
         if (actions) actions.style.display = "none";
+
         if (status) status.style.display = "none";
+
         if (wrap) wrap.classList.add("open");
+
     }
+
 }
 
-// --------------------------------------------------
-// LOAD CUSTOMER DETAILS
-// --------------------------------------------------
+
 
 // --------------------------------------------------
-// LOAD CUSTOMER DETAILS + SAVED PROFILE
+
+// LOAD CUSTOMER DETAILS
+
 // --------------------------------------------------
+
+
+
+// --------------------------------------------------
+
+// LOAD CUSTOMER DETAILS + SAVED PROFILE
+
+// --------------------------------------------------
+
+
 
 async function loadCustomerDetails() {
 
+
+
     const {
+
         data: { user },
+
         error: userError
+
     } = await supabaseClient.auth.getUser();
 
+
+
     if (userError || !user) {
+
         return;
+
     }
 
 
+
+
+
     // ------------------------------------------
+
     // DEFAULT DETAILS FROM LOGIN
+
     // ------------------------------------------
+
+
 
     document.getElementById("name").value =
+
         user.user_metadata?.full_name || "";
 
+
+
     document.getElementById("mobile").value =
+
         user.user_metadata?.mobile || "";
 
+
+
     document.getElementById("email").value =
+
         user.email || "";
+
+
 
     showSavedAddress(null);
 
 
-    // ------------------------------------------
-    // LOAD SAVED PROFILE / ADDRESS
+
+
+
     // ------------------------------------------
 
+    // LOAD SAVED PROFILE / ADDRESS
+
+    // ------------------------------------------
+
+
+
     const {
+
         data: profile,
+
         error
+
     } = await supabaseClient
+
         .from("customer_profiles")
+
         .select(
+
             "full_name, mobile, address, city, state, pincode"
+
         )
+
         .eq("user_id", user.id)
+
         .maybeSingle();
+
+
+
 
 
     if (error) {
 
+
+
         console.error(
+
             "Profile Load Error:",
+
             error
+
         );
 
+
+
         return;
+
     }
 
 
+
+
+
     // ------------------------------------------
+
     // AUTO-FILL SAVED DETAILS
+
     // ------------------------------------------
+
+
 
     if (profile) {
 
+
+
         document.getElementById("name").value =
+
             profile.full_name || "";
 
+
+
         document.getElementById("mobile").value =
+
             profile.mobile || "";
 
+
+
         document.getElementById("address").value =
+
             profile.address || "";
 
+
+
         document.getElementById("city").value =
+
             profile.city || "";
 
+
+
         document.getElementById("state").value =
+
             profile.state || "";
 
+
+
         document.getElementById("pincode").value =
+
             profile.pincode || "";
 
+
+
         showSavedAddress(profile);
+
     }
+
 }
+
+
+
 
 
 loadCustomerDetails();
 
 
+
+
+
 // --------------------------------------------------
+
 // SHOW MESSAGE
+
 // --------------------------------------------------
+
+
 
 function showMessage(type, message = "") {
 
+
+
     const successMessage =
+
         document.getElementById("order-message");
 
+
+
     const errorMessage =
+
         document.getElementById("error-message");
 
+
+
     const checkingMessage =
+
         document.getElementById("checking-message");
 
+
+
     successMessage.style.display = "none";
+
     errorMessage.style.display = "none";
+
     checkingMessage.style.display = "none";
+
+
 
     if (type === "success") {
 
+
+
         successMessage.style.display = "block";
+
+
 
     } else if (type === "error") {
 
+
+
         errorMessage.textContent = message;
+
         errorMessage.style.display = "block";
+
+
 
     } else if (type === "checking") {
 
+
+
         checkingMessage.style.display = "block";
+
     }
+
 }
 
 
+
+
+
 // --------------------------------------------------
+
 // CHECK PRODUCT STOCK
+
 // --------------------------------------------------
+
+
 
 async function checkCartStock(cart) {
 
+
+
     for (const item of cart) {
 
+
+
         const productId = Number(item.id);
+
         const quantity = Number(item.quantity || 1);
+
+
 
         if (!productId) {
 
+
+
             return {
+
                 success: false,
+
                 message:
-                    `Product "${item.name}" does not have a valid product ID.`
+
+                    \`Product "${item.name}" does not have a valid product ID.\`
+
             };
+
         }
 
+
+
         const {
+
             data: product,
+
             error
+
         } = await supabaseClient
+
             .from("products")
+
             .select("id, name, stock")
+
             .eq("id", productId)
+
             .single();
+
+
 
         if (error || !product) {
 
+
+
             console.error("Stock Check Error:", error);
 
+
+
             return {
+
                 success: false,
+
                 message:
-                    `Unable to check stock for "${item.name}".`
+
+                    \`Unable to check stock for "${item.name}".\`
+
             };
+
         }
 
+
+
         const availableStock =
+
             Number(product.stock || 0);
+
+
 
         if (availableStock <= 0) {
 
+
+
             return {
+
                 success: false,
+
                 message:
-                    `"${product.name}" is Out of Stock.`
+
+                    \`"${product.name}" is Out of Stock.\`
+
             };
+
         }
+
+
 
         if (quantity > availableStock) {
 
+
+
             return {
+
                 success: false,
+
                 message:
-                    `"${product.name}" has only ${availableStock} item(s) available. You requested ${quantity}.`
+
+                    \`"${product.name}" has only ${availableStock} item(s) available. You requested ${quantity}.\`
+
             };
+
         }
+
     }
 
+
+
     return {
+
         success: true
+
     };
+
 }
 
 
+
+
+
 // --------------------------------------------------
+
 // SAVE CUSTOMER DETAILS / PROFILE
+
 // --------------------------------------------------
+
+
 
 async function saveCustomerProfile(user) {
 
+
+
     const profile = {
+
         user_id: user.id,
+
         full_name: document.getElementById("name").value.trim(),
+
         mobile: document.getElementById("mobile").value.trim(),
+
         address: document.getElementById("address").value.trim(),
+
         city: document.getElementById("city").value.trim(),
+
         state: document.getElementById("state").value.trim(),
+
         pincode: document.getElementById("pincode").value.trim()
+
     };
+
+
 
     const { error } = await supabaseClient
+
         .from("customer_profiles")
+
         .upsert(
+
             profile,
+
             { onConflict: "user_id" }
+
         );
 
+
+
     if (error) {
+
         console.error("Customer Profile Save Error:", error);
+
         return {
+
             success: false,
+
             error: error.message
+
         };
+
     }
 
+
+
     return {
+
         success: true
+
     };
+
 }
 
 
+
+
+
 // --------------------------------------------------
+
 // ATOMIC ORDER + STOCK UPDATE
+
 // --------------------------------------------------
+
+
 
 async function placeOrderInDatabase(user, cart) {
 
+
+
     const products = cart.map(item => ({
+
         id: Number(item.id),
+
         name: item.name,
+
         price: Number(item.price),
+
         quantity: Number(item.quantity || 1)
+
     }));
 
+
+
     const { data: orderId, error } =
+
         await supabaseClient.rpc("place_order", {
+
             p_name: document.getElementById("name").value.trim(),
+
             p_mobile: document.getElementById("mobile").value.trim(),
+
             p_email: document.getElementById("email").value.trim(),
+
             p_address: document.getElementById("address").value.trim(),
+
             p_city: document.getElementById("city").value.trim(),
+
             p_state: document.getElementById("state").value.trim(),
+
             p_pincode: document.getElementById("pincode").value.trim(),
+
             p_products: products
+
         });
 
+
+
     if (error) {
+
         console.error("Place Order Error:", error);
+
         return { success: false, message: error.message || "Unable to place order." };
+
     }
+
+
 
     if (!orderId) {
+
         return { success: false, message: "Order was not created. Please try again." };
+
     }
 
+
+
     return { success: true, orderId: orderId };
+
 }
 
 
+
+
+
 // --------------------------------------------------
+
 // SEND ORDER CONFIRMATION EMAIL
+
 // --------------------------------------------------
+
+
 
 async function sendOrderConfirmationEmail(user, orderId, cart) {
 
+
+
     const customerName =
+
         document.getElementById("name").value.trim();
 
+
+
     const customerEmail =
+
         document.getElementById("email").value.trim();
 
+
+
     const customerMobile =
+
         document.getElementById("mobile").value.trim();
 
+
+
     const customerAddress =
+
         document.getElementById("address").value.trim();
 
+
+
     const customerCity =
+
         document.getElementById("city").value.trim();
 
+
+
     const customerState =
+
         document.getElementById("state").value.trim();
 
+
+
     const customerPincode =
+
         document.getElementById("pincode").value.trim();
 
+
+
     function escapeHtml(value) {
+
         return String(value ?? "")
+
             .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
+
+            .replace(/\</g, "&lt;")
+
             .replace(/>/g, "&gt;")
+
             .replace(/"/g, "&quot;")
+
             .replace(/'/g, "&#039;");
+
     }
+
+
 
     const productRows = cart.map(item => {
 
-        const quantity = Number(item.quantity || 1);
-        const price = Number(item.price || 0);
-        const total = price * quantity;
 
-        return `
+
+        const quantity = Number(item.quantity || 1);
+
+        const price = Number(item.price || 0);
+
+        const total = price \* quantity;
+
+
+
+        return \`
+
             <tr>
+
                 <td style="padding:8px;border:1px solid #ddd;">
+
                     ${escapeHtml(item.name)}
+
                 </td>
+
                 <td style="padding:8px;border:1px solid #ddd;text-align:center;">
+
                     ${quantity}
+
                 </td>
+
                 <td style="padding:8px;border:1px solid #ddd;text-align:right;">
+
                     ₹${price.toLocaleString("en-IN")}
+
                 </td>
+
                 <td style="padding:8px;border:1px solid #ddd;text-align:right;">
+
                     ₹${total.toLocaleString("en-IN")}
+
                 </td>
+
             </tr>
-        `;
+
+        \`;
+
     }).join("");
 
+
+
     const totalAmount = cart.reduce(
+
         (sum, item) =>
+
             sum +
-            Number(item.price || 0) *
+
+            Number(item.price || 0) \*
+
             Number(item.quantity || 1),
+
         0
+
     );
 
-    const emailHtml = `
+
+
+    const emailHtml = \`
+
         <div style="font-family:Arial,sans-serif;color:#111827;max-width:700px;margin:auto;">
+
             <h2 style="background:#111827;color:white;padding:18px;margin:0;">
+
                 SEPLUS - Order Received
+
             </h2>
 
+
+
             <div style="padding:20px;">
+
                 <p>Dear <strong>${escapeHtml(customerName)}</strong>,</p>
 
-                <p>
-                    Thank you for your order. Your order has been received
-                    successfully.
-                </p>
+
 
                 <p>
-                    <strong>Order ID:</strong> #${escapeHtml(orderId)}
+
+                    Thank you for your order. Your order has been received
+
+                    successfully.
+
                 </p>
+
+
+
+                <p>
+
+                    <strong>Order ID:</strong> #${escapeHtml(orderId)}
+
+                </p>
+
+
 
                 <h3>Order Details</h3>
 
+
+
                 <table style="width:100%;border-collapse:collapse;">
+
                     <thead>
+
                         <tr>
+
                             <th style="padding:8px;border:1px solid #ddd;text-align:left;">Product</th>
+
                             <th style="padding:8px;border:1px solid #ddd;">Qty</th>
+
                             <th style="padding:8px;border:1px solid #ddd;text-align:right;">Price</th>
+
                             <th style="padding:8px;border:1px solid #ddd;text-align:right;">Total</th>
+
                         </tr>
+
                     </thead>
+
                     <tbody>
+
                         ${productRows}
+
                     </tbody>
+
                 </table>
 
+
+
                 <p style="text-align:right;font-size:18px;">
+
                     <strong>Total: ₹${totalAmount.toLocaleString("en-IN")}</strong>
+
                 </p>
+
+
 
                 <h3>Customer Details</h3>
 
+
+
                 <p>
+
                     <strong>Mobile:</strong> ${escapeHtml(customerMobile)}<br>
+
                     <strong>Email:</strong> ${escapeHtml(customerEmail)}<br>
+
                     <strong>Address:</strong> ${escapeHtml(customerAddress)}<br>
+
                     <strong>City:</strong> ${escapeHtml(customerCity)}<br>
+
                     <strong>State:</strong> ${escapeHtml(customerState)}<br>
+
                     <strong>Pincode:</strong> ${escapeHtml(customerPincode)}
+
                 </p>
+
+
 
                 <p><strong>Order Status:</strong> New Order</p>
 
-                <p>
-                    We will process your order and update you when the
-                    order status changes.
-                </p>
+
 
                 <p>
-                    Regards,<br>
-                    <strong>SEPLUS</strong>
+
+                    We will process your order and update you when the
+
+                    order status changes.
+
                 </p>
+
+
+
+                <p>
+
+                    Regards,<br>
+
+                    <strong>SEPLUS</strong>
+
+                </p>
+
             </div>
+
         </div>
-    `;
+
+    \`;
+
+
 
     try {
 
+
+
         const { data, error } =
+
             await supabaseClient.functions.invoke(
+
                 "send-order-email",
+
                 {
+
                     body: {
+
                         to: customerEmail,
-                        subject: `SEPLUS - Order #${orderId} Received`,
+
+                        subject: \`SEPLUS - Order #${orderId} Received\`,
+
                         html: emailHtml
+
                     }
+
                 }
+
             );
+
+
 
         if (error) {
 
+
+
             console.error(
+
                 "Order Email Error:",
+
                 error
+
             );
 
+
+
             return {
+
                 success: false,
+
                 error: error.message || "Unable to send order email."
+
             };
+
         }
 
+
+
         console.log(
+
             "Order confirmation email sent:",
+
             data
+
         );
 
+
+
         return {
+
             success: true
+
         };
+
+
 
     } catch (error) {
 
+
+
         console.error(
+
             "Order Email Exception:",
+
             error
+
         );
 
+
+
         return {
+
             success: false,
+
             error: error.message || "Unable to send order email."
+
         };
+
     }
+
 }
 
 
+
+
+
 // --------------------------------------------------
+
 // CHECKOUT SUBMIT
+
 // --------------------------------------------------
+
+
+
 
 
 document
+
     .getElementById("checkout-form")
+
     .addEventListener("submit", async function(event) {
+
+
 
         event.preventDefault();
 
+
+
         const placeOrderButton =
+
             document.getElementById("place-order-btn");
+
         const savedPlaceOrderButton =
+
             document.getElementById("saved-place-order-btn");
 
+
+
         placeOrderButton.disabled = true;
+
         if (savedPlaceOrderButton) {
+
             savedPlaceOrderButton.disabled = true;
+
             savedPlaceOrderButton.textContent = "Processing...";
+
         }
+
+
 
         showMessage("checking");
 
 
-        // ------------------------------------------
-        // GET LOGGED-IN USER
+
+
+
         // ------------------------------------------
 
+        // GET LOGGED-IN USER
+
+        // ------------------------------------------
+
+
+
         const {
+
             data: { user }
+
         } = await supabaseClient.auth.getUser();
+
+
 
         if (!user) {
 
+
+
             showMessage(
+
                 "error",
+
                 "Please login before placing an order."
+
             );
 
+
+
             placeOrderButton.disabled = false;
+
             if (savedPlaceOrderButton) {
+
                 savedPlaceOrderButton.disabled = false;
+
                 savedPlaceOrderButton.textContent = "Place Order with this Address";
+
             }
 
+
+
             return;
+
         }
 
 
-        // ------------------------------------------
-        // GET CART
+
+
+
         // ------------------------------------------
 
+        // GET CART
+
+        // ------------------------------------------
+
+
+
         const cart =
+
             JSON.parse(
+
                 localStorage.getItem("cart")
+
             ) || [];
+
+
+
 
 
         if (cart.length === 0) {
 
+
+
             showMessage(
+
                 "error",
+
                 "Your cart is empty."
+
             );
 
+
+
             placeOrderButton.disabled = false;
+
             if (savedPlaceOrderButton) {
+
                 savedPlaceOrderButton.disabled = false;
+
                 savedPlaceOrderButton.textContent = "Place Order with this Address";
+
             }
 
+
+
             return;
+
         }
 
 
-        // ------------------------------------------
-        // CHECK STOCK
+
+
+
         // ------------------------------------------
 
+        // CHECK STOCK
+
+        // ------------------------------------------
+
+
+
         const stockCheck =
+
             await checkCartStock(cart);
+
+
+
 
 
         if (!stockCheck.success) {
 
+
+
             showMessage(
+
                 "error",
+
                 stockCheck.message
+
             );
 
+
+
             placeOrderButton.disabled = false;
+
             if (savedPlaceOrderButton) {
+
                 savedPlaceOrderButton.disabled = false;
+
                 savedPlaceOrderButton.textContent = "Place Order with this Address";
+
             }
 
+
+
             return;
+
         }
 
 
-        // ------------------------------------------
-        // CREATE ORDER + REDUCE STOCK ATOMICALLY
+
+
+
         // ------------------------------------------
 
+        // CREATE ORDER + REDUCE STOCK ATOMICALLY
+
+        // ------------------------------------------
+
+
+
         const orderResult =
+
             await placeOrderInDatabase(user, cart);
+
+
 
         if (!orderResult.success) {
 
+
+
             console.error(
+
                 "Place Order Failed:",
+
                 orderResult.message
+
             );
+
+
 
             showMessage(
+
                 "error",
+
                 orderResult.message
+
             );
 
+
+
             placeOrderButton.disabled = false;
+
             if (savedPlaceOrderButton) {
+
                 savedPlaceOrderButton.disabled = false;
+
                 savedPlaceOrderButton.textContent = "Place Order with this Address";
+
             }
 
+
+
             return;
+
         }
 
+
+
         console.log(
+
             "Order created successfully. Order ID:",
+
             orderResult.orderId
+
         );
 
 
+
+
+
         // ------------------------------------------
+
         // CREATE RAZORPAY ORDER
+
         // ------------------------------------------
+
+
 
         let razorpayOrder;
 
+
+
         try {
+
+
 
             razorpayOrder =
+
                 await createRazorpayOrder(
+
                     orderResult.orderId
+
                 );
+
+
 
         } catch (error) {
 
+
+
             console.error(
+
                 "Razorpay order creation failed:",
+
                 error
+
             );
+
+
 
             await cancelUnpaidOrder(orderResult.orderId);
 
+
+
             showMessage(
+
                 "error",
+
                 error.message || "Unable to start online payment."
+
             );
 
+
+
             placeOrderButton.disabled = false;
+
             if (savedPlaceOrderButton) {
+
                 savedPlaceOrderButton.disabled = false;
+
                 savedPlaceOrderButton.textContent = "Place Order with this Address";
+
             }
 
+
+
             return;
+
         }
 
 
+
+
+
         // ------------------------------------------
+
         // OPEN RAZORPAY CHECKOUT
+
         // ------------------------------------------
+
+
 
         try {
 
+
+
             await openRazorpayCheckout(
+
                 orderResult.orderId,
+
                 razorpayOrder,
+
                 user,
+
                 cart
+
             );
+
+
 
         } catch (error) {
 
+
+
             console.error(
+
                 "Razorpay payment failed/cancelled:",
+
                 error
+
             );
+
+
 
             await cancelUnpaidOrder(orderResult.orderId);
 
+
+
             showMessage(
+
                 "error",
+
                 error.message || "Payment was not completed."
+
             );
 
+
+
             placeOrderButton.disabled = false;
+
             if (savedPlaceOrderButton) {
+
                 savedPlaceOrderButton.disabled = false;
+
                 savedPlaceOrderButton.textContent = "Place Order with this Address";
+
             }
 
+
+
             return;
+
         }
 
 
-        // ------------------------------------------
-        // SAVE CUSTOMER DETAILS FOR FUTURE ORDERS
+
+
+
         // ------------------------------------------
 
+        // SAVE CUSTOMER DETAILS FOR FUTURE ORDERS
+
+        // ------------------------------------------
+
+
+
         const profileResult =
+
             await saveCustomerProfile(user);
+
+
 
         if (!profileResult.success) {
 
+
+
             console.warn(
+
                 "Order was paid, but customer profile could not be saved:",
+
                 profileResult.error
+
             );
+
+
 
         }
 
 
-        // ------------------------------------------
-        // SEND ORDER CONFIRMATION EMAIL
+
+
+
         // ------------------------------------------
 
+        // SEND ORDER CONFIRMATION EMAIL
+
+        // ------------------------------------------
+
+
+
         const emailResult =
+
             await sendOrderConfirmationEmail(
+
                 user,
+
                 orderResult.orderId,
+
                 cart
+
             );
+
+
 
         if (!emailResult.success) {
 
+
+
             console.warn(
+
                 "Order was paid, but confirmation email could not be sent:",
+
                 emailResult.error
+
             );
+
+
 
         }
 
 
-        // ------------------------------------------
-        // SUCCESS
+
+
+
         // ------------------------------------------
 
+        // SUCCESS
+
+        // ------------------------------------------
+
+
+
         showMessage(
+
             "success",
+
             "Payment successful! Your order has been confirmed."
+
         );
+
+
 
         localStorage.removeItem("cart");
 
+
+
         this.reset();
 
+
+
         placeOrderButton.disabled = true;
+
         if (savedPlaceOrderButton) {
+
             savedPlaceOrderButton.disabled = true;
+
             savedPlaceOrderButton.textContent = "Order Confirmed";
+
         }
 
 
+
+
+
         // ------------------------------------------
+
         // OPTIONAL: GO TO MY ORDERS
+
         // ------------------------------------------
+
+
 
         setTimeout(function() {
 
-            window.location.href =
+
+
+            window\.location.href =
+
                 "my-orders.html";
+
+
 
         }, 2000);
 
+
+
     });
 
+
+
 </script>
+
+
 
 <script>
-/* Checkout page summary */
+
+/\* Checkout page summary \*/
+
 async function loadCheckoutSummary() {
+
     const cart = JSON.parse(localStorage.getItem("cart")) || [];
+
     const itemsEl = document.getElementById("summary-items");
+
     const subtotalEl = document.getElementById("summary-subtotal");
+
     const totalEl = document.getElementById("summary-total");
 
+
+
     const itemCount = cart.reduce(
+
         (sum, item) => sum + Number(item.quantity || 1),
+
         0
+
     );
+
+
 
     const subtotal = cart.reduce(
+
         (sum, item) =>
-            sum + Number(item.price || 0) * Number(item.quantity || 1),
+
+            sum + Number(item.price || 0) \* Number(item.quantity || 1),
+
         0
+
     );
 
-    itemsEl.textContent = `${itemCount} item${itemCount === 1 ? "" : "s"}`;
+
+
+    itemsEl.textContent = \`${itemCount} item${itemCount === 1 ? "" : "s"}\`;
+
     subtotalEl.textContent = "₹" + subtotal.toLocaleString("en-IN");
+
     totalEl.textContent = "₹" + subtotal.toLocaleString("en-IN");
+
 }
 
+
+
 loadCheckoutSummary();
+
 </script>
 
+
+
 </body>
+
 </html>
