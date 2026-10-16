@@ -14,7 +14,7 @@
 
     <style>
 
-        \* { box-sizing: border-box; }
+        * { box-sizing: border-box; }
 
 
 
@@ -1030,11 +1030,11 @@
 
 
 
-<script src="https\://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
 <script src="razorpay-config.js"></script>
 
-<script src="https\://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 
 
@@ -1042,17 +1042,17 @@
 
 
 
-const SUPABASE_URL = "https\://uxujlcahvnzohohnjclv.supabase.co";
+const SUPABASE_URL = "https://uxujlcahvnzohohnjclv.supabase.co";
 
 
 
 const SUPABASE_PUBLISHABLE_KEY =
 
-    "sb_publishable_sna7FS8E7-w7pXG3_u-rRw__q2Dcv0\_";
+    "sb_publishable_sna7FS8E7-w7pXG3_u-rRw__q2Dcv0_";
 
 
 
-const supabaseClient = window\.supabase.createClient(
+const supabaseClient = window.supabase.createClient(
 
     SUPABASE_URL,
 
@@ -1074,7 +1074,7 @@ const supabaseClient = window\.supabase.createClient(
 
 // Key Secret in this file. The secret stays in Supabase Edge Function secrets.
 
-const RAZORPAY_KEY_ID = window\.SEPLUS_RAZORPAY_KEY_ID || "";
+const RAZORPAY_KEY_ID = window.SEPLUS_RAZORPAY_KEY_ID || "";
 
 
 
@@ -1113,21 +1113,17 @@ async function createRazorpayOrder(localOrderId) {
 
 
 async function cancelUnpaidOrder(localOrderId) {
-
-    const { error } = await supabaseClient.rpc("cancel_unpaid_order", {
-
+    const { data, error } = await supabaseClient.rpc("cancel_unpaid_order", {
         p_order_id: Number(localOrderId)
-
     });
 
-
-
     if (error) {
-
         console.error("Unpaid order cancellation error:", error);
-
+        throw error;
     }
 
+    // The RPC returns true only after stock restoration and cancellation succeed.
+    return data === true;
 }
 
 
@@ -1202,7 +1198,7 @@ function openRazorpayCheckout(localOrderId, razorpayOrder, user, cart) {
 
             name: "SEPLUS",
 
-            description: \`SEPLUS Order #${localOrderId}\`,
+           description: `SEPLUS Order #${localOrderId}`,
 
             order_id: razorpayOrder.order_id,
 
@@ -1211,8 +1207,6 @@ function openRazorpayCheckout(localOrderId, razorpayOrder, user, cart) {
                 name: customerName,
 
                 email: customerEmail,
-
-                contact: customerMobile
 
             },
 
@@ -1237,9 +1231,11 @@ function openRazorpayCheckout(localOrderId, razorpayOrder, user, cart) {
                     resolve(response);
 
                 } catch (error) {
+                 console.error("Payment verification failed:", error);
 
-                    reject(error);
-
+    // Payment may have succeeded. Do not cancel the order automatically.
+                 error.paymentVerificationPending = true;
+                  reject(error);
                 }
 
             },
@@ -1310,7 +1306,7 @@ function formatSavedAddress(profile) {
 
 
 
-    return \`
+    return `
 
         <span class="address-badge">Default Delivery Address</span>
 
@@ -1326,7 +1322,7 @@ function formatSavedAddress(profile) {
 
         </div>
 
-    \`;
+    `;
 
 }
 
@@ -1338,7 +1334,7 @@ function escapeAddressHtml(value) {
 
         .replace(/&/g, "&amp;")
 
-        .replace(/\</g, "&lt;")
+        .replace(/</g, "&lt;")
 
         .replace(/>/g, "&gt;")
 
@@ -1535,7 +1531,7 @@ function showSavedAddress(profile) {
 
     } else {
 
-        content.innerHTML = \`
+        content.innerHTML = `
 
             <div class="no-address">
 
@@ -1545,7 +1541,7 @@ function showSavedAddress(profile) {
 
             </div>
 
-        \`;
+        `;
 
 
 
@@ -1853,7 +1849,7 @@ async function checkCartStock(cart) {
 
                 message:
 
-                    \`Product "${item.name}" does not have a valid product ID.\`
+                    `Product "${item.name}" does not have a valid product ID.`
 
             };
 
@@ -1893,7 +1889,7 @@ async function checkCartStock(cart) {
 
                 message:
 
-                    \`Unable to check stock for "${item.name}".\`
+                    `Unable to check stock for "${item.name}".`
 
             };
 
@@ -1917,7 +1913,7 @@ async function checkCartStock(cart) {
 
                 message:
 
-                    \`"${product.name}" is Out of Stock.\`
+                    `"${product.name}" is Out of Stock.`
 
             };
 
@@ -1935,7 +1931,7 @@ async function checkCartStock(cart) {
 
                 message:
 
-                    \`"${product.name}" has only ${availableStock} item(s) available. You requested ${quantity}.\`
+                    `"${product.name}" has only ${availableStock} item(s) available. You requested ${quantity}.`
 
             };
 
@@ -2167,7 +2163,7 @@ async function sendOrderConfirmationEmail(user, orderId, cart) {
 
             .replace(/&/g, "&amp;")
 
-            .replace(/\</g, "&lt;")
+            .replace(/</g, "&lt;")
 
             .replace(/>/g, "&gt;")
 
@@ -2187,11 +2183,11 @@ async function sendOrderConfirmationEmail(user, orderId, cart) {
 
         const price = Number(item.price || 0);
 
-        const total = price \* quantity;
+        const total = price * quantity;
 
 
 
-        return \`
+        return `
 
             <tr>
 
@@ -2221,7 +2217,7 @@ async function sendOrderConfirmationEmail(user, orderId, cart) {
 
             </tr>
 
-        \`;
+        `;
 
     }).join("");
 
@@ -2233,7 +2229,7 @@ async function sendOrderConfirmationEmail(user, orderId, cart) {
 
             sum +
 
-            Number(item.price || 0) \*
+            Number(item.price || 0) *
 
             Number(item.quantity || 1),
 
@@ -2243,7 +2239,7 @@ async function sendOrderConfirmationEmail(user, orderId, cart) {
 
 
 
-    const emailHtml = \`
+    const emailHtml = `
 
         <div style="font-family:Arial,sans-serif;color:#111827;max-width:700px;margin:auto;">
 
@@ -2367,7 +2363,7 @@ async function sendOrderConfirmationEmail(user, orderId, cart) {
 
         </div>
 
-    \`;
+    `;
 
 
 
@@ -2387,7 +2383,7 @@ async function sendOrderConfirmationEmail(user, orderId, cart) {
 
                         to: customerEmail,
 
-                        subject: \`SEPLUS - Order #${orderId} Received\`,
+                        subject: `SEPLUS - Order #${orderId} Received`,
 
                         html: emailHtml
 
@@ -2471,6 +2467,109 @@ async function sendOrderConfirmationEmail(user, orderId, cart) {
 
 
 
+
+
+// --------------------------------------------------
+// SEND ORDER CANCELLATION EMAIL (UNPAID CHECKOUT)
+// --------------------------------------------------
+
+async function sendOrderCancellationEmail(user, orderId, cart) {
+    const customerName =
+        document.getElementById("name").value.trim() ||
+        user?.user_metadata?.full_name ||
+        "Customer";
+
+    const customerEmail =
+        document.getElementById("email").value.trim() ||
+        user?.email ||
+        "";
+
+    if (!customerEmail) {
+        console.error("Cancellation email skipped: customer email is missing.");
+        return false;
+    }
+
+    function escapeHtml(value) {
+        return String(value ?? "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    const productRows = (Array.isArray(cart) ? cart : []).map(item => {
+        const quantity = Number(item.quantity || 1);
+        const price = Number(item.price || 0);
+        const total = price * quantity;
+
+        return `
+            <tr>
+                <td style="padding:8px;border:1px solid #ddd;">${escapeHtml(item.name)}</td>
+                <td style="padding:8px;border:1px solid #ddd;text-align:center;">${quantity}</td>
+                <td style="padding:8px;border:1px solid #ddd;text-align:right;">₹${price.toLocaleString("en-IN")}</td>
+                <td style="padding:8px;border:1px solid #ddd;text-align:right;">₹${total.toLocaleString("en-IN")}</td>
+            </tr>`;
+    }).join("");
+
+    const totalAmount = (Array.isArray(cart) ? cart : []).reduce(
+        (sum, item) => sum + Number(item.price || 0) * Number(item.quantity || 1),
+        0
+    );
+
+    const emailHtml = `
+        <div style="font-family:Arial,sans-serif;color:#111827;max-width:700px;margin:auto;">
+            <h2 style="background:#111827;color:white;padding:18px;margin:0;">SEPLUS - Order Cancelled</h2>
+            <div style="padding:20px;">
+                <p>Dear <strong>${escapeHtml(customerName)}</strong>,</p>
+                <p>Your SEPLUS order has been cancelled because the online payment was not completed.</p>
+                <p><strong>Order ID:</strong> #${escapeHtml(orderId)}</p>
+                <p><strong>Order Status:</strong> Cancelled</p>
+                <h3>Order Details</h3>
+                <table style="width:100%;border-collapse:collapse;">
+                    <thead><tr>
+                        <th style="padding:8px;border:1px solid #ddd;text-align:left;">Product</th>
+                        <th style="padding:8px;border:1px solid #ddd;">Qty</th>
+                        <th style="padding:8px;border:1px solid #ddd;text-align:right;">Price</th>
+                        <th style="padding:8px;border:1px solid #ddd;text-align:right;">Total</th>
+                    </tr></thead>
+                    <tbody>${productRows}</tbody>
+                </table>
+                <p style="text-align:right;font-size:18px;"><strong>Total: ₹${totalAmount.toLocaleString("en-IN")}</strong></p>
+                <p>If your bank or UPI app shows a debit, please check its transaction status; contact your bank or SEPLUS support if needed.</p>
+                <p>Regards,<br><strong>SEPLUS</strong></p>
+            </div>
+        </div>`;
+
+    try {
+        const { data, error } = await supabaseClient.functions.invoke(
+            "send-order-email",
+            {
+                body: {
+                    to: customerEmail,
+                    subject: `SEPLUS - Order #${orderId} Cancelled`,
+                    html: emailHtml
+                }
+            }
+        );
+
+        if (error) {
+            console.error("Order Cancellation Email Error:", error);
+            return false;
+        }
+
+        if (data?.success === false) {
+            console.error("Order Cancellation Email Rejected:", data);
+            return false;
+        }
+
+        console.log("Order cancellation email request completed:", { orderId, data });
+        return true;
+    } catch (error) {
+        console.error("Order Cancellation Email Exception:", error);
+        return false;
+    }
+}
 
 
 // --------------------------------------------------
@@ -2785,9 +2884,21 @@ document
 
 
 
-            await cancelUnpaidOrder(orderResult.orderId);
-
-
+            try {
+                const cancellationSucceeded = await cancelUnpaidOrder(orderResult.orderId);
+                if (cancellationSucceeded) {
+                    const emailSent = await sendOrderCancellationEmail(
+                        user,
+                        orderResult.orderId,
+                        cart
+                    );
+                    if (!emailSent) {
+                        console.warn("Order was cancelled, but the cancellation email could not be sent.");
+                    }
+                }
+            } catch (cancelError) {
+                console.error("Unable to cancel order after Razorpay order creation failed:", cancelError);
+            }
 
             showMessage(
 
@@ -2859,17 +2970,50 @@ document
 
 
 
-            await cancelUnpaidOrder(orderResult.orderId);
+            
+if (!error.paymentVerificationPending) {
+    try {
+        const cancellationSucceeded = await cancelUnpaidOrder(orderResult.orderId);
 
+        if (cancellationSucceeded) {
+            const emailSent = await sendOrderCancellationEmail(
+                user,
+                orderResult.orderId,
+                cart
+            );
 
+            if (!emailSent) {
+                console.warn("Order was cancelled, but the cancellation email could not be sent.");
+            }
+        } else {
+            console.warn("Unpaid order was not newly cancelled; cancellation email was not sent.");
+        }
+    } catch (cancelError) {
+        console.error("Order cancellation failed:", cancelError);
+
+        showMessage(
+            "error",
+            "Payment status could not be confirmed. Please check My Orders before trying again."
+        );
+
+        placeOrderButton.disabled = false;
+
+        if (savedPlaceOrderButton) {
+            savedPlaceOrderButton.disabled = false;
+            savedPlaceOrderButton.textContent =
+                "Place Order with this Address";
+        }
+
+        return;
+    }
+}
 
             showMessage(
-
-                "error",
-
-                error.message || "Payment was not completed."
-
-            );
+    "error",
+    error.paymentVerificationPending
+        ? "Payment verification is pending. Please check My Orders before trying again."
+        : error.message || "Payment was not completed."
+        );
 
 
 
@@ -3021,7 +3165,7 @@ document
 
 
 
-            window\.location.href =
+            window.location.href =
 
                 "my-orders.html";
 
@@ -3033,15 +3177,7 @@ document
 
     });
 
-
-
-</script>
-
-
-
-<script>
-
-/\* Checkout page summary \*/
+/* Checkout page summary */
 
 async function loadCheckoutSummary() {
 
@@ -3069,7 +3205,7 @@ async function loadCheckoutSummary() {
 
         (sum, item) =>
 
-            sum + Number(item.price || 0) \* Number(item.quantity || 1),
+            sum + Number(item.price || 0) * Number(item.quantity || 1),
 
         0
 
@@ -3077,7 +3213,7 @@ async function loadCheckoutSummary() {
 
 
 
-    itemsEl.textContent = \`${itemCount} item${itemCount === 1 ? "" : "s"}\`;
+    itemsEl.textContent = String(itemCount) + " item" + (itemCount === 1 ? "" : "s");
 
     subtotalEl.textContent = "₹" + subtotal.toLocaleString("en-IN");
 
