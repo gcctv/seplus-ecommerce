@@ -1540,6 +1540,34 @@
             .site-header nav#main-nav .cart-nav-link { padding:0 8px; }
         }
 
+
+/* SEPLUS promotional banner slider - content managed from Admin Panel */
+#banner-carousel[hidden], .hero[hidden] { display:none !important; }
+.banner-carousel { position:relative; isolation:isolate; height:auto; aspect-ratio:2.4 / 1; min-height:0; margin:18px clamp(12px,2vw,28px) 0; overflow:hidden; border-radius:16px; background:#0a2036; box-shadow:0 14px 34px rgba(15,23,42,.14); }
+.banner-slides { position:absolute; inset:0; }
+.banner-slide { position:absolute; inset:0; opacity:0; visibility:hidden; transition:opacity .45s ease; background:#0a2036; }
+.banner-slide.active { opacity:1; visibility:visible; z-index:1; }
+.banner-image-link { position:absolute; inset:0; z-index:0; display:block; cursor:pointer; }
+.banner-image-link img { display:block; width:100%; height:100%; object-fit:contain; object-position:center; background:#0a2036; }
+.banner-slide.has-copy::after { content:""; position:absolute; inset:0; background:linear-gradient(90deg,rgba(5,20,36,.77) 0%,rgba(5,20,36,.45) 42%,rgba(5,20,36,0) 78%); pointer-events:none; }
+.banner-copy { position:absolute; z-index:2; left:clamp(24px,5vw,72px); top:50%; transform:translateY(-50%); width:min(54%,650px); color:#fff; text-shadow:0 2px 10px rgba(0,0,0,.35); pointer-events:none; }
+.banner-copy[hidden] { display:none !important; }
+.banner-copy h2 { margin:0 0 12px; font-size:clamp(25px,3vw,46px); line-height:1.08; letter-spacing:-.5px; }
+.banner-copy p { margin:0; font-size:clamp(13px,1.35vw,18px); line-height:1.5; color:#f1f5f9; }
+.banner-copy .banner-shop-link { pointer-events:auto; display:inline-flex; align-items:center; gap:10px; margin-top:20px; padding:12px 18px; border-radius:8px; background:#fbbf24; color:#111827; font-weight:800; text-decoration:none; text-shadow:none; box-shadow:0 5px 15px rgba(0,0,0,.16); }
+.banner-copy .banner-shop-link:hover { background:#fcd34d; }
+.banner-arrow { position:absolute; top:50%; z-index:5; transform:translateY(-50%); display:flex; align-items:center; justify-content:center; width:44px; height:44px; padding:0; border:0; border-radius:50%; background:rgba(255,255,255,.94); color:#172033; font-size:30px; line-height:1; box-shadow:0 3px 14px rgba(0,0,0,.15); cursor:pointer; }
+.banner-arrow:hover { background:#fff; }
+.banner-arrow.prev { left:18px; }
+.banner-arrow.next { right:18px; }
+.banner-dots { position:absolute; z-index:6; left:50%; bottom:15px; transform:translateX(-50%); display:flex; align-items:center; justify-content:center; gap:8px; padding:7px 11px; border-radius:999px; background:rgba(6,20,34,.38); }
+.banner-dot { width:9px; height:9px; padding:0; border-radius:50%; border:1px solid rgba(255,255,255,.8); background:rgba(255,255,255,.55); cursor:pointer; }
+.banner-dot.active { width:24px; border-radius:999px; background:#fff; }
+.banner-carousel.single-banner .banner-arrow, .banner-carousel.single-banner .banner-dots { display:none; }
+@media(max-width:768px) { .banner-carousel { height:auto; min-height:0; aspect-ratio:2.4 / 1; margin:12px 10px 0; border-radius:13px; } .banner-copy { width:min(78%,560px); left:22px; } .banner-copy h2 { font-size:clamp(23px,6vw,34px); } .banner-copy p { font-size:13px; } .banner-copy .banner-shop-link { margin-top:14px; padding:10px 13px; font-size:13px; } .banner-arrow { width:35px; height:35px; font-size:25px; } .banner-arrow.prev { left:10px; } .banner-arrow.next { right:10px; } .banner-dots { bottom:10px; } }
+@media(max-width:420px) { .banner-carousel { height:auto; min-height:0; aspect-ratio:2.4 / 1; } .banner-copy { width:calc(100% - 68px); left:18px; } .banner-copy h2 { font-size:23px; } .banner-copy p { font-size:12px; } .banner-slide.has-copy::after { background:linear-gradient(90deg,rgba(5,20,36,.78),rgba(5,20,36,.42)); } }
+@media(prefers-reduced-motion:reduce) { .banner-slide { transition:none; } }
+
 </style>
 
 </head>
@@ -1601,7 +1629,14 @@
 
 
 
-<section class="hero" aria-labelledby="hero-title">
+<section class="banner-carousel" id="banner-carousel" aria-label="SEPLUS promotional banners" hidden>
+    <div class="banner-slides" id="banner-slides"></div>
+    <button type="button" class="banner-arrow prev" id="banner-prev" aria-label="Previous banner">&#8249;</button>
+    <button type="button" class="banner-arrow next" id="banner-next" aria-label="Next banner">&#8250;</button>
+    <div class="banner-dots" id="banner-dots" aria-label="Choose banner"></div>
+</section>
+
+<section class="hero" id="default-hero" aria-labelledby="hero-title">
     <div class="hero-copy">
         <span class="hero-kicker"><span class="kicker-dot"></span> SEPLUS SECURITY SOLUTIONS</span>
         <h1 id="hero-title">Smart security.<br><span>Stronger protection.</span></h1>
@@ -1691,6 +1726,7 @@
             </div>
             <div class="products">
                 <div id="dynamic-products"></div>
+                <p id="discounts-empty-message" class="empty" hidden>No products currently qualify for the 50% OFF offer. Please check back for selected deals.</p>
             </div>
         </div>
     </div>
@@ -1723,6 +1759,115 @@ const supabaseClient = window.supabase.createClient(
     SUPABASE_PUBLISHABLE_KEY
 
 );
+
+// ------------------------------------------------------------------
+// Public Store banner carousel. Active banners are managed in Admin Panel.
+// If the table is not configured or has no active images, keep the original hero.
+// ------------------------------------------------------------------
+function escapeBannerHtml(value) {
+    return String(value ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+}
+
+function getSafeBannerHref(value) {
+    const link = String(value || "#products").trim();
+    if (/^#[a-z0-9_-]+$/i.test(link)) return link;
+    if (/^https?:\/\//i.test(link)) return link;
+    if (link.startsWith("//") || /^[a-z][a-z0-9+.-]*:/i.test(link)) return "#products";
+    if (/^[\w./?=&%#-]+$/.test(link) && !link.includes("..")) return link;
+    return "#products";
+}
+
+async function loadStoreBannerCarousel() {
+    const section = document.getElementById("banner-carousel");
+    const slidesElement = document.getElementById("banner-slides");
+    const dotsElement = document.getElementById("banner-dots");
+    const fallbackHero = document.getElementById("default-hero");
+    if (!section || !slidesElement || !dotsElement || !supabaseClient) return;
+
+    const { data, error } = await supabaseClient
+        .from("store_banners")
+        .select("id,title,subtitle,image_url,button_text,link_url,sort_order")
+        .eq("is_active", true)
+        .order("sort_order", { ascending: true })
+        .order("id", { ascending: true });
+
+    if (error) {
+        // Until the SQL setup is run, the current hero remains visible.
+        console.warn("SEPLUS banner slider not loaded:", error.message);
+        return;
+    }
+    const banners = (data || []).filter(item => item && item.image_url);
+    if (!banners.length) return;
+
+    slidesElement.innerHTML = banners.map((banner, index) => {
+        const title = String(banner.title || "").trim();
+        const subtitle = String(banner.subtitle || "").trim();
+        const buttonText = String(banner.button_text || "").trim();
+        const link = getSafeBannerHref(banner.link_url);
+        const hasCopy = Boolean(title || subtitle || buttonText);
+        const copy = hasCopy ? `<div class="banner-copy">
+            ${title ? `<h2>${escapeBannerHtml(title)}</h2>` : ""}
+            ${subtitle ? `<p>${escapeBannerHtml(subtitle)}</p>` : ""}
+            ${buttonText ? `<a class="banner-shop-link" href="${escapeBannerHtml(link)}">${escapeBannerHtml(buttonText)} <span aria-hidden="true">→</span></a>` : ""}
+        </div>` : "";
+        return `<div class="banner-slide${index === 0 ? " active" : ""}${hasCopy ? " has-copy" : ""}" role="group" aria-roledescription="slide" aria-label="${index + 1} of ${banners.length}" aria-hidden="${index === 0 ? "false" : "true"}">
+            <a class="banner-image-link" href="${escapeBannerHtml(link)}" aria-label="Open ${escapeBannerHtml(title || "SEPLUS banner offer")}"><img src="${escapeBannerHtml(banner.image_url)}" alt="${escapeBannerHtml(title || "SEPLUS promotional banner")}" ${index === 0 ? "fetchpriority=\"high\"" : "loading=\"lazy\""}></a>
+            ${copy}
+        </div>`;
+    }).join("");
+
+    dotsElement.innerHTML = banners.map((banner, index) =>
+        `<button type="button" class="banner-dot${index === 0 ? " active" : ""}" data-banner-index="${index}" aria-label="Show banner ${index + 1}" aria-current="${index === 0 ? "true" : "false"}"></button>`
+    ).join("");
+
+    section.hidden = false;
+    section.classList.toggle("single-banner", banners.length < 2);
+    if (fallbackHero) fallbackHero.hidden = true;
+
+    const slides = Array.from(slidesElement.querySelectorAll(".banner-slide"));
+    const dots = Array.from(dotsElement.querySelectorAll(".banner-dot"));
+    let activeIndex = 0;
+    let timer = null;
+    const reducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    function showBanner(index) {
+        if (!slides.length) return;
+        activeIndex = (index + slides.length) % slides.length;
+        slides.forEach((slide, slideIndex) => {
+            const active = slideIndex === activeIndex;
+            slide.classList.toggle("active", active);
+            slide.setAttribute("aria-hidden", active ? "false" : "true");
+        });
+        dots.forEach((dot, dotIndex) => {
+            const active = dotIndex === activeIndex;
+            dot.classList.toggle("active", active);
+            dot.setAttribute("aria-current", active ? "true" : "false");
+        });
+    }
+    function stopAutoplay() {
+        if (timer) window.clearInterval(timer);
+        timer = null;
+    }
+    function startAutoplay() {
+        stopAutoplay();
+        if (reducedMotion || banners.length < 2 || document.hidden) return;
+        timer = window.setInterval(() => showBanner(activeIndex + 1), 5000);
+    }
+
+    document.getElementById("banner-prev").addEventListener("click", () => { showBanner(activeIndex - 1); startAutoplay(); });
+    document.getElementById("banner-next").addEventListener("click", () => { showBanner(activeIndex + 1); startAutoplay(); });
+    dots.forEach(dot => dot.addEventListener("click", () => { showBanner(Number(dot.dataset.bannerIndex)); startAutoplay(); }));
+    // Keep the carousel rotating while the pointer is over the banner.
+    // Keyboard focus still pauses it so a focused slide link does not unexpectedly move away.
+    section.addEventListener("focusin", stopAutoplay);
+    section.addEventListener("focusout", startAutoplay);
+    document.addEventListener("visibilitychange", () => document.hidden ? stopAutoplay() : startAutoplay());
+    startAutoplay();
+}
+
+loadStoreBannerCarousel();
+
 
 
 
@@ -2012,6 +2157,12 @@ async function loadAdminProducts() {
 
         card.dataset.category = product.category || "Accessories";
         card.dataset.stock = String(Number(product.stock) || 0);
+        const productMrp = Number(product.mrp || product.price || 0);
+        const productPrice = Number(product.price || 0);
+        const productDiscountPercent = productMrp > productPrice && productMrp > 0
+            ? Math.round(((productMrp - productPrice) / productMrp) * 100)
+            : 0;
+        card.dataset.discountPercent = String(productDiscountPercent);
 
 
 
@@ -2181,11 +2332,29 @@ const searchInput = document.getElementById("searchInput");
 const categoryFilter = document.getElementById("categoryFilter");
 const productsSectionTitle = document.querySelector("#products .section-title");
 
-
+// Discount banner links support #discounts (50%+) and #discounts60/#discounts70/#discounts80/#discounts90 (or another 1-100 threshold).
+function getDiscountThresholdFromHash() {
+    const hash = String(window.location.hash || "").toLowerCase();
+    if (hash === "#discounts") return 50;
+    const match = hash.match(/^#discounts(\d{1,3})$/);
+    if (!match) return null;
+    const threshold = Number(match[1]);
+    return threshold >= 1 && threshold <= 100 ? threshold : null;
+}
 
 function filterProducts() {
 
     const searchText = searchInput.value.toLowerCase().trim();
+    const discountThreshold = getDiscountThresholdFromHash();
+    const discountMode = discountThreshold !== null;
+    const discountsEmptyMessage = document.getElementById("discounts-empty-message");
+    const catalogSubtitle = document.querySelector("#products .catalog-subtitle");
+    const defaultCatalogSubtitle = "Explore our CCTV and security products.";
+    if (discountsEmptyMessage) {
+        discountsEmptyMessage.textContent = discountMode
+            ? `No products currently qualify for the ${discountThreshold}% OFF offer. Please check back for selected deals.`
+            : "No products currently qualify for this discount offer. Please check back for selected deals.";
+    }
 
 
 
@@ -2213,7 +2382,7 @@ function filterProducts() {
 
     // Compact the page while searching so matching products appear immediately.
     const inStockOnly = document.getElementById("in-stock-only")?.checked || false;
-    const isSearchMode = searchText.length > 0 || selectedCategory !== "all" || inStockOnly;
+    const isSearchMode = searchText.length > 0 || selectedCategory !== "all" || inStockOnly || discountMode;
     document.body.classList.toggle("search-mode", isSearchMode);
 
     document.querySelectorAll("[data-sidebar-category]").forEach(button => {
@@ -2221,7 +2390,9 @@ function filterProducts() {
     });
 
     if (productsSectionTitle) {
-        if (searchText.length > 0) {
+        if (discountMode) {
+            productsSectionTitle.textContent = `${discountThreshold}% OFF Offers`;
+        } else if (searchText.length > 0) {
             productsSectionTitle.textContent = "Search Results";
         } else if (categoryFilter.value !== "all") {
             const categoryLabel = categoryFilter.options[categoryFilter.selectedIndex].text;
@@ -2232,8 +2403,14 @@ function filterProducts() {
             productsSectionTitle.textContent = "Featured Products";
         }
     }
+    if (catalogSubtitle) {
+        catalogSubtitle.textContent = discountMode
+            ? `Selected products with at least ${discountThreshold}% savings based on current MRP and selling price.`
+            : defaultCatalogSubtitle;
+    }
 
     const products = document.querySelectorAll(".product");
+    let visibleProductCount = 0;
 
 
 
@@ -2284,18 +2461,19 @@ function filterProducts() {
             productCategory === selectedCategory;
 
         const matchesAvailability = !inStockOnly || Number(product.dataset.stock || 0) > 0;
+        const matchesDiscount = !discountMode || Number(product.dataset.discountPercent || 0) >= discountThreshold;
 
-        if (matchesSearch && matchesCategory && matchesAvailability) {
-
+        if (matchesSearch && matchesCategory && matchesAvailability && matchesDiscount) {
             product.style.display = "";
-
+            visibleProductCount++;
         } else {
-
             product.style.display = "none";
-
         }
 
     });
+    if (discountsEmptyMessage) {
+        discountsEmptyMessage.hidden = !discountMode || visibleProductCount > 0;
+    }
 
 }
 
@@ -2321,6 +2499,9 @@ if (clearCatalogFilters) {
         searchInput.value = "";
         categoryFilter.value = "all";
         if (inStockOnlyFilter) inStockOnlyFilter.checked = false;
+        if (getDiscountThresholdFromHash() !== null) {
+            history.replaceState(null, "", window.location.pathname + window.location.search);
+        }
         filterProducts();
     });
 }
@@ -2342,7 +2523,22 @@ document.querySelectorAll("[data-category-filter]").forEach(categoryCard => {
     });
 });
 
+window.addEventListener("hashchange", () => {
+    if (getDiscountThresholdFromHash() !== null) {
+        searchInput.value = "";
+        categoryFilter.value = "all";
+        if (inStockOnlyFilter) inStockOnlyFilter.checked = false;
+    }
+    filterProducts();
+    if (getDiscountThresholdFromHash() !== null) {
+        window.setTimeout(() => document.getElementById("products")?.scrollIntoView({ behavior: "smooth", block: "start" }), 80);
+    }
+});
+
 filterProducts();
+if (getDiscountThresholdFromHash() !== null) {
+    window.setTimeout(() => document.getElementById("products")?.scrollIntoView({ behavior: "smooth", block: "start" }), 250);
+}
 
 </script>
 
