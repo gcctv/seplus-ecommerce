@@ -1,2 +1,2 @@
-# seplus-ecommerce
-SEPLUS CCTV Security Products E-commerce Website
+# GLOBALLIX
+GLOBALLIX CCTV Security Products E-commerce Website

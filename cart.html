@@ -8,7 +8,7 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>SEPLUS - Shopping Cart</title>
+    <title>GLOBALLIX - Shopping Cart</title>
 
 
 
@@ -141,10 +141,10 @@
 
 
 <div class="top-strip" aria-label="Store information">
-    <span>SEPLUS <strong>SECURITY SOLUTIONS</strong></span>
+    <span>GLOBALLIX <strong>SECURITY SOLUTIONS</strong></span>
 </div>
 <header class="site-header">
-    <a class="logo" href="store.html" aria-label="SEPLUS home"><span>SEPLUS</span><small>SECURITY SOLUTIONS</small></a>
+    <a class="logo" href="store.html" aria-label="GLOBALLIX home"><span>GLOBALLIX</span><small>SECURITY SOLUTIONS</small></a>
     <nav class="header-nav" aria-label="Account and cart navigation">
         <div class="profile-menu">
             <button class="profile-trigger" type="button" id="cart-profile-toggle" aria-expanded="false" aria-controls="cart-profile-dropdown">
@@ -155,7 +155,7 @@
             <div class="profile-dropdown" id="cart-profile-dropdown" hidden>
                 <div class="profile-dropdown-header">
                     <span class="profile-avatar" aria-hidden="true">👤</span>
-                    <div><strong id="cart-user-name">Account</strong><small>Manage your SEPLUS account</small></div>
+                    <div><strong id="cart-user-name">Account</strong><small>Manage your GLOBALLIX account</small></div>
                 </div>
                 <a href="store.html">Continue Shopping</a>
                 <a href="my-orders.html">My Orders</a>
@@ -190,7 +190,7 @@
                 </div>
                 <div id="cart-items"></div>
                 <div class="cart-bottom">
-                    <div class="cart-bottom-note">Need anything else for your installation?<br>Browse more products from SEPLUS.</div>
+                    <div class="cart-bottom-note">Need anything else for your installation?<br>Browse more products from GLOBALLIX.</div>
                     <a href="store.html#products" class="continue-btn">← Continue Shopping</a>
                 </div>
             </div>
@@ -210,7 +210,7 @@
                     <span>Total</span>
                     <strong>₹<span id="cart-total">0</span></strong>
                 </div>
-                <div class="savings-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3 20 6v5c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-3Z"/><path d="m8.5 12 2.3 2.3 4.8-5"/></svg><span>Your order will continue through the SEPLUS checkout.</span></div>
+                <div class="savings-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3 20 6v5c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-3Z"/><path d="m8.5 12 2.3 2.3 4.8-5"/></svg><span>Your order will continue through the GLOBALLIX checkout.</span></div>
                 <button type="button" id="checkout-btn" class="checkout-btn">Proceed to Checkout <span aria-hidden="true">→</span></button>
                 <p class="delivery-note">Delivery charges, if applicable, will be confirmed during checkout.</p>
             </div>
@@ -235,7 +235,7 @@
     </div>
 
 </main>
-<footer class="cart-footer">© 2026 SEPLUS · CCTV & Security Solutions · Secure online shopping</footer>
+<footer class="cart-footer">© 2026 GLOBALLIX · CCTV & Security Solutions · Secure online shopping</footer>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 
@@ -256,9 +256,73 @@ const supabaseClient = window.supabase.createClient(
 
 );
 
+// Each signed-in GLOBALLIX customer gets a separate browser cart.
+// The old "cart" key is deliberately not imported because it may contain
+// items mixed from multiple accounts before this account-isolation fix.
+const GLOBALLIX_GUEST_CART_KEY = "globallix_cart_guest";
+const GLOBALLIX_USER_CART_PREFIX = "globallix_cart_user_";
 
+function readStoredCart(storageKey) {
+    try {
+        const parsed = JSON.parse(localStorage.getItem(storageKey) || "[]");
+        return Array.isArray(parsed) ? parsed : [];
+    } catch (error) {
+        console.warn("Unable to read saved cart:", error);
+        return [];
+    }
+}
 
-let cartData = JSON.parse(localStorage.getItem("cart")) || [];
+function mergeGuestCartIntoUserCart(userCartKey) {
+    const guestCart = readStoredCart(GLOBALLIX_GUEST_CART_KEY);
+    if (!guestCart.length) return;
+
+    const userCart = readStoredCart(userCartKey);
+
+    guestCart.forEach(guestItem => {
+        const guestId = guestItem?.id == null ? "" : String(guestItem.id);
+        const guestName = String(guestItem?.name || "").trim().toLowerCase();
+
+        const existingItem = userCart.find(userItem => {
+            const userId = userItem?.id == null ? "" : String(userItem.id);
+            if (guestId && userId) return guestId === userId;
+            return guestName && String(userItem?.name || "").trim().toLowerCase() === guestName;
+        });
+
+        if (existingItem) {
+            existingItem.quantity =
+                Math.max(1, Number(existingItem.quantity || 1)) +
+                Math.max(1, Number(guestItem.quantity || 1));
+            if (existingItem.stock == null && guestItem.stock != null) {
+                existingItem.stock = guestItem.stock;
+            }
+            if (!existingItem.image && guestItem.image) existingItem.image = guestItem.image;
+        } else {
+            userCart.push(guestItem);
+        }
+    });
+
+    localStorage.setItem(userCartKey, JSON.stringify(userCart));
+    localStorage.removeItem(GLOBALLIX_GUEST_CART_KEY);
+}
+
+async function resolveActiveCartStorageKey(userOverride = undefined) {
+    let activeUser = userOverride;
+
+    if (activeUser === undefined) {
+        const { data, error } = await supabaseClient.auth.getUser();
+        if (error) throw error;
+        activeUser = data?.user || null;
+    }
+
+    if (!activeUser?.id) return GLOBALLIX_GUEST_CART_KEY;
+
+    const userCartKey = GLOBALLIX_USER_CART_PREFIX + activeUser.id;
+    mergeGuestCartIntoUserCart(userCartKey);
+    return userCartKey;
+}
+
+let cartStorageKey = null;
+let cartData = [];
 
 
 
@@ -316,7 +380,7 @@ async function enrichCartProducts() {
         }
     }
 
-    localStorage.setItem("cart", JSON.stringify(cartData));
+    localStorage.setItem(cartStorageKey, JSON.stringify(cartData));
 }
 
 // Merge duplicate entries for the same product into one cart row.
@@ -450,7 +514,7 @@ function renderCart() {
                 </div>
                 <div class="cart-product-info">
                     <h3 class="product-name">${escapeHtml(item.name)}</h3>
-                    <p class="seller-line">Sold by <strong>SEPLUS</strong> · CCTV & security</p>
+                    <p class="seller-line">Sold by <strong>GLOBALLIX</strong> · CCTV & security</p>
                     <p class="unit-price">₹${formatPrice(price)} per item</p>
                     ${item.stock !== undefined && Number(item.stock) > 0 ? `<p class="in-stock">In stock · ${Number(item.stock)} available</p>` : (item.stock !== undefined ? `<p class="stock-warning">Currently out of stock</p>` : "")}
                     <div class="item-action-row">
@@ -607,7 +671,7 @@ function removeItem(index) {
 
 function saveAndRender() {
 
-    localStorage.setItem("cart", JSON.stringify(cartData));
+    localStorage.setItem(cartStorageKey, JSON.stringify(cartData));
 
     renderCart();
 
@@ -651,6 +715,16 @@ document.getElementById("checkout-btn").addEventListener("click", goToCheckout);
 
 async function initCart() {
 
+    try {
+        cartStorageKey = await resolveActiveCartStorageKey();
+        cartData = readStoredCart(cartStorageKey);
+    } catch (error) {
+        console.error("Unable to identify the current customer's cart:", error);
+        document.getElementById("loading").textContent =
+            "Unable to load your cart. Please refresh the page or sign in again.";
+        return;
+    }
+
     if (cartData.length > 0) {
 
         await enrichCartProducts();
@@ -688,7 +762,7 @@ async function initCart() {
 
         cartData = cartData.filter(item => Number(item.quantity || 0) > 0);
 
-        localStorage.setItem("cart", JSON.stringify(cartData));
+        localStorage.setItem(cartStorageKey, JSON.stringify(cartData));
 
     }
 

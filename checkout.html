@@ -8,7 +8,7 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>SEPLUS - Checkout</title>
+    <title>GLOBALLIX - Checkout</title>
 
 
 
@@ -731,7 +731,7 @@
 
 <header>
 
-    <div class="logo">SEPLUS</div>
+    <div class="logo">GLOBALLIX</div>
 
     <a class="header-link" href="cart.html">← Back to Cart</a>
 
@@ -938,7 +938,7 @@
 
                     <div class="secure-note" style="text-align:left;margin-top:12px;">
 
-                        Your delivery address is saved securely to your SEPLUS account for future orders.
+                        Your delivery address is saved securely to your GLOBALLIX account for future orders.
 
                     </div>
 
@@ -1014,7 +1014,7 @@
 
                 <div class="secure-note">
 
-                    Your order will be securely saved to your SEPLUS account.
+                    Your order will be securely saved to your GLOBALLIX account.
 
                 </div>
 
@@ -1060,6 +1060,71 @@ const supabaseClient = window.supabase.createClient(
 
 );
 
+// Each signed-in GLOBALLIX customer gets a separate browser cart.
+// The old "cart" key is deliberately not imported because it may contain
+// items mixed from multiple accounts before this account-isolation fix.
+const GLOBALLIX_GUEST_CART_KEY = "globallix_cart_guest";
+const GLOBALLIX_USER_CART_PREFIX = "globallix_cart_user_";
+
+function readStoredCart(storageKey) {
+    try {
+        const parsed = JSON.parse(localStorage.getItem(storageKey) || "[]");
+        return Array.isArray(parsed) ? parsed : [];
+    } catch (error) {
+        console.warn("Unable to read saved cart:", error);
+        return [];
+    }
+}
+
+function mergeGuestCartIntoUserCart(userCartKey) {
+    const guestCart = readStoredCart(GLOBALLIX_GUEST_CART_KEY);
+    if (!guestCart.length) return;
+
+    const userCart = readStoredCart(userCartKey);
+
+    guestCart.forEach(guestItem => {
+        const guestId = guestItem?.id == null ? "" : String(guestItem.id);
+        const guestName = String(guestItem?.name || "").trim().toLowerCase();
+
+        const existingItem = userCart.find(userItem => {
+            const userId = userItem?.id == null ? "" : String(userItem.id);
+            if (guestId && userId) return guestId === userId;
+            return guestName && String(userItem?.name || "").trim().toLowerCase() === guestName;
+        });
+
+        if (existingItem) {
+            existingItem.quantity =
+                Math.max(1, Number(existingItem.quantity || 1)) +
+                Math.max(1, Number(guestItem.quantity || 1));
+            if (existingItem.stock == null && guestItem.stock != null) {
+                existingItem.stock = guestItem.stock;
+            }
+            if (!existingItem.image && guestItem.image) existingItem.image = guestItem.image;
+        } else {
+            userCart.push(guestItem);
+        }
+    });
+
+    localStorage.setItem(userCartKey, JSON.stringify(userCart));
+    localStorage.removeItem(GLOBALLIX_GUEST_CART_KEY);
+}
+
+async function resolveActiveCartStorageKey(userOverride = undefined) {
+    let activeUser = userOverride;
+
+    if (activeUser === undefined) {
+        const { data, error } = await supabaseClient.auth.getUser();
+        if (error) throw error;
+        activeUser = data?.user || null;
+    }
+
+    if (!activeUser?.id) return GLOBALLIX_GUEST_CART_KEY;
+
+    const userCartKey = GLOBALLIX_USER_CART_PREFIX + activeUser.id;
+    mergeGuestCartIntoUserCart(userCartKey);
+    return userCartKey;
+}
+
 
 
 
@@ -1074,7 +1139,7 @@ const supabaseClient = window.supabase.createClient(
 
 // Key Secret in this file. The secret stays in Supabase Edge Function secrets.
 
-const RAZORPAY_KEY_ID = window.SEPLUS_RAZORPAY_KEY_ID || "";
+const RAZORPAY_KEY_ID = window.GLOBALLIX_RAZORPAY_KEY_ID || "";
 
 
 
@@ -1196,9 +1261,9 @@ function openRazorpayCheckout(localOrderId, razorpayOrder, user, cart) {
 
             currency: razorpayOrder.currency || "INR",
 
-            name: "SEPLUS",
+            name: "GLOBALLIX",
 
-           description: `SEPLUS Order #${localOrderId}`,
+           description: `GLOBALLIX Order #${localOrderId}`,
 
             order_id: razorpayOrder.order_id,
 
@@ -1212,7 +1277,7 @@ function openRazorpayCheckout(localOrderId, razorpayOrder, user, cart) {
 
             notes: {
 
-                seplus_order_id: String(localOrderId)
+                GLOBALLIX_order_id: String(localOrderId)
 
             },
 
@@ -2245,7 +2310,7 @@ async function sendOrderConfirmationEmail(user, orderId, cart) {
 
             <h2 style="background:#111827;color:white;padding:18px;margin:0;">
 
-                SEPLUS - Order Received
+                GLOBALLIX - Order Received
 
             </h2>
 
@@ -2355,7 +2420,7 @@ async function sendOrderConfirmationEmail(user, orderId, cart) {
 
                     Regards,<br>
 
-                    <strong>SEPLUS</strong>
+                    <strong>GLOBALLIX</strong>
 
                 </p>
 
@@ -2383,7 +2448,7 @@ async function sendOrderConfirmationEmail(user, orderId, cart) {
 
                         to: customerEmail,
 
-                        subject: `SEPLUS - Order #${orderId} Received`,
+                        subject: `GLOBALLIX - Order #${orderId} Received`,
 
                         html: emailHtml
 
@@ -2519,10 +2584,10 @@ async function sendOrderCancellationEmail(user, orderId, cart) {
 
     const emailHtml = `
         <div style="font-family:Arial,sans-serif;color:#111827;max-width:700px;margin:auto;">
-            <h2 style="background:#111827;color:white;padding:18px;margin:0;">SEPLUS - Order Cancelled</h2>
+            <h2 style="background:#111827;color:white;padding:18px;margin:0;">GLOBALLIX - Order Cancelled</h2>
             <div style="padding:20px;">
                 <p>Dear <strong>${escapeHtml(customerName)}</strong>,</p>
-                <p>Your SEPLUS order has been cancelled because the online payment was not completed.</p>
+                <p>Your GLOBALLIX order has been cancelled because the online payment was not completed.</p>
                 <p><strong>Order ID:</strong> #${escapeHtml(orderId)}</p>
                 <p><strong>Order Status:</strong> Cancelled</p>
                 <h3>Order Details</h3>
@@ -2536,8 +2601,8 @@ async function sendOrderCancellationEmail(user, orderId, cart) {
                     <tbody>${productRows}</tbody>
                 </table>
                 <p style="text-align:right;font-size:18px;"><strong>Total: ₹${totalAmount.toLocaleString("en-IN")}</strong></p>
-                <p>If your bank or UPI app shows a debit, please check its transaction status; contact your bank or SEPLUS support if needed.</p>
-                <p>Regards,<br><strong>SEPLUS</strong></p>
+                <p>If your bank or UPI app shows a debit, please check its transaction status; contact your bank or GLOBALLIX support if needed.</p>
+                <p>Regards,<br><strong>GLOBALLIX</strong></p>
             </div>
         </div>`;
 
@@ -2547,7 +2612,7 @@ async function sendOrderCancellationEmail(user, orderId, cart) {
             {
                 body: {
                     to: customerEmail,
-                    subject: `SEPLUS - Order #${orderId} Cancelled`,
+                    subject: `GLOBALLIX - Order #${orderId} Cancelled`,
                     html: emailHtml
                 }
             }
@@ -2680,13 +2745,22 @@ document
 
 
 
-        const cart =
+        let checkoutCartStorageKey;
 
-            JSON.parse(
+        try {
+            checkoutCartStorageKey = await resolveActiveCartStorageKey(user);
+        } catch (error) {
+            console.error("Unable to identify the current customer's cart:", error);
+            showMessage("error", "Unable to load your account cart. Please refresh and try again.");
+            placeOrderButton.disabled = false;
+            if (savedPlaceOrderButton) {
+                savedPlaceOrderButton.disabled = false;
+                savedPlaceOrderButton.textContent = "Place Order with this Address";
+            }
+            return;
+        }
 
-                localStorage.getItem("cart")
-
-            ) || [];
+        const cart = readStoredCart(checkoutCartStorageKey);
 
 
 
@@ -3131,7 +3205,7 @@ if (!error.paymentVerificationPending) {
 
 
 
-        localStorage.removeItem("cart");
+        localStorage.removeItem(checkoutCartStorageKey);
 
 
 
@@ -3181,7 +3255,15 @@ if (!error.paymentVerificationPending) {
 
 async function loadCheckoutSummary() {
 
-    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    let summaryCartStorageKey;
+    try {
+        summaryCartStorageKey = await resolveActiveCartStorageKey();
+    } catch (error) {
+        console.error("Unable to identify the current customer's cart summary:", error);
+        summaryCartStorageKey = GLOBALLIX_GUEST_CART_KEY;
+    }
+
+    const cart = readStoredCart(summaryCartStorageKey);
 
     const itemsEl = document.getElementById("summary-items");
 

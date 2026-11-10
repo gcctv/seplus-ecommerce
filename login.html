@@ -8,7 +8,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>SEPLUS - Login</title>
+<title>GLOBALLIX - Login</title>
 
 <style>
 
@@ -106,7 +106,7 @@ button:disabled{opacity:.6;cursor:not-allowed}
 
 <div class="login-container">
 
-<h1>SEPLUS</h1>
+<h1>GLOBALLIX</h1>
 
 <p class="subtitle">Customer / Admin Login</p>
 
@@ -350,7 +350,7 @@ async function routeUser(user){
 
 
 // Direct Google Identity Services sign-in. Google handles the account chooser,
-// and the Google ID token is passed to Supabase to establish the SEPLUS session.
+// and the Google ID token is passed to Supabase to establish the GLOBALLIX session.
 let googleRawNonce = "";
 
 async function createGoogleNoncePair() {
@@ -409,7 +409,7 @@ async function initializeGoogleSignIn() {
 }
 
 async function handleGoogleCredentialResponse(response) {
-    message.textContent = "Signing in to SEPLUS...";
+    message.textContent = "Signing in to GLOBALLIX...";
 
     if (!response || !response.credential || !googleRawNonce) {
         message.textContent = "Google did not return a valid sign-in credential. Please try again.";

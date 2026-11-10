@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SEPLUS - Admin Panel</title>
+<title>GLOBALLIX - Admin Panel</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;font-family:Arial,sans-serif;background:#f5f6f8;color:#111827}
@@ -60,7 +60,7 @@ header{padding:15px 20px}.logo{font-size:22px}.admin-title{font-size:15px}
 .full-width{grid-column:auto}.products-grid{grid-template-columns:1fr}
 }
 
-/* SEPLUS Store Banner Management */
+/* GLOBALLIX Store Banner Management */
 .banner-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 15px}
 .banner-preview-wrap{display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap;margin:8px 0 14px}
 .banner-preview-image{width:min(100%,360px);aspect-ratio:16/6;object-fit:cover;background:#f1f5f9;border:1px solid #dbe3ed;border-radius:9px;display:block}
@@ -82,7 +82,7 @@ header{padding:15px 20px}.logo{font-size:22px}.admin-title{font-size:15px}
 <body>
 
 <header>
-<div class="logo">SEPLUS</div>
+<div class="logo">GLOBALLIX</div>
 <div class="admin-title"><a href="service-dashboard.html" style="color:#fff;text-decoration:none;margin-right:18px;">Service Management</a> Admin Panel</div>
 </header>
 
@@ -418,7 +418,7 @@ async function updateOrderStatus(orderId) {
         });
 
         const subject =
-            `SEPLUS - Order #${orderId} Status Updated`;
+            `GLOBALLIX - Order #${orderId} Status Updated`;
 
         const html = `
             <div style="
@@ -435,7 +435,7 @@ async function updateOrderStatus(orderId) {
                     font-size:20px;
                     font-weight:bold;
                 ">
-                    SEPLUS - Order Status Updated
+                    GLOBALLIX - Order Status Updated
                 </div>
 
                 <div style="padding:20px;">
@@ -529,7 +529,7 @@ async function updateOrderStatus(orderId) {
 
                     <p>
                         Regards,<br>
-                        <strong>SEPLUS</strong>
+                        <strong>GLOBALLIX</strong>
                     </p>
 
                 </div>
@@ -1402,7 +1402,7 @@ function renderBannersAdmin() {
         const image = document.createElement("img");
         image.className = "banner-admin-thumb";
         image.src = banner.image_url;
-        image.alt = banner.title || "SEPLUS banner";
+        image.alt = banner.title || "GLOBALLIX banner";
         image.loading = "lazy";
         const info = document.createElement("div");
         info.className = "banner-admin-info";

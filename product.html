@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Details - SEPLUS</title>
+    <title>Product Details - GLOBALLIX</title>
     <link rel="icon" href="data:,">
 
     <style>
@@ -269,6 +269,10 @@
             color: #dc2626;
         }
 
+        .stock-status.hidden {
+            display: none;
+        }
+
         .toast-message {
             position: fixed;
             right: 24px;
@@ -330,6 +334,62 @@
             }
         }
 
+    
+        /* Customer ratings & reviews */
+        .inline-rating { display:flex; align-items:center; gap:8px; margin:4px 0 14px; color:#64748b; font-size:14px; }
+        .rating-stars { color:#f59e0b; letter-spacing:1px; font-size:18px; white-space:nowrap; }
+        .inline-rating strong { color:#334155; }
+        .reviews-section { max-width:1180px; margin:0 auto 44px; padding:30px 34px; border:1px solid #e2e8f0; border-radius:18px; background:#fff; box-shadow:0 10px 28px rgba(15,23,42,.06); }
+        .reviews-heading { display:flex; align-items:center; justify-content:space-between; gap:24px; padding-bottom:22px; border-bottom:1px solid #e5e7eb; }
+        .reviews-eyebrow { color:#1d4ed8; font-size:11px; font-weight:800; letter-spacing:1.7px; }
+        .reviews-heading h2 { margin:7px 0 8px; color:#102a43; font-size:27px; }
+        .reviews-heading p { margin:0; color:#64748b; line-height:1.5; font-size:14px; }
+        .reviews-summary { display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:7px; padding:13px 16px; border-radius:12px; background:#f8fafc; color:#64748b; white-space:nowrap; }
+        .reviews-summary strong { color:#102a43; font-size:15px; }
+        .review-policy-note { margin:18px 0; padding:12px 14px; border-radius:9px; background:#f0fdf4; color:#166534; font-size:13px; line-height:1.5; }
+        .review-policy-note span { display:inline-block; margin-right:5px; font-weight:800; }
+        .review-signin-message { margin:18px 0; padding:16px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; color:#475569; }
+        .review-signin-message a { color:#1d4ed8; font-weight:700; }
+        .review-form { margin:20px 0 28px; padding:20px; border:1px solid #dbeafe; background:#f8fbff; border-radius:12px; }
+        .review-form h3 { margin:0 0 16px; color:#102a43; }
+        .review-form label { display:block; margin:12px 0 7px; color:#334155; font-size:14px; font-weight:700; }
+        .review-form input[type="text"], .review-form textarea { width:100%; padding:12px 13px; border:1px solid #cbd5e1; border-radius:8px; font:inherit; color:#172033; background:#fff; }
+        .review-form textarea { resize:vertical; min-height:110px; }
+        .review-form input:focus, .review-form textarea:focus { outline:3px solid rgba(37,99,235,.12); border-color:#2563eb; }
+        .optional-label { color:#94a3b8; font-size:12px; font-weight:400; }
+        .review-star-picker { display:flex; gap:5px; margin-top:6px; }
+        .review-star-picker button { margin:0; padding:1px 3px; border:0; background:transparent; color:#cbd5e1; font-size:30px; line-height:1.2; cursor:pointer; }
+        .review-star-picker button.selected { color:#f59e0b; }
+        .review-star-picker button:focus-visible { outline:2px solid #2563eb; border-radius:4px; }
+        .review-form-actions { display:flex; align-items:center; flex-wrap:wrap; gap:14px; margin-top:14px; }
+        .review-form-actions button { margin:0; padding:12px 18px; background:#102a43; font-weight:700; }
+        .review-form-hint { color:#64748b; font-size:12px; line-height:1.5; }
+        .review-form-message { min-height:18px; margin:10px 0 0; color:#475569; font-size:13px; }
+        .review-form-message.error { color:#b91c1c; }
+        .review-form-message.success { color:#15803d; }
+        .reviews-list-heading { display:flex; align-items:center; justify-content:space-between; gap:12px; margin:24px 0 12px; }
+        .reviews-list-heading h3 { margin:0; color:#102a43; font-size:18px; }
+        .reviews-list-heading span { color:#64748b; font-size:13px; }
+        .reviews-list { display:grid; gap:12px; }
+        .review-item { padding:17px 0; border-bottom:1px solid #e5e7eb; }
+        .review-item:last-child { border-bottom:0; }
+        .review-item-top { display:flex; align-items:center; flex-wrap:wrap; gap:9px; }
+        .reviewer-name { color:#334155; font-size:14px; font-weight:800; }
+        .verified-badge { display:inline-flex; align-items:center; gap:4px; padding:4px 7px; border-radius:999px; background:#ecfdf5; color:#166534; font-size:10px; font-weight:800; }
+        .review-date { margin-left:auto; color:#94a3b8; font-size:12px; }
+        .review-item .rating-stars { display:block; margin-top:7px; font-size:15px; }
+        .review-item h4 { margin:8px 0 5px; color:#1e293b; font-size:15px; }
+        .review-item-text { margin:0; color:#475569; font-size:14px; line-height:1.65; white-space:pre-wrap; overflow-wrap:anywhere; }
+        .reviews-empty { margin:0; padding:18px 0; color:#64748b; font-size:14px; }
+        @media (max-width:768px) {
+            .reviews-section { margin:0 14px 28px; padding:20px 18px; border-radius:14px; }
+            .reviews-heading { align-items:stretch; flex-direction:column; gap:14px; }
+            .reviews-heading h2 { font-size:23px; }
+            .reviews-summary { justify-content:flex-start; }
+            .review-form { padding:15px; }
+            .review-date { margin-left:0; }
+        }
+
     </style>
 </head>
 
@@ -347,6 +407,10 @@
 
     <div class="product-info">
         <h1 id="product-name">4MP IP Dome Camera</h1>
+
+        <div id="product-rating-inline" class="inline-rating" aria-live="polite">
+            <span class="rating-stars">☆☆☆☆☆</span><span>No ratings yet</span>
+        </div>
 
         <p id="product-price">₹4,999</p>
         <p><strong>MRP:</strong> <del id="product-mrp">₹5,999</del></p>
@@ -384,6 +448,58 @@
 
 </div>
 
+<section class="reviews-section" id="customer-reviews" aria-labelledby="reviews-title">
+    <div class="reviews-heading">
+        <div>
+            <span class="reviews-eyebrow">CUSTOMER FEEDBACK</span>
+            <h2 id="reviews-title">Ratings &amp; Reviews</h2>
+            <p>Read customer feedback and share your experience with this product.</p>
+        </div>
+        <div id="reviews-summary" class="reviews-summary" aria-live="polite">
+            <span class="rating-stars">☆☆☆☆☆</span><strong>No ratings yet</strong>
+        </div>
+    </div>
+
+    <div class="review-policy-note">
+        <span aria-hidden="true">✓</span> Reviews can be submitted by signed-in customers whose order for this product is marked <strong>Delivered</strong>.
+    </div>
+
+    <div id="review-signin-message" class="review-signin-message" hidden>
+        Please <a href="login.html">login</a> to write a review after your order has been delivered.
+    </div>
+
+    <form id="review-form" class="review-form" hidden>
+        <h3 id="review-form-title">Write a Review</h3>
+        <label>
+            Your rating
+            <span class="review-star-picker" id="review-star-picker" role="radiogroup" aria-label="Choose a rating from one to five stars">
+                <button type="button" data-rating="1" aria-label="1 star" aria-pressed="false">★</button>
+                <button type="button" data-rating="2" aria-label="2 stars" aria-pressed="false">★</button>
+                <button type="button" data-rating="3" aria-label="3 stars" aria-pressed="false">★</button>
+                <button type="button" data-rating="4" aria-label="4 stars" aria-pressed="false">★</button>
+                <button type="button" data-rating="5" aria-label="5 stars" aria-pressed="false">★</button>
+            </span>
+        </label>
+        <label for="review-title">Review title <span class="optional-label">(optional)</span></label>
+        <input id="review-title" type="text" maxlength="100" placeholder="Summarize your experience">
+        <label for="review-text">Your review</label>
+        <textarea id="review-text" rows="4" minlength="5" maxlength="1200" placeholder="What did you think about this product? (5–1200 characters)" required></textarea>
+        <div class="review-form-actions">
+            <button id="submit-review-btn" type="submit">Submit Review</button>
+            <span class="review-form-hint">One review per account for each product; you can update it later.</span>
+        </div>
+        <p id="review-form-message" class="review-form-message" role="status" aria-live="polite"></p>
+    </form>
+
+    <div class="reviews-list-heading">
+        <h3>Customer reviews</h3>
+        <span id="reviews-count-label">0 reviews</span>
+    </div>
+    <div id="reviews-list" class="reviews-list" aria-live="polite">
+        <p class="reviews-empty">Loading reviews…</p>
+    </div>
+</section>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
@@ -398,6 +514,71 @@ const supabaseClient = window.supabase.createClient(
     SUPABASE_URL,
     SUPABASE_PUBLISHABLE_KEY
 );
+
+// Each signed-in GLOBALLIX customer gets a separate browser cart.
+// The old "cart" key is deliberately not imported because it may contain
+// items mixed from multiple accounts before this account-isolation fix.
+const GLOBALLIX_GUEST_CART_KEY = "globallix_cart_guest";
+const GLOBALLIX_USER_CART_PREFIX = "globallix_cart_user_";
+
+function readStoredCart(storageKey) {
+    try {
+        const parsed = JSON.parse(localStorage.getItem(storageKey) || "[]");
+        return Array.isArray(parsed) ? parsed : [];
+    } catch (error) {
+        console.warn("Unable to read saved cart:", error);
+        return [];
+    }
+}
+
+function mergeGuestCartIntoUserCart(userCartKey) {
+    const guestCart = readStoredCart(GLOBALLIX_GUEST_CART_KEY);
+    if (!guestCart.length) return;
+
+    const userCart = readStoredCart(userCartKey);
+
+    guestCart.forEach(guestItem => {
+        const guestId = guestItem?.id == null ? "" : String(guestItem.id);
+        const guestName = String(guestItem?.name || "").trim().toLowerCase();
+
+        const existingItem = userCart.find(userItem => {
+            const userId = userItem?.id == null ? "" : String(userItem.id);
+            if (guestId && userId) return guestId === userId;
+            return guestName && String(userItem?.name || "").trim().toLowerCase() === guestName;
+        });
+
+        if (existingItem) {
+            existingItem.quantity =
+                Math.max(1, Number(existingItem.quantity || 1)) +
+                Math.max(1, Number(guestItem.quantity || 1));
+            if (existingItem.stock == null && guestItem.stock != null) {
+                existingItem.stock = guestItem.stock;
+            }
+            if (!existingItem.image && guestItem.image) existingItem.image = guestItem.image;
+        } else {
+            userCart.push(guestItem);
+        }
+    });
+
+    localStorage.setItem(userCartKey, JSON.stringify(userCart));
+    localStorage.removeItem(GLOBALLIX_GUEST_CART_KEY);
+}
+
+async function resolveActiveCartStorageKey(userOverride = undefined) {
+    let activeUser = userOverride;
+
+    if (activeUser === undefined) {
+        const { data, error } = await supabaseClient.auth.getUser();
+        if (error) throw error;
+        activeUser = data?.user || null;
+    }
+
+    if (!activeUser?.id) return GLOBALLIX_GUEST_CART_KEY;
+
+    const userCartKey = GLOBALLIX_USER_CART_PREFIX + activeUser.id;
+    mergeGuestCartIntoUserCart(userCartKey);
+    return userCartKey;
+}
 
 /* Convert local image filename or full Supabase Storage URL into a usable URL */
 function getProductImageUrl(image) {
@@ -538,21 +719,21 @@ async function loadProduct() {
     const stockElement = document.getElementById("product-stock");
     const addButton = document.getElementById("add-to-cart-btn");
     const buyButton = document.getElementById("buy-now-btn");
-    const availableStock = Number(product.stock || 0);
+    const availableStock = Number(product.stock ?? 0);
 
-    if (availableStock <= 0) {
+    if (!Number.isFinite(availableStock) || availableStock <= 0) {
         stockElement.textContent = "● Out of Stock";
         stockElement.className = "stock-status out";
         addButton.disabled = true;
         buyButton.disabled = true;
         addButton.textContent = "Out of Stock";
         buyButton.textContent = "Unavailable";
-    } else if (availableStock <= 3) {
-        stockElement.textContent = `● Only ${availableStock} left in stock`;
+    } else if (availableStock <= 5) {
+        stockElement.textContent = "● Limited Stock";
         stockElement.className = "stock-status low";
     } else {
-        stockElement.textContent = `● ${availableStock} items in stock`;
-        stockElement.className = "stock-status";
+        stockElement.textContent = "";
+        stockElement.className = "stock-status hidden";
     }
 
     const mainImageUrl = getProductImageUrl(product.image);
@@ -627,7 +808,7 @@ function showToast(message, type = "success") {
 }
 
 /* Add current product to cart */
-function addToCart() {
+async function addToCart() {
     if (!currentProduct) {
         showToast("Product is still loading. Please try again.", "warning");
         return false;
@@ -641,7 +822,16 @@ function addToCart() {
         return false;
     }
 
-    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    let cartStorageKey;
+    try {
+        cartStorageKey = await resolveActiveCartStorageKey();
+    } catch (error) {
+        console.error("Unable to identify the current customer's cart:", error);
+        showToast("Unable to load your cart. Please refresh and try again.", "warning");
+        return false;
+    }
+
+    let cart = readStoredCart(cartStorageKey);
     const existingProduct = cart.find(
         item => Number(item.id) === productIdNumber
     );
@@ -673,7 +863,7 @@ function addToCart() {
         });
     }
 
-    localStorage.setItem("cart", JSON.stringify(cart));
+    localStorage.setItem(cartStorageKey, JSON.stringify(cart));
 
     const addButton = document.getElementById("add-to-cart-btn");
     const newQuantity = currentQuantity + 1;
@@ -695,11 +885,269 @@ function addToCart() {
 }
 
 /* Buy Now */
-function buyNow() {
-    if (addToCart()) {
+async function buyNow() {
+    if (await addToCart()) {
         window.location.href = "cart.html";
     }
 }
+
+/* Customer ratings and reviews. Ratings are calculated from database rows; no demo ratings are fabricated. */
+let selectedReviewRating = 0;
+let loggedInReviewUser = null;
+
+function ratingStarsText(rating) {
+    const rounded = Math.max(0, Math.min(5, Math.round(Number(rating) || 0)));
+    return "★".repeat(rounded) + "☆".repeat(5 - rounded);
+}
+
+function setReviewRating(rating) {
+    selectedReviewRating = Number(rating) || 0;
+    document.querySelectorAll("#review-star-picker [data-rating]").forEach(button => {
+        const value = Number(button.dataset.rating);
+        button.classList.toggle("selected", value <= selectedReviewRating);
+        button.setAttribute("aria-pressed", value === selectedReviewRating ? "true" : "false");
+    });
+}
+
+document.querySelectorAll("#review-star-picker [data-rating]").forEach(button => {
+    button.addEventListener("click", () => setReviewRating(button.dataset.rating));
+});
+
+function renderReviewSummary(reviews) {
+    const inline = document.getElementById("product-rating-inline");
+    const summary = document.getElementById("reviews-summary");
+    const countLabel = document.getElementById("reviews-count-label");
+    const count = reviews.length;
+    const average = count ? reviews.reduce((sum, item) => sum + Number(item.rating || 0), 0) / count : 0;
+    const avgText = count ? average.toFixed(1) : "0.0";
+    const starText = ratingStarsText(average);
+
+    if (inline) {
+        inline.innerHTML = "";
+        const stars = document.createElement("span");
+        stars.className = "rating-stars";
+        stars.textContent = count ? starText : "☆☆☆☆☆";
+        inline.appendChild(stars);
+        const text = document.createElement("span");
+        if (count) {
+            const strong = document.createElement("strong");
+            strong.textContent = avgText;
+            inline.appendChild(strong);
+            text.textContent = `(${count} review${count === 1 ? "" : "s"})`;
+        } else {
+            text.textContent = "No ratings yet";
+        }
+        inline.appendChild(text);
+    }
+
+    if (summary) {
+        summary.innerHTML = "";
+        const stars = document.createElement("span");
+        stars.className = "rating-stars";
+        stars.textContent = count ? starText : "☆☆☆☆☆";
+        summary.appendChild(stars);
+        const strong = document.createElement("strong");
+        strong.textContent = count ? `${avgText} / 5` : "No ratings yet";
+        summary.appendChild(strong);
+        if (count) {
+            const countText = document.createElement("span");
+            countText.textContent = `(${count} review${count === 1 ? "" : "s"})`;
+            summary.appendChild(countText);
+        }
+    }
+    if (countLabel) countLabel.textContent = `${count} review${count === 1 ? "" : "s"}`;
+}
+
+function renderReviewList(reviews) {
+    const list = document.getElementById("reviews-list");
+    if (!list) return;
+    list.innerHTML = "";
+    if (!reviews.length) {
+        const empty = document.createElement("p");
+        empty.className = "reviews-empty";
+        empty.textContent = "No customer reviews yet. Be the first to share your experience after a delivered order.";
+        list.appendChild(empty);
+        return;
+    }
+
+    reviews.forEach(review => {
+        const item = document.createElement("article");
+        item.className = "review-item";
+
+        const top = document.createElement("div");
+        top.className = "review-item-top";
+        const name = document.createElement("span");
+        name.className = "reviewer-name";
+        name.textContent = "GLOBALLIX Customer";
+        top.appendChild(name);
+        const verified = document.createElement("span");
+        verified.className = "verified-badge";
+        verified.textContent = "✓ Verified purchase";
+        top.appendChild(verified);
+        if (review.created_at) {
+            const date = document.createElement("time");
+            date.className = "review-date";
+            const parsedDate = new Date(review.created_at);
+            date.textContent = Number.isNaN(parsedDate.getTime()) ? "" : parsedDate.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
+            top.appendChild(date);
+        }
+        item.appendChild(top);
+
+        const stars = document.createElement("span");
+        stars.className = "rating-stars";
+        stars.setAttribute("aria-label", `${Number(review.rating)} out of 5 stars`);
+        stars.textContent = ratingStarsText(review.rating);
+        item.appendChild(stars);
+
+        if (review.review_title) {
+            const title = document.createElement("h4");
+            title.textContent = review.review_title;
+            item.appendChild(title);
+        }
+        const body = document.createElement("p");
+        body.className = "review-item-text";
+        body.textContent = review.review_text || "";
+        item.appendChild(body);
+        list.appendChild(item);
+    });
+}
+
+async function loadProductReviews(productIdToLoad) {
+    const summary = document.getElementById("reviews-summary");
+    const list = document.getElementById("reviews-list");
+    if (summary) summary.textContent = "Loading ratings…";
+    if (list) list.innerHTML = '<p class="reviews-empty">Loading reviews…</p>';
+
+    const { data: reviews, error } = await supabaseClient
+        .from("product_reviews")
+        .select("id, product_id, user_id, rating, review_title, review_text, created_at")
+        .eq("product_id", Number(productIdToLoad))
+        .order("created_at", { ascending: false })
+        .limit(100);
+
+    if (error) {
+        console.warn("Product reviews are unavailable. Run the product-reviews SQL setup first.", error.message);
+        if (summary) summary.textContent = "Ratings not available yet";
+        if (list) list.innerHTML = '<p class="reviews-empty">Ratings and reviews will appear here once the review system is configured.</p>';
+        const inline = document.getElementById("product-rating-inline");
+        if (inline) inline.textContent = "Ratings not available yet";
+        return;
+    }
+
+    const safeReviews = Array.isArray(reviews) ? reviews : [];
+    renderReviewSummary(safeReviews);
+    renderReviewList(safeReviews);
+}
+
+async function prepareReviewForm(productIdToLoad) {
+    const form = document.getElementById("review-form");
+    const signInMessage = document.getElementById("review-signin-message");
+    const formMessage = document.getElementById("review-form-message");
+    const formTitle = document.getElementById("review-form-title");
+    const submitButton = document.getElementById("submit-review-btn");
+    if (!form || !signInMessage) return;
+
+    const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
+    loggedInReviewUser = (!authError && user) ? user : null;
+    if (!loggedInReviewUser) {
+        form.hidden = true;
+        signInMessage.hidden = false;
+        return;
+    }
+
+    signInMessage.hidden = true;
+    form.hidden = false;
+
+    const { data: existingReview, error } = await supabaseClient
+        .from("product_reviews")
+        .select("rating, review_title, review_text")
+        .eq("product_id", Number(productIdToLoad))
+        .eq("user_id", loggedInReviewUser.id)
+        .maybeSingle();
+
+    if (error) {
+        console.warn("Unable to load current customer's review:", error.message);
+        if (formMessage) {
+            formMessage.className = "review-form-message error";
+            formMessage.textContent = "Review setup is not ready yet. Please check the Supabase review SQL setup.";
+        }
+        return;
+    }
+
+    if (existingReview) {
+        setReviewRating(existingReview.rating);
+        document.getElementById("review-title").value = existingReview.review_title || "";
+        document.getElementById("review-text").value = existingReview.review_text || "";
+        if (formTitle) formTitle.textContent = "Update Your Review";
+        if (submitButton) submitButton.textContent = "Update Review";
+    } else {
+        setReviewRating(0);
+        document.getElementById("review-title").value = "";
+        document.getElementById("review-text").value = "";
+        if (formTitle) formTitle.textContent = "Write a Review";
+        if (submitButton) submitButton.textContent = "Submit Review";
+    }
+    if (formMessage) {
+        formMessage.textContent = "";
+        formMessage.className = "review-form-message";
+    }
+}
+
+document.getElementById("review-form")?.addEventListener("submit", async function(event) {
+    event.preventDefault();
+    const message = document.getElementById("review-form-message");
+    const button = document.getElementById("submit-review-btn");
+    const title = document.getElementById("review-title").value.trim();
+    const body = document.getElementById("review-text").value.trim();
+
+    if (!currentProduct) {
+        if (message) { message.className = "review-form-message error"; message.textContent = "Product is still loading. Please try again."; }
+        return;
+    }
+    if (!loggedInReviewUser) {
+        if (message) { message.className = "review-form-message error"; message.textContent = "Please login before submitting a review."; }
+        return;
+    }
+    if (selectedReviewRating < 1 || selectedReviewRating > 5) {
+        if (message) { message.className = "review-form-message error"; message.textContent = "Please select a star rating from 1 to 5."; }
+        return;
+    }
+    if (body.length < 5 || body.length > 1200) {
+        if (message) { message.className = "review-form-message error"; message.textContent = "Your review must be between 5 and 1200 characters."; }
+        return;
+    }
+
+    if (button) { button.disabled = true; button.textContent = "Saving review…"; }
+    if (message) { message.className = "review-form-message"; message.textContent = "Checking your delivered order and saving review…"; }
+
+    const reviewPayload = {
+        product_id: Number(currentProduct.id),
+        user_id: loggedInReviewUser.id,
+        rating: selectedReviewRating,
+        review_title: title,
+        review_text: body,
+        updated_at: new Date().toISOString()
+    };
+
+    const { error } = await supabaseClient
+        .from("product_reviews")
+        .upsert(reviewPayload, { onConflict: "product_id,user_id" });
+
+    if (button) { button.disabled = false; button.textContent = "Save Review"; }
+    if (error) {
+        console.error("Review save error:", error);
+        const rawMessage = String(error.message || "");
+        const eligibleMessage = /row-level security|permission|policy/i.test(rawMessage)
+            ? "Only a signed-in customer whose order for this product is marked Delivered can submit a review."
+            : "Unable to save the review. Please check the review table setup and try again.";
+        if (message) { message.className = "review-form-message error"; message.textContent = eligibleMessage; }
+        return;
+    }
+
+    await loadProductReviews(currentProduct.id);
+    await prepareReviewForm(currentProduct.id);
+    if (message) { message.className = "review-form-message success"; message.textContent = "Thank you — your review has been saved."; }
+});
 
 loadProduct();
 </script>

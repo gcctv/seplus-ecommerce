@@ -8,7 +8,7 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>SEPLUS - CCTV Store</title>
+    <title>GLOBALLIX - CCTV Store</title>
 
     <link rel="icon" href="data:,">
 
@@ -1274,7 +1274,7 @@
 
 
 
-        /* SEPLUS Moglix-inspired homepage refresh */
+        /* GLOBALLIX Moglix-inspired homepage refresh */
         :root { --se-navy:#102a43; --se-navy-deep:#081b2d; --se-blue:#1d4ed8; --se-amber:#f59e0b; --se-muted:#64748b; }
         html { scroll-behavior:smooth; scroll-padding-top:120px; }
         body { background:#f5f7fb; color:#172033; }
@@ -1541,7 +1541,7 @@
         }
 
 
-/* SEPLUS promotional banner slider - content managed from Admin Panel */
+/* GLOBALLIX promotional banner slider - content managed from Admin Panel */
 #banner-carousel[hidden], .hero[hidden] { display:none !important; }
 .banner-carousel { position:relative; isolation:isolate; height:auto; aspect-ratio:2.4 / 1; min-height:0; margin:18px clamp(12px,2vw,28px) 0; overflow:hidden; border-radius:16px; background:#0a2036; box-shadow:0 14px 34px rgba(15,23,42,.14); }
 .banner-slides { position:absolute; inset:0; }
@@ -1568,6 +1568,72 @@
 @media(max-width:420px) { .banner-carousel { height:auto; min-height:0; aspect-ratio:2.4 / 1; } .banner-copy { width:calc(100% - 68px); left:18px; } .banner-copy h2 { font-size:23px; } .banner-copy p { font-size:12px; } .banner-slide.has-copy::after { background:linear-gradient(90deg,rgba(5,20,36,.78),rgba(5,20,36,.42)); } }
 @media(prefers-reduced-motion:reduce) { .banner-slide { transition:none; } }
 
+
+
+        /* Moglix-inspired category listing refinements for GLOBALLIX */
+        .catalog-breadcrumbs { display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin:0 0 13px; color:#94a3b8; font-size:12px; }
+        .catalog-breadcrumbs a { color:#64748b; text-decoration:none; }
+        .catalog-breadcrumbs a:hover { color:#1d4ed8; text-decoration:underline; }
+        .catalog-breadcrumbs strong { color:#334155; font-weight:700; }
+        .catalog-title-row { align-items:flex-end; }
+        #dynamic-products { grid-template-columns:repeat(4,minmax(0,1fr)); gap:17px; }
+        .catalog-heading-copy { min-width:0; }
+        .catalog-controls { display:flex; align-items:flex-end; justify-content:flex-end; gap:16px; flex-wrap:wrap; }
+        .catalog-result-count { color:#64748b; font-size:12px; white-space:nowrap; }
+        .catalog-sort { display:flex; align-items:center; gap:8px; color:#475569; font-size:12px; white-space:nowrap; }
+        .catalog-sort select { margin:0; min-width:150px; height:40px; padding:0 10px; border:1px solid #cbd5e1; border-radius:8px; background:#fff; color:#14263b; font-size:13px; }
+        .shop-by-brands { margin:0 0 18px; padding:15px 16px 16px; border:1px solid #e2e8f0; border-radius:12px; background:#fff; box-shadow:0 4px 14px rgba(15,23,42,.035); }
+        .shop-by-brands[hidden] { display:none !important; }
+        .shop-by-brands-title { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:12px; color:#15283d; font-size:14px; font-weight:800; }
+        .shop-by-brands-title small { color:#64748b; font-size:11px; font-weight:500; }
+        .brand-chips { display:flex; flex-wrap:wrap; gap:8px; }
+        .brand-chip { padding:8px 13px; border:1px solid #dbe3ed; border-radius:999px; background:#f8fafc; color:#334155; font-size:12px; font-weight:700; cursor:pointer; transition:background .15s,border-color .15s,color .15s; }
+        .brand-chip:hover,.brand-chip.active { border-color:#2563eb; background:#eff6ff; color:#1d4ed8; }
+        .brand-filter-list { display:flex; flex-direction:column; gap:10px; max-height:210px; overflow:auto; }
+        .brand-filter-list .sidebar-checkbox { line-height:1.35; }
+        .price-range-fields { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+        .price-range-fields input { min-width:0; width:100%; height:38px; margin:0; padding:0 9px; border:1px solid #d5dde7; border-radius:7px; font-size:12px; }
+        .price-actions { display:flex; gap:7px; margin-top:9px; }
+        .price-actions button { flex:1; min-height:34px; padding:7px 9px; border:1px solid #dbe3ed; border-radius:7px; background:#f8fafc; color:#334155; font-size:12px; font-weight:700; cursor:pointer; }
+        .price-actions button:first-child { border-color:#102a43; background:#102a43; color:#fff; }
+        .discount-select { width:100%; height:38px; margin:0; padding:0 9px; border:1px solid #d5dde7; border-radius:7px; background:#fff; color:#334155; font-size:12px; }
+        .catalog-sidebar .sidebar-section { background:#fff; }
+        .product-brand-label { margin:0 0 7px !important; color:#64748b !important; font-size:11px !important; font-weight:700; text-transform:uppercase; letter-spacing:.4px; }
+        #dynamic-products .product h3 { min-height:44px; }
+        #dynamic-products .product .price { margin-top:7px; }
+        body.search-mode .shop-by-brands { display:block; }
+        body.search-mode .catalog-breadcrumbs { margin-top:0; }
+        body.search-mode #products .catalog-title-row { border-bottom:1px solid #e5eaf1; padding-bottom:16px; margin-bottom:16px; }
+        @media(max-width:1000px) {
+            .catalog-title-row { align-items:flex-start; }
+            .catalog-controls { align-items:center; justify-content:flex-start; }
+        }
+        @media(max-width:800px) {
+            .catalog-title-row { display:flex; flex-direction:column; align-items:stretch; gap:14px; }
+            .catalog-controls { justify-content:space-between; gap:10px; }
+            .catalog-sort { margin-left:auto; }
+            .catalog-sort select { min-width:135px; max-width:48vw; }
+            .shop-by-brands { padding:13px; }
+            .brand-chips { flex-wrap:nowrap; overflow-x:auto; padding-bottom:3px; }
+            .brand-chip { flex:0 0 auto; }
+            .brand-filter-list { max-height:150px; }
+        }
+        @media(max-width:420px) {
+            .catalog-result-count { font-size:11px; }
+            .catalog-sort { font-size:11px; gap:5px; }
+            .catalog-sort select { min-width:120px; width:120px; font-size:12px; }
+            .brand-chip { padding:7px 11px; }
+        }
+
+
+        /* Genuine customer rating summaries on product cards */
+        .product-rating { display:flex; align-items:center; flex-wrap:wrap; gap:5px; margin:7px 0 9px !important; color:#64748b; font-size:12px; line-height:1.35; }
+        .product-rating .rating-stars { color:#f59e0b; font-size:15px; letter-spacing:.35px; white-space:nowrap; }
+        .product-rating strong { color:#334155; font-size:12px; }
+        .product-rating .rating-count { color:#64748b; }
+        .product-rating.no-rating { color:#94a3b8; }
+        .product-rating.rating-unavailable { color:#94a3b8; font-size:11px; }
+
 </style>
 
 </head>
@@ -1579,12 +1645,12 @@
 
 
 <div class="top-strip" aria-label="Store information">
-    <span>SEPLUS <b>SECURITY SOLUTIONS</b></span>
+    <span>GLOBALLIX <b>SECURITY SOLUTIONS</b></span>
 </div>
 
 <header class="site-header">
-    <div class="logo" aria-label="SEPLUS CCTV and security store">
-        <span>SEPLUS</span>
+    <div class="logo" aria-label="GLOBALLIX CCTV and security store">
+        <span>GLOBALLIX</span>
         <small>SECURITY SOLUTIONS</small>
     </div>
 
@@ -1616,7 +1682,7 @@
             <div class="profile-dropdown" id="profile-dropdown" hidden>
                 <div class="profile-dropdown-header">
                     <span class="profile-avatar" aria-hidden="true">👤</span>
-                    <div><strong id="user-name">Account</strong><small>Manage your SEPLUS account</small></div>
+                    <div><strong id="user-name">Account</strong><small>Manage your GLOBALLIX account</small></div>
                 </div>
                 <a href="my-orders.html">My Orders</a>
                 <a href="service-dashboard.html" id="service-management-link" style="display:none;">Service Management</a>
@@ -1629,7 +1695,7 @@
 
 
 
-<section class="banner-carousel" id="banner-carousel" aria-label="SEPLUS promotional banners" hidden>
+<section class="banner-carousel" id="banner-carousel" aria-label="GLOBALLIX promotional banners" hidden>
     <div class="banner-slides" id="banner-slides"></div>
     <button type="button" class="banner-arrow prev" id="banner-prev" aria-label="Previous banner">&#8249;</button>
     <button type="button" class="banner-arrow next" id="banner-next" aria-label="Next banner">&#8250;</button>
@@ -1638,7 +1704,7 @@
 
 <section class="hero" id="default-hero" aria-labelledby="hero-title">
     <div class="hero-copy">
-        <span class="hero-kicker"><span class="kicker-dot"></span> SEPLUS SECURITY SOLUTIONS</span>
+        <span class="hero-kicker"><span class="kicker-dot"></span> GLOBALLIX SECURITY SOLUTIONS</span>
         <h1 id="hero-title">Smart security.<br><span>Stronger protection.</span></h1>
         <p>Explore CCTV cameras, NVR/DVR recorders, surveillance storage and the accessories that keep your security system connected.</p>
         <div class="hero-actions">
@@ -1709,21 +1775,69 @@
                 </div>
             </div>
 
+            <div class="sidebar-section">
+                <h4>Brand</h4>
+                <div id="brand-filter-list" class="brand-filter-list"><span class="small-note">Loading brands…</span></div>
+            </div>
+
+            <div class="sidebar-section">
+                <h4>Price (₹)</h4>
+                <div class="price-range-fields">
+                    <input type="number" id="min-price" min="0" step="1" inputmode="numeric" placeholder="Min price" aria-label="Minimum price">
+                    <input type="number" id="max-price" min="0" step="1" inputmode="numeric" placeholder="Max price" aria-label="Maximum price">
+                </div>
+                <div class="price-actions">
+                    <button type="button" id="apply-price-filter">Apply price</button>
+                    <button type="button" id="clear-price-filter">Clear</button>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <h4>Discount</h4>
+                <select id="minimum-discount" class="discount-select" aria-label="Minimum discount">
+                    <option value="0">All discounts</option>
+                    <option value="10">10% and above</option>
+                    <option value="25">25% and above</option>
+                    <option value="50">50% and above</option>
+                    <option value="75">75% and above</option>
+                </select>
+            </div>
+
             <div class="sidebar-section sidebar-availability">
                 <h4>Availability</h4>
                 <label class="sidebar-checkbox"><input type="checkbox" id="in-stock-only"> In stock only</label>
             </div>
-            <p class="sidebar-note">Choose a category to narrow down CCTV products.</p>
+            <p class="sidebar-note">Filters use product details saved in the GLOBALLIX catalogue.</p>
         </aside>
 
         <div class="catalog-main">
+            <nav class="catalog-breadcrumbs" id="catalog-breadcrumbs" aria-label="Breadcrumb">
+                <a href="store.html">Home</a><span aria-hidden="true">›</span><span>CCTV &amp; Security</span><span aria-hidden="true">›</span><strong id="breadcrumb-current">All Products</strong>
+            </nav>
             <div class="catalog-title-row">
-                <div>
-                    <span class="section-eyebrow">SECURITY ESSENTIALS</span>
+                <div class="catalog-heading-copy">
+                    <span class="section-eyebrow">GLOBALLIX CCTV &amp; SECURITY</span>
                     <h2 class="section-title">Featured Products</h2>
                     <p class="catalog-subtitle">Explore our CCTV and security products.</p>
                 </div>
+                <div class="catalog-controls">
+                    <span class="catalog-result-count" id="result-count" aria-live="polite">Loading products…</span>
+                    <label class="catalog-sort">Sort by
+                        <select id="sort-products" aria-label="Sort products">
+                            <option value="featured">Featured</option>
+                            <option value="price-low">Price: Low to High</option>
+                            <option value="price-high">Price: High to Low</option>
+                            <option value="discount-high">Discount: High to Low</option>
+                            <option value="name-asc">Name: A to Z</option>
+                        </select>
+                    </label>
+                </div>
             </div>
+            <section class="shop-by-brands" id="shop-by-brands" hidden aria-label="Shop by brands">
+                <div class="shop-by-brands-title"><span>Shop by Brands</span><small>Choose a brand to filter products</small></div>
+                <div class="brand-chips" id="brand-chips"></div>
+            </section>
+            <p id="catalog-filter-notice" class="error" hidden style="margin:0 0 14px;"></p>
             <div class="products">
                 <div id="dynamic-products"></div>
                 <p id="discounts-empty-message" class="empty" hidden>No products currently qualify for the 50% OFF offer. Please check back for selected deals.</p>
@@ -1734,7 +1848,7 @@
 
 <footer>
 
-    <p>© 2026 SEPLUS. All Rights Reserved.</p>
+    <p>© 2026 GLOBALLIX. All Rights Reserved.</p>
 
     <p>CCTV & Security Solutions</p>
 
@@ -1759,6 +1873,71 @@ const supabaseClient = window.supabase.createClient(
     SUPABASE_PUBLISHABLE_KEY
 
 );
+
+// Each signed-in GLOBALLIX customer gets a separate browser cart.
+// The old "cart" key is deliberately not imported because it may contain
+// items mixed from multiple accounts before this account-isolation fix.
+const GLOBALLIX_GUEST_CART_KEY = "globallix_cart_guest";
+const GLOBALLIX_USER_CART_PREFIX = "globallix_cart_user_";
+
+function readStoredCart(storageKey) {
+    try {
+        const parsed = JSON.parse(localStorage.getItem(storageKey) || "[]");
+        return Array.isArray(parsed) ? parsed : [];
+    } catch (error) {
+        console.warn("Unable to read saved cart:", error);
+        return [];
+    }
+}
+
+function mergeGuestCartIntoUserCart(userCartKey) {
+    const guestCart = readStoredCart(GLOBALLIX_GUEST_CART_KEY);
+    if (!guestCart.length) return;
+
+    const userCart = readStoredCart(userCartKey);
+
+    guestCart.forEach(guestItem => {
+        const guestId = guestItem?.id == null ? "" : String(guestItem.id);
+        const guestName = String(guestItem?.name || "").trim().toLowerCase();
+
+        const existingItem = userCart.find(userItem => {
+            const userId = userItem?.id == null ? "" : String(userItem.id);
+            if (guestId && userId) return guestId === userId;
+            return guestName && String(userItem?.name || "").trim().toLowerCase() === guestName;
+        });
+
+        if (existingItem) {
+            existingItem.quantity =
+                Math.max(1, Number(existingItem.quantity || 1)) +
+                Math.max(1, Number(guestItem.quantity || 1));
+            if (existingItem.stock == null && guestItem.stock != null) {
+                existingItem.stock = guestItem.stock;
+            }
+            if (!existingItem.image && guestItem.image) existingItem.image = guestItem.image;
+        } else {
+            userCart.push(guestItem);
+        }
+    });
+
+    localStorage.setItem(userCartKey, JSON.stringify(userCart));
+    localStorage.removeItem(GLOBALLIX_GUEST_CART_KEY);
+}
+
+async function resolveActiveCartStorageKey(userOverride = undefined) {
+    let activeUser = userOverride;
+
+    if (activeUser === undefined) {
+        const { data, error } = await supabaseClient.auth.getUser();
+        if (error) throw error;
+        activeUser = data?.user || null;
+    }
+
+    if (!activeUser?.id) return GLOBALLIX_GUEST_CART_KEY;
+
+    const userCartKey = GLOBALLIX_USER_CART_PREFIX + activeUser.id;
+    mergeGuestCartIntoUserCart(userCartKey);
+    return userCartKey;
+}
 
 // ------------------------------------------------------------------
 // Public Store banner carousel. Active banners are managed in Admin Panel.
@@ -1794,7 +1973,7 @@ async function loadStoreBannerCarousel() {
 
     if (error) {
         // Until the SQL setup is run, the current hero remains visible.
-        console.warn("SEPLUS banner slider not loaded:", error.message);
+        console.warn("GLOBALLIX banner slider not loaded:", error.message);
         return;
     }
     const banners = (data || []).filter(item => item && item.image_url);
@@ -1812,7 +1991,7 @@ async function loadStoreBannerCarousel() {
             ${buttonText ? `<a class="banner-shop-link" href="${escapeBannerHtml(link)}">${escapeBannerHtml(buttonText)} <span aria-hidden="true">→</span></a>` : ""}
         </div>` : "";
         return `<div class="banner-slide${index === 0 ? " active" : ""}${hasCopy ? " has-copy" : ""}" role="group" aria-roledescription="slide" aria-label="${index + 1} of ${banners.length}" aria-hidden="${index === 0 ? "false" : "true"}">
-            <a class="banner-image-link" href="${escapeBannerHtml(link)}" aria-label="Open ${escapeBannerHtml(title || "SEPLUS banner offer")}"><img src="${escapeBannerHtml(banner.image_url)}" alt="${escapeBannerHtml(title || "SEPLUS promotional banner")}" ${index === 0 ? "fetchpriority=\"high\"" : "loading=\"lazy\""}></a>
+            <a class="banner-image-link" href="${escapeBannerHtml(link)}" aria-label="Open ${escapeBannerHtml(title || "GLOBALLIX banner offer")}"><img src="${escapeBannerHtml(banner.image_url)}" alt="${escapeBannerHtml(title || "GLOBALLIX promotional banner")}" ${index === 0 ? "fetchpriority=\"high\"" : "loading=\"lazy\""}></a>
             ${copy}
         </div>`;
     }).join("");
@@ -1929,7 +2108,16 @@ async function addToCart(id, name, price, stock, button = null) {
 
 
 
-    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    let cartStorageKey;
+    try {
+        cartStorageKey = await resolveActiveCartStorageKey();
+    } catch (error) {
+        console.error("Unable to identify the current customer's cart:", error);
+        showToast("Unable to load your cart. Please refresh and try again.", "warning");
+        return;
+    }
+
+    let cart = readStoredCart(cartStorageKey);
 
     const productId = Number(id);
 
@@ -1995,9 +2183,11 @@ async function addToCart(id, name, price, stock, button = null) {
 
 
 
-    localStorage.setItem("cart", JSON.stringify(cart));
+    localStorage.setItem(cartStorageKey, JSON.stringify(cart));
 
-    updateCartCount();
+    updateCartCount().catch(error => {
+    console.error("Unable to update the cart count:", error);
+});
 
 
 
@@ -2015,7 +2205,7 @@ async function addToCart(id, name, price, stock, button = null) {
 
 
 
-            const latestCart = JSON.parse(localStorage.getItem("cart")) || [];
+            const latestCart = readStoredCart(cartStorageKey);
 
             const latestItem = latestCart.find(
 
@@ -2061,9 +2251,10 @@ async function addToCart(id, name, price, stock, button = null) {
 
 
 
-function updateCartCount() {
+async function updateCartCount() {
 
-    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    const cartStorageKey = await resolveActiveCartStorageKey();
+    const cart = readStoredCart(cartStorageKey);
 
 
 
@@ -2083,7 +2274,9 @@ function updateCartCount() {
 
 
 
-updateCartCount();
+updateCartCount().catch(error => {
+    console.error("Unable to update the cart count:", error);
+});
 
 
 
@@ -2115,6 +2308,15 @@ async function loadAdminProducts() {
 
     const container = document.getElementById("dynamic-products");
 
+    let cartStorageKey;
+    try {
+        cartStorageKey = await resolveActiveCartStorageKey();
+    } catch (error) {
+        console.error("Unable to identify the current customer's cart:", error);
+        container.innerHTML = "<p>Unable to load your cart state. Please refresh the page.</p>";
+        return;
+    }
+
 
 
     container.innerHTML = "<p>Loading products...</p>";
@@ -2145,7 +2347,28 @@ async function loadAdminProducts() {
 
     container.innerHTML = "";
 
-
+    // Read real customer ratings; do not invent stars for products without reviews.
+    const ratingSummaryByProduct = new Map();
+    let ratingDataLoaded = false;
+    const productIdsForRatings = (data || []).map(product => Number(product.id)).filter(Number.isFinite);
+    if (productIdsForRatings.length) {
+        const { data: reviewRows, error: reviewRowsError } = await supabaseClient
+            .from("product_reviews")
+            .select("product_id,rating")
+            .in("product_id", productIdsForRatings);
+        if (reviewRowsError) {
+            console.warn("Product card ratings are not available yet. Run the product-reviews SQL setup first.", reviewRowsError.message);
+        } else {
+            ratingDataLoaded = true;
+            (reviewRows || []).forEach(review => {
+                const key = String(review.product_id);
+                const current = ratingSummaryByProduct.get(key) || { total: 0, count: 0 };
+                current.total += Number(review.rating) || 0;
+                current.count += 1;
+                ratingSummaryByProduct.set(key, current);
+            });
+        }
+    }
 
     data.forEach(product => {
 
@@ -2154,17 +2377,34 @@ async function loadAdminProducts() {
 
 
         card.className = "product";
+        card.dataset.originalOrder = String(container.children.length);
 
         card.dataset.category = product.category || "Accessories";
-        card.dataset.stock = String(Number(product.stock) || 0);
+        const availableStock = Number(product.stock ?? 0);
+        card.dataset.stock = String(Number.isFinite(availableStock) ? availableStock : 0);
+        card.dataset.brand = String(product.brand || "").trim();
         const productMrp = Number(product.mrp || product.price || 0);
         const productPrice = Number(product.price || 0);
+        card.dataset.price = String(productPrice);
         const productDiscountPercent = productMrp > productPrice && productMrp > 0
             ? Math.round(((productMrp - productPrice) / productMrp) * 100)
             : 0;
         card.dataset.discountPercent = String(productDiscountPercent);
-
-
+        const brandLabel = card.dataset.brand
+            ? `<p class="product-brand-label">${escapeBannerHtml(card.dataset.brand)}</p>`
+            : "";
+        const ratingSummary = ratingSummaryByProduct.get(String(product.id));
+        let ratingMarkup = "";
+        if (!ratingDataLoaded) {
+            ratingMarkup = `<p class="product-rating rating-unavailable">Ratings unavailable</p>`;
+        } else if (ratingSummary && ratingSummary.count > 0) {
+            const averageRating = ratingSummary.total / ratingSummary.count;
+            const roundedStars = Math.max(0, Math.min(5, Math.round(averageRating)));
+            const stars = "★".repeat(roundedStars) + "☆".repeat(5 - roundedStars);
+            ratingMarkup = `<p class="product-rating" aria-label="${averageRating.toFixed(1)} out of 5 based on ${ratingSummary.count} reviews"><span class="rating-stars">${stars}</span><strong>${averageRating.toFixed(1)}</strong><span class="rating-count">(${ratingSummary.count})</span></p>`;
+        } else {
+            ratingMarkup = `<p class="product-rating no-rating"><span class="rating-stars">☆☆☆☆☆</span><span>No ratings yet</span></p>`;
+        }
 
         card.innerHTML = `
 
@@ -2182,7 +2422,9 @@ async function loadAdminProducts() {
 
             </a>
 
+            ${ratingMarkup}
 
+            ${brandLabel}
 
             <p>
 
@@ -2218,45 +2460,21 @@ async function loadAdminProducts() {
 
 
 
-            <p class="${
-
-                Number(product.stock) <= 0
-
-                    ? "stock-out"
-
-                    : Number(product.stock) <= 3
-
-                        ? "stock-low"
-
-                        : "stock-available"
-
-            }">
-
-                ${
-
-                    Number(product.stock) <= 0
-
-                    ? "Out of Stock"
-
-                    : Number(product.stock) <= 3
-
-                        ? `Only ${product.stock} left in stock`
-
-                        : `${product.stock} items in stock`
-
-                }
-
-            </p>
+            ${availableStock > 5 ? "" : `
+                <p class="${availableStock <= 0 ? "stock-out" : "stock-low"}">
+                    ${availableStock <= 0 ? "Out of Stock" : "Limited Stock"}
+                </p>
+            `}
 
 
 
            <button class="add-cart"
 
-    ${Number(product.stock) <= 0 ? "disabled" : ""}
+    ${availableStock <= 0 ? "disabled" : ""}
 
     data-product-id="${product.id}">
 
-    ${Number(product.stock) <= 0 ? "Out of Stock" : "Add to Cart"}
+    ${availableStock <= 0 ? "Out of Stock" : "Add to Cart"}
 
 </button>
 
@@ -2272,7 +2490,7 @@ async function loadAdminProducts() {
 
 
 
-        if (addButton && Number(product.stock) > 0) {
+        if (addButton && availableStock > 0) {
 
             addButton.addEventListener("click", function () {
 
@@ -2294,7 +2512,7 @@ async function loadAdminProducts() {
 
 
 
-            const currentCart = JSON.parse(localStorage.getItem("cart")) || [];
+            const currentCart = readStoredCart(cartStorageKey);
 
             const currentItem = currentCart.find(
 
@@ -2322,6 +2540,7 @@ async function loadAdminProducts() {
 
     });
 
+    if (typeof populateBrandFilters === "function") populateBrandFilters();
     if (typeof filterProducts === "function") filterProducts();
 }
 
@@ -2342,145 +2561,236 @@ function getDiscountThresholdFromHash() {
     return threshold >= 1 && threshold <= 100 ? threshold : null;
 }
 
-function filterProducts() {
+function normalizeProductCategory(value) {
+    let normalized = String(value || "").trim().toLowerCase().replace(/\s*\/\s*/g, "/").replace(/\s+/g, " ");
+    if (normalized === "nvr") normalized = "nvr/dvr";
+    if (normalized === "surveillance hdd") normalized = "hdd";
+    return normalized;
+}
 
-    const searchText = searchInput.value.toLowerCase().trim();
+function getSelectedBrands() {
+    return new Set(Array.from(document.querySelectorAll("[data-brand-filter]:checked"))
+        .map(input => String(input.value || "").trim().toLowerCase()).filter(Boolean));
+}
+
+function sortProductCards() {
+    const container = document.getElementById("dynamic-products");
+    if (!container) return;
+    const mode = document.getElementById("sort-products")?.value || "featured";
+    const cards = Array.from(container.querySelectorAll(".product"));
+    const compareText = (a, b) => String(a.querySelector("h3")?.textContent || "")
+        .localeCompare(String(b.querySelector("h3")?.textContent || ""), undefined, { sensitivity: "base" });
+    cards.sort((a, b) => {
+        const priceA = Number(a.dataset.price || 0);
+        const priceB = Number(b.dataset.price || 0);
+        const discountA = Number(a.dataset.discountPercent || 0);
+        const discountB = Number(b.dataset.discountPercent || 0);
+        if (mode === "price-low") return priceA - priceB;
+        if (mode === "price-high") return priceB - priceA;
+        if (mode === "discount-high") return discountB - discountA || priceA - priceB;
+        if (mode === "name-asc") return compareText(a, b);
+        return Number(a.dataset.originalOrder || 0) - Number(b.dataset.originalOrder || 0);
+    });
+    cards.forEach((card, index) => {
+        if (!card.dataset.originalOrder) card.dataset.originalOrder = String(index);
+        container.appendChild(card);
+    });
+}
+
+function populateBrandFilters() {
+    const list = document.getElementById("brand-filter-list");
+    const chips = document.getElementById("brand-chips");
+    if (!list || !chips) return;
+    const cards = Array.from(document.querySelectorAll("#dynamic-products .product"));
+    const brands = [...new Set(cards.map(card => String(card.dataset.brand || "").trim()).filter(Boolean))]
+        .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
+    list.innerHTML = "";
+    if (!brands.length) {
+        list.innerHTML = '<span class="small-note">Brand details have not been added to products yet.</span>';
+        chips.innerHTML = "";
+        const section = document.getElementById("shop-by-brands");
+        if (section) section.hidden = true;
+        return;
+    }
+    brands.forEach(brand => {
+        const label = document.createElement("label");
+        label.className = "sidebar-checkbox";
+        const input = document.createElement("input");
+        input.type = "checkbox";
+        input.value = brand;
+        input.dataset.brandFilter = "";
+        input.setAttribute("aria-label", "Filter by brand " + brand);
+        input.addEventListener("change", filterProducts);
+        label.appendChild(input);
+        label.appendChild(document.createTextNode(" " + brand));
+        list.appendChild(label);
+    });
+    renderBrandChips();
+}
+
+function renderBrandChips() {
+    const chips = document.getElementById("brand-chips");
+    const section = document.getElementById("shop-by-brands");
+    if (!chips || !section) return;
+    const selectedCategory = normalizeProductCategory(document.getElementById("categoryFilter")?.value || "all");
+    const selectedBrands = getSelectedBrands();
+    const cards = Array.from(document.querySelectorAll("#dynamic-products .product"));
+    const brands = [...new Set(cards.filter(card => {
+        return selectedCategory === "all" || normalizeProductCategory(card.dataset.category) === selectedCategory;
+    }).map(card => String(card.dataset.brand || "").trim()).filter(Boolean))]
+        .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
+    chips.innerHTML = "";
+    brands.forEach(brand => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "brand-chip" + (selectedBrands.has(brand.toLowerCase()) ? " active" : "");
+        button.textContent = brand;
+        button.setAttribute("aria-pressed", selectedBrands.has(brand.toLowerCase()) ? "true" : "false");
+        button.addEventListener("click", () => {
+            const checkbox = Array.from(document.querySelectorAll("[data-brand-filter]"))
+                .find(input => input.value.toLowerCase() === brand.toLowerCase());
+            if (checkbox) checkbox.checked = !checkbox.checked;
+            filterProducts();
+        });
+        chips.appendChild(button);
+    });
+    section.hidden = !document.body.classList.contains("search-mode") || !brands.length;
+}
+
+function updateCategoryHeader({ searchText, discountThreshold, selectedCategory, selectedBrands, minPrice, maxPrice, minDiscount, inStockOnly }) {
+    const title = document.querySelector("#products .section-title");
+    const subtitle = document.querySelector("#products .catalog-subtitle");
+    const breadcrumb = document.getElementById("breadcrumb-current");
+    let currentTitle = "Featured Products";
+    let description = "Explore our CCTV and security products.";
+    const categorySelect = document.getElementById("categoryFilter");
+
+    if (discountThreshold !== null) {
+        currentTitle = `${discountThreshold}% OFF Offers`;
+        description = `Selected products with at least ${discountThreshold}% savings based on current MRP and selling price.`;
+    } else if (searchText) {
+        currentTitle = "Search Results";
+        description = `Products matching “${searchText}”.`;
+    } else if (selectedCategory !== "all") {
+        currentTitle = (categorySelect?.options[categorySelect.selectedIndex]?.text || "CCTV") + " Products";
+        const categoryDescriptions = {
+            "ip camera": "Explore network cameras for indoor and outdoor monitoring.",
+            "nvr/dvr": "Browse recorders for dependable CCTV video storage.",
+            "hdd": "Find surveillance storage for continuous recording.",
+            "poe switch": "Connect and power compatible IP cameras with PoE networking.",
+            "accessories": "Browse CCTV installation parts, cables and power accessories.",
+            "cctv kits": "Explore complete surveillance kits and bundled equipment."
+        };
+        description = categoryDescriptions[selectedCategory] || "Browse products in this category.";
+    } else if (selectedBrands.size === 1) {
+        currentTitle = `${Array.from(selectedBrands)[0]} Products`;
+        description = "Explore products from your selected brand.";
+    } else if (minPrice !== null || maxPrice !== null) {
+        currentTitle = "Products by Price Range";
+        description = "Products matching your selected budget.";
+    } else if (minDiscount > 0) {
+        currentTitle = `${minDiscount}% Discount and Above`;
+        description = "Products matching your selected minimum discount.";
+    } else if (inStockOnly) {
+        currentTitle = "In-stock Products";
+        description = "Products currently marked as available in stock.";
+    }
+
+    if (title) title.textContent = currentTitle;
+    if (subtitle) subtitle.textContent = description;
+    if (breadcrumb) breadcrumb.textContent = currentTitle;
+}
+
+function filterProducts() {
+    const searchText = String(searchInput.value || "").toLowerCase().trim();
     const discountThreshold = getDiscountThresholdFromHash();
     const discountMode = discountThreshold !== null;
     const discountsEmptyMessage = document.getElementById("discounts-empty-message");
-    const catalogSubtitle = document.querySelector("#products .catalog-subtitle");
-    const defaultCatalogSubtitle = "Explore our CCTV and security products.";
     if (discountsEmptyMessage) {
         discountsEmptyMessage.textContent = discountMode
             ? `No products currently qualify for the ${discountThreshold}% OFF offer. Please check back for selected deals.`
             : "No products currently qualify for this discount offer. Please check back for selected deals.";
     }
 
-
-
-    let selectedCategory = categoryFilter.value.toLowerCase();
-
-
-
-    // Category name mapping
-
-    if (selectedCategory === "nvr") {
-
-        selectedCategory = "nvr/dvr";
-
-    }
-
-
-
-    if (selectedCategory === "surveillance hdd") {
-
-        selectedCategory = "hdd";
-
-    }
-
-
-
-    // Compact the page while searching so matching products appear immediately.
+    const selectedCategory = normalizeProductCategory(categoryFilter.value);
+    const selectedBrands = getSelectedBrands();
+    const minValue = document.getElementById("min-price")?.value.trim();
+    const maxValue = document.getElementById("max-price")?.value.trim();
+    const minPrice = minValue !== undefined && minValue !== "" && Number.isFinite(Number(minValue)) ? Math.max(0, Number(minValue)) : null;
+    const maxPrice = maxValue !== undefined && maxValue !== "" && Number.isFinite(Number(maxValue)) ? Math.max(0, Number(maxValue)) : null;
+    const minDiscount = Number(document.getElementById("minimum-discount")?.value || 0);
     const inStockOnly = document.getElementById("in-stock-only")?.checked || false;
-    const isSearchMode = searchText.length > 0 || selectedCategory !== "all" || inStockOnly || discountMode;
+    const hasPriceFilter = minPrice !== null || maxPrice !== null;
+    const isSearchMode = searchText.length > 0 || selectedCategory !== "all" || inStockOnly || discountMode || selectedBrands.size > 0 || hasPriceFilter || minDiscount > 0;
     document.body.classList.toggle("search-mode", isSearchMode);
 
     document.querySelectorAll("[data-sidebar-category]").forEach(button => {
-        button.classList.toggle("active", button.dataset.sidebarCategory.toLowerCase() === selectedCategory);
+        button.classList.toggle("active", normalizeProductCategory(button.dataset.sidebarCategory) === selectedCategory);
     });
 
-    if (productsSectionTitle) {
-        if (discountMode) {
-            productsSectionTitle.textContent = `${discountThreshold}% OFF Offers`;
-        } else if (searchText.length > 0) {
-            productsSectionTitle.textContent = "Search Results";
-        } else if (categoryFilter.value !== "all") {
-            const categoryLabel = categoryFilter.options[categoryFilter.selectedIndex].text;
-            productsSectionTitle.textContent = categoryLabel + " Products";
-        } else if (inStockOnly) {
-            productsSectionTitle.textContent = "In-stock Products";
-        } else {
-            productsSectionTitle.textContent = "Featured Products";
-        }
-    }
-    if (catalogSubtitle) {
-        catalogSubtitle.textContent = discountMode
-            ? `Selected products with at least ${discountThreshold}% savings based on current MRP and selling price.`
-            : defaultCatalogSubtitle;
-    }
+    updateCategoryHeader({ searchText, discountThreshold, selectedCategory, selectedBrands, minPrice, maxPrice, minDiscount, inStockOnly });
+    renderBrandChips();
+    sortProductCards();
 
-    const products = document.querySelectorAll(".product");
+    const products = document.querySelectorAll("#dynamic-products .product");
     let visibleProductCount = 0;
-
-
-
     products.forEach(product => {
-
-
-
-        const productText =
-
-            product.querySelector("h3").textContent.toLowerCase();
-
-
-
-        let productCategory =
-
-            (product.dataset.category || "").toLowerCase();
-
-
-
-        // Product category mapping
-
-        if (productCategory === "nvr") {
-
-            productCategory = "nvr/dvr";
-
-        }
-
-
-
-        if (productCategory === "surveillance hdd") {
-
-            productCategory = "hdd";
-
-        }
-
-
-
-        const matchesSearch =
-
-            productText.includes(searchText);
-
-
-
-        const matchesCategory =
-
-            selectedCategory === "all" ||
-
-            productCategory === selectedCategory;
-
+        const productText = String(product.querySelector("h3")?.textContent || "").toLowerCase();
+        const productCategory = normalizeProductCategory(product.dataset.category);
+        const brand = String(product.dataset.brand || "").trim().toLowerCase();
+        const price = Number(product.dataset.price || 0);
+        const discountPercent = Number(product.dataset.discountPercent || 0);
+        const matchesSearch = productText.includes(searchText) || brand.includes(searchText);
+        const matchesCategory = selectedCategory === "all" || productCategory === selectedCategory;
+        const matchesBrand = selectedBrands.size === 0 || selectedBrands.has(brand);
         const matchesAvailability = !inStockOnly || Number(product.dataset.stock || 0) > 0;
-        const matchesDiscount = !discountMode || Number(product.dataset.discountPercent || 0) >= discountThreshold;
-
-        if (matchesSearch && matchesCategory && matchesAvailability && matchesDiscount) {
-            product.style.display = "";
-            visibleProductCount++;
-        } else {
-            product.style.display = "none";
-        }
-
+        const matchesDiscount = (!discountMode || discountPercent >= discountThreshold) && discountPercent >= minDiscount;
+        const matchesPrice = (minPrice === null || price >= minPrice) && (maxPrice === null || price <= maxPrice);
+        const matches = matchesSearch && matchesCategory && matchesBrand && matchesAvailability && matchesDiscount && matchesPrice;
+        product.style.display = matches ? "" : "none";
+        if (matches) visibleProductCount++;
     });
-    if (discountsEmptyMessage) {
-        discountsEmptyMessage.hidden = !discountMode || visibleProductCount > 0;
-    }
 
+    const resultCount = document.getElementById("result-count");
+    if (resultCount) resultCount.textContent = `Showing ${visibleProductCount} of ${products.length} products`;
+    if (discountsEmptyMessage) discountsEmptyMessage.hidden = !discountMode || visibleProductCount > 0;
 }
 
 
 
 searchInput.addEventListener("input", filterProducts);
 categoryFilter.addEventListener("change", filterProducts);
+const sortProductsSelect = document.getElementById("sort-products");
+if (sortProductsSelect) sortProductsSelect.addEventListener("change", filterProducts);
+
+const applyPriceButton = document.getElementById("apply-price-filter");
+if (applyPriceButton) applyPriceButton.addEventListener("click", () => {
+    const minInput = document.getElementById("min-price");
+    const maxInput = document.getElementById("max-price");
+    if (minInput?.value && maxInput?.value && Number(minInput.value) > Number(maxInput.value)) {
+        showCatalogNotice("Minimum price cannot be greater than maximum price.");
+        return;
+    }
+    filterProducts();
+});
+const clearPriceButton = document.getElementById("clear-price-filter");
+if (clearPriceButton) clearPriceButton.addEventListener("click", () => {
+    document.getElementById("min-price").value = "";
+    document.getElementById("max-price").value = "";
+    filterProducts();
+});
+const minimumDiscountSelect = document.getElementById("minimum-discount");
+if (minimumDiscountSelect) minimumDiscountSelect.addEventListener("change", filterProducts);
+
+function showCatalogNotice(message) {
+    const notice = document.getElementById("catalog-filter-notice");
+    if (notice) {
+        notice.textContent = message;
+        notice.hidden = false;
+        window.clearTimeout(showCatalogNotice.timeout);
+        showCatalogNotice.timeout = window.setTimeout(() => { notice.hidden = true; }, 3500);
+    }
+}
 
 // Sidebar category and availability filters share the existing catalogue filter state.
 document.querySelectorAll("[data-sidebar-category]").forEach(button => {
@@ -2499,6 +2809,15 @@ if (clearCatalogFilters) {
         searchInput.value = "";
         categoryFilter.value = "all";
         if (inStockOnlyFilter) inStockOnlyFilter.checked = false;
+        document.querySelectorAll("[data-brand-filter]").forEach(input => { input.checked = false; });
+        const minPriceInput = document.getElementById("min-price");
+        const maxPriceInput = document.getElementById("max-price");
+        const minDiscountSelect = document.getElementById("minimum-discount");
+        const sortSelect = document.getElementById("sort-products");
+        if (minPriceInput) minPriceInput.value = "";
+        if (maxPriceInput) maxPriceInput.value = "";
+        if (minDiscountSelect) minDiscountSelect.value = "0";
+        if (sortSelect) sortSelect.value = "featured";
         if (getDiscountThresholdFromHash() !== null) {
             history.replaceState(null, "", window.location.pathname + window.location.search);
         }
